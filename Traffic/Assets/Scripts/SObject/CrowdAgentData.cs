@@ -1,10 +1,10 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace ScriptableObject
+namespace SObject
 {
     [CreateAssetMenu(fileName = "CrowdAgentData", menuName = "CrowdWizard/New Crowd Agent Data")]
-    public class CrowdAgentData : UnityEngine.ScriptableObject
+    public class CrowdAgentData : ScriptableObject
     {
         public List<GameObject> crowdAgentPrefabs = new List<GameObject>();
     }

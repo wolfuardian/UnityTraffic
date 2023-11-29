@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
-using ScriptableObject;
+using SObject;
 
 namespace Runtime.Crowd
 {
