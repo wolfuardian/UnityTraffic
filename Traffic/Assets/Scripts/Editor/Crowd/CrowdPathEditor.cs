@@ -12,25 +12,17 @@ namespace Editor.Crowd
     {
         private CrowdPath m_CrowdPath;
         private static bool isLocked;
-        private SerializedProperty m_PointsProp;
-        private SerializedProperty m_IsLoopingProp;
-        private SerializedProperty m_hasGoalProp;
-        private SerializedProperty m_pathModeProp;
-        private SerializedProperty m_AgentSpeedProp;
+        private SerializedProperty m_WaypointsProp;
 
         private void OnEnable()
         {
             m_CrowdPath = (CrowdPath)target;
-            m_PointsProp = serializedObject.FindProperty("points");
-            m_IsLoopingProp = serializedObject.FindProperty("isLooping");
-            m_hasGoalProp = serializedObject.FindProperty("hasGoal");
-            m_pathModeProp = serializedObject.FindProperty("pathMode");
-            m_AgentSpeedProp = serializedObject.FindProperty("agentSpeed");
+            m_WaypointsProp = serializedObject.FindProperty("waypoints");
         }
 
         private void OnSceneGUI()
         {
-            if (!m_CrowdPath.IsInEditMode || Event.current.type != EventType.MouseDown || Event.current.button != 0)
+            if (!m_CrowdPath.isInEditMode || Event.current.type != EventType.MouseDown || Event.current.button != 0)
                 return;
 
             var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
@@ -44,35 +36,34 @@ namespace Editor.Crowd
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.PropertyField(m_PointsProp);
+            EditorGUILayout.PropertyField(m_WaypointsProp);
 
-            if (GUILayout.Button(m_CrowdPath.IsInEditMode ? "Exit Edit Mode" : "Enter Edit Mode"))
+
+            if (GUILayout.Button(m_CrowdPath.isInEditMode ? "Exit Edit Mode" : "Enter Edit Mode"))
             {
                 ToggleEditMode();
             }
 
-            if (m_CrowdPath.IsInEditMode) return;
+            if (m_CrowdPath.isInEditMode) return;
             if (GUILayout.Button("Clear Points"))
             {
                 ClearPoints();
             }
 
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Path Configuration", EditorStyles.boldLabel);
-
-            EditorGUILayout.PropertyField(m_IsLoopingProp);
-            EditorGUILayout.PropertyField(m_hasGoalProp);
-            EditorGUILayout.PropertyField(m_pathModeProp);
-            EditorGUILayout.PropertyField(m_AgentSpeedProp);
+            if (GUILayout.Button("Refresh"))
+            {
+                m_CrowdPath.waypoints = m_CrowdPath.GetComponentsInChildren<CrowdPathPoint>()
+                    .Select(point => point.gameObject).ToList();
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
 
         private void ToggleEditMode()
         {
-            m_CrowdPath.IsInEditMode = !m_CrowdPath.IsInEditMode;
+            m_CrowdPath.isInEditMode = !m_CrowdPath.isInEditMode;
 
-            if (m_CrowdPath.IsInEditMode)
+            if (m_CrowdPath.isInEditMode)
             {
                 LockInspector();
             }
@@ -84,13 +75,13 @@ namespace Editor.Crowd
 
         private void ClearPoints()
         {
-            foreach (var point in m_CrowdPath.points.Where(point => point != null))
+            foreach (var point in m_CrowdPath.waypoints.Where(point => point != null))
             {
                 DestroyImmediate(point);
             }
 
-            m_CrowdPath.points.Clear();
-            m_CrowdPath.IsInEditMode = false;
+            m_CrowdPath.waypoints.Clear();
+            m_CrowdPath.isInEditMode = false;
             UnlockInspectorAndSelectObject();
         }
 

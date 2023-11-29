@@ -9,27 +9,14 @@ namespace Runtime.Crowd
     [ExecuteInEditMode]
     public class CrowdPath : MonoBehaviour
     {
-        [NonSerialized] public bool IsInEditMode;
-        public List<GameObject> points = new List<GameObject>();
-        public bool isLooping = true;
-        public bool hasGoal = false;
-
-        public enum PathMode
-        {
-            Loop,
-            OneWay,
-            PingPong
-        };
-
-        public PathMode pathMode = PathMode.Loop;
-        public float agentSpeed = 10f;
-        private int m_PointCounter;
+        [NonSerialized] public bool isInEditMode;
+        public List<GameObject> waypoints = new List<GameObject>();
 
         public void AddPoint(Vector3 position)
         {
-            if (!IsInEditMode) return;
+            if (!isInEditMode) return;
 
-            var point = new GameObject("Point" + m_PointCounter++)
+            var point = new GameObject("Point" + waypoints.Count)
             {
                 transform = { position = position }
             };
@@ -40,9 +27,9 @@ namespace Runtime.Crowd
             meshFilter.mesh = CreateSphereMesh();
             meshRenderer.material = new Material(Shader.Find("Standard"));
 
-            point.AddComponent<TargetPoint>();
+            point.AddComponent<CrowdPathPoint>();
 
-            points.Add(point);
+            waypoints.Add(point);
             SortTargetPoints();
         }
 
@@ -53,12 +40,12 @@ namespace Runtime.Crowd
 
         private void SortTargetPoints()
         {
-            var pointsCount = points.Count;
-            foreach (var point in points)
+            var pointsCount = waypoints.Count;
+            foreach (var point in waypoints)
             {
-                point.GetComponent<TargetPoint>().pointIndex = points.IndexOf(point);
-                point.GetComponent<TargetPoint>().isLastPoint =
-                    point.GetComponent<TargetPoint>().pointIndex == pointsCount - 1;
+                point.GetComponent<CrowdPathPoint>().pointIndex = waypoints.IndexOf(point);
+                point.GetComponent<CrowdPathPoint>().isLastPoint =
+                    point.GetComponent<CrowdPathPoint>().pointIndex == pointsCount - 1;
             }
         }
     }

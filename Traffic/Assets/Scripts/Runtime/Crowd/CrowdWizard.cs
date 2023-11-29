@@ -77,7 +77,7 @@ namespace Runtime.Crowd
         {
             IsPointHide = !IsPointHide;
 
-            var points = FindObjectsOfType<TargetPoint>();
+            var points = FindObjectsOfType<CrowdPathPoint>();
             foreach (var point in points)
             {
                 var meshRenderer = point.gameObject.GetComponent<MeshRenderer>();

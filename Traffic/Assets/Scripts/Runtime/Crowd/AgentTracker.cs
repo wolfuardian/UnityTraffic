@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -5,28 +6,38 @@ namespace Runtime.Crowd
 {
     public class AgentTracker : MonoBehaviour
     {
-        public CrowdPath crowdPath;
         public AgentEntity agent;
         public GameObject previousTarget;
         public GameObject target;
         public int targetIndex;
-        public List<GameObject> targets;
-        [Range(0.0f, 1.0f)] public float globalJourney;
-        [Range(0.0f, 1.0f)] public float localJourney;
+        private List<GameObject> _targets;
+        [SerializeField] [Range(0.0f, 1.0f)] private float globalJourney;
+        [SerializeField] [Range(0.0f, 1.0f)] private float localJourney;
         public float localDistance;
         public float remainingDistance;
+        public int maxTargetIndex;
+        private CrowdPath _crowdPath;
+        private float _turningRadius;
+
+        public bool isGoingForward = true;
+        public bool isDestroyOnArrival = true;
 
 
         public LineRenderer lineRenderer;
-        private int m_TargetIndex;
 
+        public AgentTracker(List<GameObject> targets)
+        {
+            _targets = targets;
+        }
 
         private void Start()
         {
             previousTarget = gameObject;
-            targets = crowdPath.points;
-            target = targets[0];
-            m_TargetIndex = 0;
+            _targets = _crowdPath.waypoints;
+            target = _targets[0];
+            targetIndex = 0;
+            localDistance = Vector3.Distance(previousTarget.transform.position, target.transform.position);
+            maxTargetIndex = _targets.Count - 1;
 
             InitialGuideline();
             SetAgentDestination();
@@ -34,41 +45,57 @@ namespace Runtime.Crowd
 
         private void Update()
         {
-            UpdatingTarget();
+            MoveToward();
 
-            if (previousTarget != null)
-            {
-                localDistance = Vector3.Distance(previousTarget.transform.position, target.transform.position);
-            }
+            CalculateJourney();
 
-            targetIndex = targets.IndexOf(target);
-            remainingDistance = agent.navMeshAgent.remainingDistance;
-            localJourney = Mathf.Clamp(1 - remainingDistance / localDistance, 0f, 1f);
-            globalJourney = (targetIndex + localJourney) / targets.Count;
-
-            UpdatingGuideline();
+            RedrawGuide();
         }
 
-        private void UpdatingTarget()
+        public void SetAgentEntity(AgentEntity agentEntity) => agent = agentEntity;
+        public void SetCrowdPath(CrowdPath crowdPath) => _crowdPath = crowdPath;
+        public void SetTurningRadius(float turningRadius) => _turningRadius = turningRadius;
+
+
+        private void CalculateJourney()
         {
-            if (Vector3.Distance(transform.position, target.transform.position) < 2f)
+            targetIndex = _targets.IndexOf(target);
+            remainingDistance = agent.navMeshAgent.remainingDistance;
+            localDistance = Vector3.Distance(previousTarget.transform.position, target.transform.position);
+            localJourney = Mathf.Clamp(1 - remainingDistance / localDistance, 0f, 1f);
+            if (previousTarget == target) localJourney = 1f;
+
+            globalJourney = (targetIndex + localJourney) / _targets.Count;
+
+            if (Math.Abs(globalJourney - 1f) < 0.001f)
             {
-                FindNextTarget();
+                agent.shouldDestroy = true;
+            }
+        }
+
+        private float CalculatePingPongJourneyIndex()
+        {
+            var effectiveIndex = isGoingForward ? targetIndex : maxTargetIndex - targetIndex;
+            return (float)effectiveIndex / maxTargetIndex;
+        }
+
+        private void MoveToward()
+        {
+            if (Vector3.Distance(transform.position, target.transform.position) < _turningRadius)
+            {
+                previousTarget = target;
+                if (targetIndex < _targets.Count - 1)
+                {
+                    targetIndex++;
+                }
+
+                if (targetIndex < _targets.Count && targetIndex >= 0)
+                {
+                    target = _targets[targetIndex];
+                }
             }
 
             SetAgentDestination();
-        }
-
-        private void FindNextTarget()
-        {
-            previousTarget = target;
-
-            var nextIndex = crowdPath.isLooping ? (m_TargetIndex + 1) % targets.Count : m_TargetIndex + 1;
-
-            if (nextIndex >= targets.Count) return;
-
-            m_TargetIndex = nextIndex;
-            target = targets[m_TargetIndex];
         }
 
         private void SetAgentDestination()
@@ -88,7 +115,7 @@ namespace Runtime.Crowd
             lineRenderer.positionCount = 2;
         }
 
-        private void UpdatingGuideline()
+        private void RedrawGuide()
         {
             lineRenderer.SetPosition(0, transform.position);
             lineRenderer.SetPosition(1, target.transform.position);
