@@ -12,6 +12,22 @@ namespace Runtime.Crowd
         [NonSerialized] public bool isInEditMode;
         public List<GameObject> waypoints = new List<GameObject>();
 
+        void OnDrawGizmos()
+        {
+            if (waypoints.Count > 1)
+            {
+                Gizmos.color = Color.cyan;
+                
+                for (int i = 0; i < waypoints.Count - 1; i++)
+                {
+                    if (waypoints[i] != null && waypoints[i + 1] != null)
+                    {
+                        Gizmos.DrawLine(waypoints[i].transform.position, waypoints[i + 1].transform.position);
+                    }
+                }
+            }
+        }
+
         public void AddPoint(Vector3 position)
         {
             if (!isInEditMode) return;

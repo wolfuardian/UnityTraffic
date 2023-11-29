@@ -20,7 +20,6 @@ namespace Runtime.Crowd
         private float _turningRadius;
 
         public bool isGoingForward = true;
-        public bool isDestroyOnArrival = true;
 
 
         public LineRenderer lineRenderer;
@@ -73,11 +72,7 @@ namespace Runtime.Crowd
             }
         }
 
-        private float CalculatePingPongJourneyIndex()
-        {
-            var effectiveIndex = isGoingForward ? targetIndex : maxTargetIndex - targetIndex;
-            return (float)effectiveIndex / maxTargetIndex;
-        }
+
 
         private void MoveToward()
         {
