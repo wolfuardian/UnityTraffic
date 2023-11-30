@@ -1,5 +1,3 @@
-// PathBuilder.cs
-
 using System;
 using UnityEngine;
 using System.Collections.Generic;
@@ -10,6 +8,7 @@ namespace Runtime.Crowd
     public class CrowdPath : MonoBehaviour
     {
         [NonSerialized] public bool isInEditMode;
+        [NonSerialized] public bool _isOpenPointConfigPanel;
         public List<GameObject> waypoints = new List<GameObject>();
 
         void OnDrawGizmos()
@@ -17,13 +16,22 @@ namespace Runtime.Crowd
             if (waypoints.Count > 1)
             {
                 Gizmos.color = Color.cyan;
-                
-                for (int i = 0; i < waypoints.Count - 1; i++)
+
+                for (var i = 0; i < waypoints.Count - 1; i++)
                 {
                     if (waypoints[i] != null && waypoints[i + 1] != null)
                     {
                         Gizmos.DrawLine(waypoints[i].transform.position, waypoints[i + 1].transform.position);
                     }
+                }
+
+                for (var i = 0; i < waypoints.Count; i++)
+                {
+                    Gizmos.color = i == waypoints.Count - 1 ? Color.green : Color.red;
+
+                    var lastPointPosition = waypoints[i].transform.position;
+                    Gizmos.DrawWireSphere(lastPointPosition,
+                        waypoints[i].GetComponent<CrowdPathPoint>().allowableRadius * 0.9f);
                 }
             }
         }

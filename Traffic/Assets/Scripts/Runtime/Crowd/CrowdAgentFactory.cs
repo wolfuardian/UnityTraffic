@@ -1,10 +1,8 @@
-using System;
 using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
-using SObject;
 using Random = UnityEngine.Random;
+using SObject;
 
 namespace Runtime.Crowd
 {
@@ -14,17 +12,9 @@ namespace Runtime.Crowd
         public CrowdPath crowdPath;
 
         [SerializeField] private List<GameObject> crowdAgentPrefabs = new List<GameObject>();
-        [SerializeField] private List<GameObject> crowdAgentInstances = new List<GameObject>();
-
-        public int maxAgentCount = 5;
-        public float spawnInterval;
-        public float minSpeed;
-        public float maxSpeed;
-        public float speed;
-        public float turningRadius;
-        public float stoppingDistance;
 
         public int currentAgentCount;
+        private float _speed;
 
         private void OnValidate()
         {
@@ -32,17 +22,6 @@ namespace Runtime.Crowd
 
             crowdAgentPrefabs.Clear();
             crowdAgentPrefabs.AddRange(crowdAgentData.crowdAgentPrefabs);
-        }
-
-
-        private void Awake()
-        {
-            maxAgentCount = crowdAgentData.maxAgentCount;
-            spawnInterval = crowdAgentData.spawnInterval;
-            minSpeed = crowdAgentData.minSpeed;
-            maxSpeed = crowdAgentData.maxSpeed;
-            turningRadius = crowdAgentData.turningRadius;
-            stoppingDistance = crowdAgentData.stoppingDistance;
         }
 
 
@@ -54,14 +33,14 @@ namespace Runtime.Crowd
             StartCoroutine(SpawnRoutine());
         }
 
-        IEnumerator SpawnRoutine()
+        private IEnumerator SpawnRoutine()
         {
             while (gameObject.activeSelf)
             {
-                if (currentAgentCount < maxAgentCount)
+                if (currentAgentCount < crowdAgentData.maxAgentCount)
                 {
                     SpawnCrowdAgent();
-                    yield return new WaitForSeconds(spawnInterval);
+                    yield return new WaitForSeconds(crowdAgentData.spawnInterval);
                 }
                 else
                 {
@@ -72,7 +51,7 @@ namespace Runtime.Crowd
 
         private void SpawnCrowdAgent()
         {
-            speed = Random.Range(minSpeed, maxSpeed);
+            _speed = Random.Range(crowdAgentData.minSpeed, crowdAgentData.maxSpeed);
 
             var prefabIndex = Random.Range(0, crowdAgentPrefabs.Count);
             var crowdAgentPrefab = crowdAgentPrefabs[prefabIndex];
@@ -84,18 +63,18 @@ namespace Runtime.Crowd
 
             crowdAgentInstance.AddComponent<AgentEntity>();
 
-            var instAgentEntity = crowdAgentInstance.GetComponent<AgentEntity>();
-            instAgentEntity.onAgentExited += OnCrowdAgentExited;
-            instAgentEntity.SetSpeed(speed);
-            instAgentEntity.SetTurningRadius(turningRadius);
-            instAgentEntity.SetStoppingDistance(stoppingDistance);
+            var entity = crowdAgentInstance.GetComponent<AgentEntity>();
+            entity.onAgentExited += OnCrowdAgentExited;
+            entity.SetSpeed(_speed);
+            entity.SetTurningRadius(crowdAgentData.turningRadius);
+            entity.SetStoppingDistance(crowdAgentData.stoppingDistance);
 
             crowdAgentInstance.AddComponent<AgentTracker>();
 
-            var instAgentTracker = crowdAgentInstance.GetComponent<AgentTracker>();
-            instAgentTracker.SetAgentEntity(instAgentEntity);
-            instAgentTracker.SetCrowdPath(crowdPath);
-            instAgentTracker.SetTurningRadius(turningRadius);
+            var tracker = crowdAgentInstance.GetComponent<AgentTracker>();
+            tracker.SetAgentEntity(entity);
+            tracker.SetWaypoints(crowdPath.waypoints);
+            tracker.SetTurningRadius(crowdAgentData.turningRadius);
 
             currentAgentCount++;
         }

@@ -18,7 +18,7 @@ namespace Runtime
         private float _currentRandomWaitTime;
         private Coroutine _jumpRoutine;
 
-        private const bool IsJumpRoutineRunningForce = true;
+        public bool isJumpRoutineRunningForce = true;
 
         private void Awake()
         {
@@ -68,7 +68,7 @@ namespace Runtime
 
         private IEnumerator JumpRoutine()
         {
-            while (IsJumpRoutineRunningForce)
+            while (isJumpRoutineRunningForce)
             {
                 yield return new WaitForSeconds(jumpDuration);
                 yield return new WaitForSeconds(jumpInterval - jumpDuration);

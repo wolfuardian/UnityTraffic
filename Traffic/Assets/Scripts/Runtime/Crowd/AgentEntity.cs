@@ -6,6 +6,7 @@ namespace Runtime.Crowd
 {
     public class AgentEntity : MonoBehaviour
     {
+        
         public NavMeshAgent navMeshAgent;
         public bool shouldDestroy;
         private float _turningRadius;

@@ -1,92 +1,72 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 namespace Runtime.Crowd
 {
     public class AgentTracker : MonoBehaviour
     {
-        public AgentEntity agent;
-        public GameObject previousTarget;
-        public GameObject target;
-        public int targetIndex;
-        private List<GameObject> _targets;
+        [SerializeField] private GameObject previousTarget;
+        [SerializeField] private GameObject target;
+        [SerializeField] private Vector3 previousDesiredPosition;
+        [SerializeField] private Vector3 desiredPosition;
+        [SerializeField] private int waypointIndex;
         [SerializeField] [Range(0.0f, 1.0f)] private float globalJourney;
         [SerializeField] [Range(0.0f, 1.0f)] private float localJourney;
-        public float localDistance;
-        public float remainingDistance;
-        public int maxTargetIndex;
-        private CrowdPath _crowdPath;
+        [SerializeField] private float localDistance;
+        [SerializeField] private float remainingDistance;
+        [SerializeField] private bool isTrackable = false;
+        private List<GameObject> _waypoints = new List<GameObject>();
+        private AgentEntity _agentEntity;
         private float _turningRadius;
 
-        public bool isGoingForward = true;
 
+        public void SetWaypoints(List<GameObject> waypoints) => _waypoints = waypoints;
+        public void SetAgentEntity(AgentEntity agentEntity) => _agentEntity = agentEntity;
+        public void SetTurningRadius(float turningRadius) => _turningRadius = turningRadius;
 
-        public LineRenderer lineRenderer;
-
-        public AgentTracker(List<GameObject> targets)
-        {
-            _targets = targets;
-        }
 
         private void Start()
         {
-            previousTarget = gameObject;
-            _targets = _crowdPath.waypoints;
-            target = _targets[0];
-            targetIndex = 0;
-            localDistance = Vector3.Distance(previousTarget.transform.position, target.transform.position);
-            maxTargetIndex = _targets.Count - 1;
-
-            InitialGuideline();
-            SetAgentDestination();
+            if (_waypoints != null && _waypoints.Count > 0)
+            {
+                waypointIndex = 0;
+                previousTarget = gameObject;
+                target = _waypoints[0];
+                desiredPosition = GetRandomPointInRadius(target);
+                localDistance = Vector3.Distance(previousTarget.transform.position, desiredPosition);
+                SetAgentDestination();
+                isTrackable = true;
+            }
+            else
+            {
+                Debug.LogError("Waypoints list is empty or null!");
+            }
         }
 
         private void Update()
         {
+            if (!isTrackable) return;
             MoveToward();
-
             CalculateJourney();
-
-            RedrawGuide();
         }
-
-        public void SetAgentEntity(AgentEntity agentEntity) => agent = agentEntity;
-        public void SetCrowdPath(CrowdPath crowdPath) => _crowdPath = crowdPath;
-        public void SetTurningRadius(float turningRadius) => _turningRadius = turningRadius;
-
-
-        private void CalculateJourney()
-        {
-            targetIndex = _targets.IndexOf(target);
-            remainingDistance = agent.navMeshAgent.remainingDistance;
-            localDistance = Vector3.Distance(previousTarget.transform.position, target.transform.position);
-            localJourney = Mathf.Clamp(1 - remainingDistance / localDistance, 0f, 1f);
-            if (previousTarget == target) localJourney = 1f;
-
-            globalJourney = (targetIndex + localJourney) / _targets.Count;
-
-            if (Math.Abs(globalJourney - 1f) < 0.001f)
-            {
-                agent.shouldDestroy = true;
-            }
-        }
-
-
 
         private void MoveToward()
         {
-            if (Vector3.Distance(transform.position, target.transform.position) < _turningRadius)
+            if (Vector3.Distance(transform.position, desiredPosition) < _turningRadius)
             {
                 previousTarget = target;
-                if (targetIndex < _targets.Count - 1)
+                if (previousTarget == target) desiredPosition = GetRandomPointInRadius(target);
+
+                if (waypointIndex < _waypoints.Count - 1)
                 {
-                    targetIndex++;
+                    waypointIndex++;
                 }
 
-                if (targetIndex < _targets.Count && targetIndex >= 0)
+                if (waypointIndex < _waypoints.Count && waypointIndex >= 0)
                 {
-                    target = _targets[targetIndex];
+                    target = _waypoints[waypointIndex];
                 }
             }
 
@@ -95,25 +75,51 @@ namespace Runtime.Crowd
 
         private void SetAgentDestination()
         {
-            agent.SetDestination(target.transform.position);
+            _agentEntity.SetDestination(desiredPosition);
         }
 
-
-        private void InitialGuideline()
+        private void CalculateJourney()
         {
-            lineRenderer = gameObject.AddComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.1f;
-            lineRenderer.endWidth = 0.1f;
-            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            lineRenderer.startColor = Color.red;
-            lineRenderer.endColor = Color.red;
-            lineRenderer.positionCount = 2;
+            waypointIndex = _waypoints.IndexOf(target);
+            remainingDistance = _agentEntity.navMeshAgent.remainingDistance;
+            localDistance = Vector3.Distance(previousTarget.transform.position, desiredPosition);
+            localJourney = Mathf.Clamp(1 - remainingDistance / localDistance, 0f, 1f);
+            if (previousTarget == target) localJourney = 1f;
+
+            globalJourney = (waypointIndex + localJourney) / _waypoints.Count;
+
+            if (Math.Abs(globalJourney - 1f) < 0.001f)
+            {
+                _agentEntity.shouldDestroy = true;
+            }
         }
 
-        private void RedrawGuide()
+        private static Vector3 GetRandomPointInRadius(GameObject point)
         {
-            lineRenderer.SetPosition(0, transform.position);
-            lineRenderer.SetPosition(1, target.transform.position);
+            var crowdPathPoint = point.GetComponent<CrowdPathPoint>();
+            if (crowdPathPoint != null)
+            {
+                var radius = crowdPathPoint.allowableRadius;
+                var randomDirection = Random.insideUnitSphere * radius;
+                var position = point.transform.position;
+                randomDirection += position;
+                randomDirection.y = position.y;
+                return randomDirection;
+            }
+
+            return point.transform.position;
+        }
+
+        void OnDrawGizmos()
+        {
+            if (target != null)
+            {
+                // 設置Gizmo的顏色為紅色
+                Gizmos.color = Color.red;
+
+                // 從物件的位置繪製一條線到目標位置
+                Gizmos.DrawLine(transform.position, desiredPosition);
+            }
         }
     }
 }
