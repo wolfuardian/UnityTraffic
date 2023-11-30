@@ -23,7 +23,7 @@ namespace Editor.Crowd
             if (!_crowdPath.isInEditMode || Event.current.type != EventType.MouseDown ||
                 Event.current.button != 0)
                 return;
-
+            Debug.Log("OnSceneGUI");
             var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
             if (!Physics.Raycast(ray, out var hit)) return;
@@ -52,12 +52,12 @@ namespace Editor.Crowd
             EditorGUILayout.LabelField("Actions", headerStyle);
             EditorGUI.BeginDisabledGroup(_crowdPath.isInEditMode);
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Refresh", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.8f)))
+            if (GUILayout.Button("Refresh"))
             {
                 RefreshWaypoints();
             }
 
-            if (GUILayout.Button("Clear Points"))
+            if (GUILayout.Button("Reset", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
             {
                 ClearPoints();
             }
@@ -133,12 +133,18 @@ namespace Editor.Crowd
             if (_crowdPath.isInEditMode)
             {
                 LockInspector();
-                Selection.activeGameObject = _crowdPath.waypoints[_crowdPath.waypoints.Count - 1];
+                SelectLastPoint();
             }
             else
             {
                 UnlockInspectorAndSelectObject();
             }
+        }
+
+        private void SelectLastPoint()
+        {
+            if (_crowdPath.waypoints.Count <= 0) return;
+            Selection.activeGameObject = _crowdPath.waypoints[_crowdPath.waypoints.Count - 1];
         }
 
         private void TogglePointConfigPanel()

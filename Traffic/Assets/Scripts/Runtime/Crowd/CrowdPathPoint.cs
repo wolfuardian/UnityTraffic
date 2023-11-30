@@ -1,16 +1,14 @@
+using System;
 using UnityEngine;
 
 namespace Runtime.Crowd
 {
     public class CrowdPathPoint : MonoBehaviour
     {
-        public float colliderRadius = 2f;
-        public int pointIndex;
-        public bool isLastPoint;
         public float allowableRadius = 2f;
 
 
-        void OnDrawGizmos()
+        private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;
 

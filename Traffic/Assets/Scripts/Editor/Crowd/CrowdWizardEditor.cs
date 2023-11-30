@@ -11,8 +11,8 @@ namespace Editor.Crowd
     public class CrowdWizardEditor : UnityEditor.Editor
     {
         private CrowdWizard _crowdWizard;
-        SerializedProperty crowdAgentPrefabsProp;
-        SerializedProperty newCrowdAgentPrefabProp;
+        private SerializedProperty crowdAgentPrefabsProp;
+        private SerializedProperty newCrowdAgentPrefabProp;
 
         private void OnEnable()
         {
@@ -23,8 +23,10 @@ namespace Editor.Crowd
 
         public override void OnInspectorGUI()
         {
-            // var crowdWizard = (CrowdWizard)target;
+            EditorGUILayout.BeginVertical("box");
 
+
+            EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(_crowdWizard.IsPathCreated());
             if (GUILayout.Button("Create Path"))
             {
@@ -41,10 +43,16 @@ namespace Editor.Crowd
 
             EditorGUI.EndDisabledGroup();
 
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(10);
+
             if (_crowdWizard.IsPathCreated())
             {
-                EditorGUILayout.Space(20);
+                EditorGUILayout.BeginVertical("box");
+
                 EditorGUILayout.LabelField("Path Instances", EditorStyles.boldLabel);
+
 
                 var toRemove = new List<GameObject>();
 
@@ -66,16 +74,21 @@ namespace Editor.Crowd
                     _crowdWizard.pathInstances.Remove(remove);
                 }
 
+                if (GUILayout.Button("Add Path Instance"))
+                {
+                    _crowdWizard.CreatePathInstance();
+                }
 
+                EditorGUILayout.EndVertical();
             }
-            if (GUILayout.Button("Add Path Instance"))
-            {
-                _crowdWizard.CreatePathInstance();
-            }
+
+
+            EditorGUILayout.Space(10);
 
             if (_crowdWizard.IsCrowdAgentCreated())
             {
-                EditorGUILayout.Space(20);
+                EditorGUILayout.BeginVertical("box");
+
                 EditorGUILayout.LabelField("Agent Instance", EditorStyles.boldLabel);
                 var toRemove = new List<GameObject>();
 
@@ -90,106 +103,22 @@ namespace Editor.Crowd
 
                     EditorGUILayout.EndHorizontal();
                 }
-                
+
                 foreach (var remove in toRemove)
                 {
                     DestroyImmediate(remove);
                     _crowdWizard.crowdAgentInstances.Remove(remove);
                 }
-            }
-            
-            if (GUILayout.Button("Add Agent Instance"))
-            {
-                _crowdWizard.CreateCrowdAgentInstance();
-            }
-            
-            
-            
-            //
-            //
-            // for (int i = 0; i < crowdWizard.crowdAgentPrefabs.Count; i++)
-            // {
-            //     EditorGUILayout.BeginHorizontal();
-            //     EditorGUILayout.ObjectField("Prefab", crowdWizard.crowdAgentPrefabs[i], typeof(GameObject), false);
-            //
-            //     if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
-            //     {
-            //         toRemove.Add(crowdWizard.crowdAgentPrefabs[i]);
-            //     }
-            //
-            //     EditorGUILayout.EndHorizontal();
-            // }
-            //
-            // foreach (var remove in toRemove)
-            // {
-            //     crowdWizard.crowdAgentPrefabs.Remove(remove);
-            // }
-            //
-            // EditorGUILayout.Space(20);
-            // EditorGUILayout.LabelField("Add Crowd Agent Variant", EditorStyles.boldLabel);
-            //
-            // EditorGUILayout.BeginHorizontal();
-            //
-            // EditorGUILayout.PropertyField(newCrowdAgentPrefabProp, new GUIContent("New Prefab"));
-            // if (GUILayout.Button("Add to List"))
-            // {
-            //     crowdWizard.AddCrowdAgentPrefab();
-            // }
-            //
-            // EditorGUILayout.EndHorizontal();
-            //
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            // if (crowdWizard.IsCrowdAgentCreated())
-            // {
-            //     EditorGUILayout.Space();
-            //     EditorGUILayout.LabelField("Crowd Agent Prefabs", EditorStyles.boldLabel);
-            //
-            //     var toRemove = new List<GameObject>();
-            //
-            //     foreach (var pathInstance in crowdWizard.pathInstances)
-            //     {
-            //         EditorGUILayout.BeginHorizontal();
-            //         EditorGUILayout.ObjectField("Instance", pathInstance, typeof(GameObject), true);
-            //         if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
-            //         {
-            //             toRemove.Add(pathInstance);
-            //         }
-            //
-            //         EditorGUILayout.EndHorizontal();
-            //     }
-            // }
 
+                if (GUILayout.Button("Add Agent Instance"))
+                {
+                    _crowdWizard.CreateCrowdAgentInstance();
+                }
 
-            // EditorGUILayout.Space(20);
-            // EditorGUILayout.LabelField("Display Configuration", EditorStyles.boldLabel);
-            // EditorGUILayout.BeginHorizontal();
-            // if (GUILayout.Button(crowdWizard.IsPointHide ? "Hide Point Mesh" : "Show Point Mesh"))
-            // {
-            //     TogglePointDisplayMode();
-            // }
-            //
-            // EditorGUILayout.EndHorizontal();
+                EditorGUILayout.EndVertical();
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
-
-
-        // private void TogglePointDisplayMode()
-        // {
-        //     _CrowdWizard.TogglePointDisplayMode();
-        // }
     }
 }

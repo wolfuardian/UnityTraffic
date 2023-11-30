@@ -81,13 +81,29 @@ namespace Runtime.Crowd
 
         private Vector3 GetSpawnPosition()
         {
-            var spawnPosition = crowdPath.waypoints[0].transform.position;
+            var spawnPosition = GetRandomPointInRadius(crowdPath.waypoints[0]);
             return spawnPosition;
         }
 
         private void OnCrowdAgentExited(AgentEntity agent)
         {
             currentAgentCount--;
+        }
+
+        private static Vector3 GetRandomPointInRadius(GameObject point)
+        {
+            var crowdPathPoint = point.GetComponent<CrowdPathPoint>();
+            if (crowdPathPoint != null)
+            {
+                var radius = crowdPathPoint.allowableRadius;
+                var randomDirection = Random.insideUnitSphere * radius;
+                var position = point.transform.position;
+                randomDirection += position;
+                randomDirection.y = position.y;
+                return randomDirection;
+            }
+
+            return point.transform.position;
         }
     }
 }
