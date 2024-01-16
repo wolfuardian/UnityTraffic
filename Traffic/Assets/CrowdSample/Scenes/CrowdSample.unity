@@ -314,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebcad41b5011e3f4f8e7c0296e9baa1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crowdAgentData: {fileID: 11400000, guid: 6495667d6612744488e6891bd953ae76, type: 2}
+  crowdAgentData: {fileID: 11400000, guid: 7e3aa5c06b3da3f4695285f17881d181, type: 2}
   crowdPath: {fileID: 1967065787}
   crowdAgentPrefabs:
   - {fileID: 1093931620385302678, guid: 71e915f9aea5a8a4db31be4ff656ef12, type: 3}
@@ -868,7 +868,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebcad41b5011e3f4f8e7c0296e9baa1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crowdAgentData: {fileID: 11400000, guid: ef9d22e0a23b4cb47924aa0f577cafc1, type: 2}
+  crowdAgentData: {fileID: 11400000, guid: 7e3aa5c06b3da3f4695285f17881d181, type: 2}
   crowdPath: {fileID: 35728215}
   crowdAgentPrefabs:
   - {fileID: 1093931620385302678, guid: 71e915f9aea5a8a4db31be4ff656ef12, type: 3}
@@ -930,7 +930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebcad41b5011e3f4f8e7c0296e9baa1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crowdAgentData: {fileID: 11400000, guid: 7d68f10552778d549a5235ce09b60837, type: 2}
+  crowdAgentData: {fileID: 11400000, guid: 7e3aa5c06b3da3f4695285f17881d181, type: 2}
   crowdPath: {fileID: 687232379}
   crowdAgentPrefabs:
   - {fileID: 1093931620385302678, guid: 71e915f9aea5a8a4db31be4ff656ef12, type: 3}

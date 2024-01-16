@@ -10,13 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4558792433b941544ac8b7ae7249cedf, type: 3}
-  m_Name: CrowdAgentDataPreset1
+  m_Name: CarAgentData_Denied
   m_EditorClassIdentifier: 
   crowdAgentPrefabs:
-  - {fileID: 1093931620385302678, guid: 71e915f9aea5a8a4db31be4ff656ef12, type: 3}
-  maxAgentCount: 100
-  spawnInterval: 0.5
-  minSpeed: 3
-  maxSpeed: 6
-  turningRadius: 5
-  stoppingDistance: 1
+  - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
+  permissionID: Denied
+  maxAgentCount: 5
+  spawnInterval: 1
+  minSpeed: 4
+  maxSpeed: 5
+  angularSpeed: 70
+  acceleration: 5
+  turningRadius: 4
+  stoppingDistance: 2

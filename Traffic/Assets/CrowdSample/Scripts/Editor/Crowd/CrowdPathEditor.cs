@@ -108,7 +108,11 @@ namespace CrowdSample.Scripts.Editor.Crowd
                                 GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f));
                             EditorGUILayout.PropertyField(radiusProp, GUIContent.none,
                                 GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f));
-                            GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f));
+                            if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
+                            {
+                                DestroyImmediate(waypointGo);
+                                break;
+                            }
                             if (GUI.changed)
                             {
                                 waypointSo.ApplyModifiedProperties();
