@@ -20,8 +20,28 @@ namespace CrowdSample.Scripts.Editor.Crowd
         public override void OnInspectorGUI()
         {
             EditorGUILayout.BeginVertical("box");
+            DrawInitializationSection();
+            EditorGUILayout.EndVertical();
 
+            EditorGUILayout.Space(10);
 
+            if (_crowdWizard.IsPathCreated())
+            {
+                DrawSection("Path Instances", _crowdWizard.pathInstances, _crowdWizard.CreatePathInstance);
+            }
+
+            EditorGUILayout.Space(10);
+
+            if (_crowdWizard.IsCrowdAgentCreated())
+            {
+                DrawSection("Agent Instance", _crowdWizard.crowdAgentInstances, _crowdWizard.CreateCrowdAgentInstance);
+            }
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawInitializationSection()
+        {
             EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(_crowdWizard.IsPathCreated());
             if (GUILayout.Button("Create Path"))
@@ -38,83 +58,43 @@ namespace CrowdSample.Scripts.Editor.Crowd
             }
 
             EditorGUI.EndDisabledGroup();
+        }
+
+        private static void DrawSection(string label, List<GameObject> instances, System.Action addInstanceAction)
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+
+            var toRemove = new List<GameObject>();
+            foreach (var instance in instances)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.ObjectField("Instance", instance, typeof(GameObject), true);
+                if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
+                {
+                    toRemove.Add(instance);
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            RemoveInstances(instances, toRemove);
+
+            if (GUILayout.Button($"Add {label}"))
+            {
+                addInstanceAction?.Invoke();
+            }
 
             EditorGUILayout.EndVertical();
+        }
 
-            EditorGUILayout.Space(10);
-
-            if (_crowdWizard.IsPathCreated())
+        private static void RemoveInstances(List<GameObject> instances, List<GameObject> toRemove)
+        {
+            foreach (var remove in toRemove)
             {
-                EditorGUILayout.BeginVertical("box");
-
-                EditorGUILayout.LabelField("Path Instances", EditorStyles.boldLabel);
-
-
-                var toRemove = new List<GameObject>();
-
-                foreach (var pathInstance in _crowdWizard.pathInstances)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.ObjectField("Instance", pathInstance, typeof(GameObject), true);
-                    if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
-                    {
-                        toRemove.Add(pathInstance);
-                    }
-
-                    EditorGUILayout.EndHorizontal();
-                }
-
-                foreach (var remove in toRemove)
-                {
-                    DestroyImmediate(remove);
-                    _crowdWizard.pathInstances.Remove(remove);
-                }
-
-                if (GUILayout.Button("Add Path Instance"))
-                {
-                    _crowdWizard.CreatePathInstance();
-                }
-
-                EditorGUILayout.EndVertical();
+                DestroyImmediate(remove);
+                instances.Remove(remove);
             }
-
-
-            EditorGUILayout.Space(10);
-
-            if (_crowdWizard.IsCrowdAgentCreated())
-            {
-                EditorGUILayout.BeginVertical("box");
-
-                EditorGUILayout.LabelField("Agent Instance", EditorStyles.boldLabel);
-                var toRemove = new List<GameObject>();
-
-                foreach (var crowdAgentInstance in _crowdWizard.crowdAgentInstances)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.ObjectField("Instance", crowdAgentInstance, typeof(GameObject), true);
-                    if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
-                    {
-                        toRemove.Add(crowdAgentInstance);
-                    }
-
-                    EditorGUILayout.EndHorizontal();
-                }
-
-                foreach (var remove in toRemove)
-                {
-                    DestroyImmediate(remove);
-                    _crowdWizard.crowdAgentInstances.Remove(remove);
-                }
-
-                if (GUILayout.Button("Add Agent Instance"))
-                {
-                    _crowdWizard.CreateCrowdAgentInstance();
-                }
-
-                EditorGUILayout.EndVertical();
-            }
-
-            serializedObject.ApplyModifiedProperties();
         }
     }
 }

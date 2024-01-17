@@ -7,9 +7,22 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     [ExecuteInEditMode]
     public class CrowdPath : MonoBehaviour
     {
-        [NonSerialized] public bool isInEditMode;
-        [NonSerialized] public bool isOpenPointConfigPanel;
-        public List<GameObject> waypoints = new List<GameObject>();
+        [NonSerialized] public bool             isInEditMode;
+        [NonSerialized] public bool             isOpenPointConfigPanel;
+        public                 List<GameObject> waypoints = new List<GameObject>();
+        public                 EditMode         editMode;
+
+        public enum EditMode
+        {
+            None = 0,
+            Add  = 1
+        }
+
+        public bool isInEditMode1
+        {
+            get => isInEditMode;
+            set => isInEditMode = value;
+        }
 
         private void OnDrawGizmos()
         {
@@ -46,9 +59,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             };
             point.transform.SetParent(transform);
 
-            var meshFilter = point.AddComponent<MeshFilter>();
+            var meshFilter   = point.AddComponent<MeshFilter>();
             var meshRenderer = point.AddComponent<MeshRenderer>();
-            meshFilter.mesh = CreateSphereMesh();
+            meshFilter.mesh       = CreateSphereMesh();
             meshRenderer.material = new Material(Shader.Find("Standard"));
             point.AddComponent<CrowdPathPoint>();
             waypoints.Add(point);

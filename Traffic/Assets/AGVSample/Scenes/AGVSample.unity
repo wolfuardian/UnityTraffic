@@ -2062,9 +2062,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crowdAgentData: {fileID: 11400000, guid: b1633fc45b1bd5348a5379bf7692d166, type: 2}
   crowdPath: {fileID: 1418053577}
-  crowdAgentPrefabs:
-  - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
-  currentAgentCount: 0
 --- !u!1 &1373887184
 GameObject:
   m_ObjectHideFlags: 0
@@ -2173,7 +2170,7 @@ GameObject:
   m_Layer: 0
   m_Name: Path_MainRoad
   m_TagString: Untagged
-  m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -3064,9 +3061,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crowdAgentData: {fileID: 11400000, guid: 0670063306d103a49917c64acf55e224, type: 2}
   crowdPath: {fileID: 1418053577}
-  crowdAgentPrefabs:
-  - {fileID: 7766751489447370779, guid: 1c1be1bba36f7fa4e8bf93cd7a74fe94, type: 3}
-  currentAgentCount: 0
 --- !u!4 &1764132525
 Transform:
   m_ObjectHideFlags: 0
@@ -3229,7 +3223,7 @@ GameObject:
   m_Layer: 0
   m_Name: Path_GotoParking
   m_TagString: Untagged
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1

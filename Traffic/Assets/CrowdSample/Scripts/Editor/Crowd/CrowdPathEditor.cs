@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using CrowdSample.Scripts.Runtime.Crowd;
+using CrowdSample.Scripts.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,69 +11,92 @@ namespace CrowdSample.Scripts.Editor.Crowd
     [CustomEditor(typeof(CrowdPath))]
     public class CrowdPathEditor : UnityEditor.Editor
     {
-        private CrowdPath _crowdPath;
-        private static bool _isLocked;
-        private SerializedProperty _waypointsProp;
+        private static bool               _isLocked;
+        private        CrowdPath          _crowdPath;
+        private        SerializedProperty _waypointsProp;
 
         private void OnEnable()
         {
-            _crowdPath = (CrowdPath)target;
+            _crowdPath     = (CrowdPath)target;
             _waypointsProp = serializedObject.FindProperty("waypoints");
         }
 
         private void OnSceneGUI()
         {
-            if (!_crowdPath.isInEditMode || Event.current.type != EventType.MouseDown ||
-                Event.current.button != 0)
-                return;
-            Debug.Log("OnSceneGUI");
-            var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+            if (!(_crowdPath.isInEditMode && UnityUtils.IsLeftMouseButtonDown())) return;
+            if (!UnityUtils.TryGetRaycastHit(out var hitPoint)) return;
 
-            if (!Physics.Raycast(ray, out var hit)) return;
-
-            Undo.RecordObject(_crowdPath, "Add Point");
-            _crowdPath.AddPoint(hit.point);
+            _crowdPath.AddPoint(hitPoint);
             Event.current.Use();
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+            var headerGUIStyle = UnityUtils.GetHeaderStyle(FontStyle.Bold, 12);
 
-            var headerStyle = new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold, fontSize = 12 };
-            headerStyle.normal.textColor = EditorStyles.boldLabel.normal.textColor;
+            DrawAddModeSection(headerGUIStyle);
+            DrawActionsSection(headerGUIStyle);
+            DrawPointConfigSection(headerGUIStyle);
 
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawAddModeSection(GUIStyle headerStyle)
+        {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("Add Mode", headerStyle);
-            if (GUILayout.Button(_crowdPath.isInEditMode ? "Exit" : "Enter Add Mode"))
+            EditorGUILayout.LabelField("Mode", headerStyle);
+            var customStyle = new GUIStyle(EditorStyles.helpBox)
+            {
+                fontSize = 14
+            };
+            switch (_crowdPath.editMode)
+            {
+                case CrowdPath.EditMode.None:
+                    GUILayout.Label("當前模式: None", customStyle, GUILayout.Height(24f));
+                    break;
+                case CrowdPath.EditMode.Add:
+                    GUILayout.Label("當前模式: Add Mode", customStyle, GUILayout.Height(24f));
+                    break;
+            }
+
+            if (GUILayout.Button("切換模式", GUILayout.Height(48)))
             {
                 ToggleEditMode();
             }
 
-            GUILayout.Space(10);
+            if (_crowdPath.editMode == CrowdPath.EditMode.Add)
+            {
+                EditorGUILayout.HelpBox("點擊場景中的位置添加路徑點", MessageType.Info);
+            }
 
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawActionsSection(GUIStyle headerStyle)
+        {
+            EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Actions", headerStyle);
             EditorGUI.BeginDisabledGroup(_crowdPath.isInEditMode);
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Refresh"))
             {
-                RefreshWaypoints();
+                RefreshGUI();
             }
 
             if (GUILayout.Button("Reset", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
             {
                 ClearPoints();
+                UnlockInspectorAndSelectObject();
             }
 
             EditorGUILayout.EndHorizontal();
-
-
             EditorGUI.EndDisabledGroup();
-
-            GUILayout.Space(5);
-
             EditorGUILayout.EndVertical();
+        }
 
+        private void DrawPointConfigSection(GUIStyle headerStyle)
+        {
             EditorGUILayout.BeginVertical("box");
             EditorGUI.BeginDisabledGroup(_crowdPath.isInEditMode);
             EditorGUILayout.LabelField("Point Config", headerStyle);
@@ -82,66 +108,72 @@ namespace CrowdSample.Scripts.Editor.Crowd
             }
 
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.EndVertical();
-
 
             if (_crowdPath.isOpenPointConfigPanel)
             {
-                EditorGUI.indentLevel++;
-                for (var i = 0; i < _waypointsProp.arraySize; i++)
-                {
-                    var waypoint = _waypointsProp.GetArrayElementAtIndex(i);
-
-                    EditorGUILayout.BeginHorizontal();
-
-                    EditorGUILayout.PropertyField(waypoint, GUIContent.none);
-
-                    var waypointGo = waypoint.objectReferenceValue as GameObject;
-                    if (waypointGo != null)
-                    {
-                        var crowdPathPoint = waypointGo.GetComponent<CrowdPathPoint>();
-                        if (crowdPathPoint != null)
-                        {
-                            var waypointSo = new SerializedObject(crowdPathPoint);
-                            var radiusProp = waypointSo.FindProperty("allowableRadius");
-                            EditorGUILayout.LabelField("Radius",
-                                GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f));
-                            EditorGUILayout.PropertyField(radiusProp, GUIContent.none,
-                                GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f));
-                            if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
-                            {
-                                DestroyImmediate(waypointGo);
-                                break;
-                            }
-                            if (GUI.changed)
-                            {
-                                waypointSo.ApplyModifiedProperties();
-                            }
-                        }
-                    }
-
-                    EditorGUILayout.EndHorizontal();
-                }
-
-                EditorGUI.indentLevel--;
+                DrawPointConfigPanel();
             }
 
+            EditorGUILayout.EndVertical();
+        }
 
-            serializedObject.ApplyModifiedProperties();
+        private void DrawPointConfigPanel()
+        {
+            EditorGUI.indentLevel++;
+            for (var i = 0; i < _waypointsProp.arraySize; i++)
+            {
+                var waypoint = _waypointsProp.GetArrayElementAtIndex(i);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PropertyField(waypoint, GUIContent.none);
+
+                if (waypoint.objectReferenceValue is GameObject waypointGo)
+                {
+                    var crowdPathPoint = waypointGo.GetComponent<CrowdPathPoint>();
+                    if (crowdPathPoint != null)
+                    {
+                        DrawCrowdPathPointConfig(crowdPathPoint);
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUI.indentLevel--;
+        }
+
+        private void DrawCrowdPathPointConfig(CrowdPathPoint crowdPathPoint)
+        {
+            var waypointSo = new SerializedObject(crowdPathPoint);
+            var radiusProp = waypointSo.FindProperty("allowableRadius");
+            EditorGUILayout.LabelField("Radius", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f));
+            EditorGUILayout.PropertyField(radiusProp, GUIContent.none,
+                GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f));
+            if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
+            {
+                DestroyImmediate(crowdPathPoint.gameObject);
+                RefreshGUI();
+            }
         }
 
         private void ToggleEditMode()
         {
-            _crowdPath.isInEditMode = !_crowdPath.isInEditMode;
+            var totalModes  = Enum.GetNames(typeof(CrowdPath.EditMode)).Length;
+            var currentMode = (int)_crowdPath.editMode;
+            _crowdPath.editMode = (CrowdPath.EditMode)((currentMode + 1) % totalModes);
 
-            if (_crowdPath.isInEditMode)
+            switch (_crowdPath.editMode)
             {
-                LockInspector();
-                SelectLastPoint();
-            }
-            else
-            {
-                UnlockInspectorAndSelectObject();
+                case CrowdPath.EditMode.None:
+                    _crowdPath.isInEditMode = false;
+
+                    UnlockInspectorAndSelectObject();
+                    break;
+                case CrowdPath.EditMode.Add:
+                    _crowdPath.isInEditMode = true;
+
+                    _isLocked = UnityUtils.LockInspector(_isLocked);
+                    SelectLastPoint();
+                    break;
             }
         }
 
@@ -165,40 +197,18 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             _crowdPath.waypoints.Clear();
             _crowdPath.isInEditMode = false;
-            UnlockInspectorAndSelectObject();
         }
 
-        private void RefreshWaypoints()
+        private void RefreshGUI()
         {
             _crowdPath.waypoints = _crowdPath.GetComponentsInChildren<CrowdPathPoint>()
                 .Select(point => point.gameObject).ToList();
         }
 
-
         private void UnlockInspectorAndSelectObject()
         {
-            UnlockInspector();
-
-            if (_crowdPath != null)
-            {
-                Selection.activeObject = _crowdPath.gameObject;
-            }
-        }
-
-        private static void LockInspector()
-        {
-            if (_isLocked) return;
-
-            ActiveEditorTracker.sharedTracker.isLocked = true;
-            _isLocked = true;
-        }
-
-        private static void UnlockInspector()
-        {
-            if (!_isLocked) return;
-
-            ActiveEditorTracker.sharedTracker.isLocked = false;
-            _isLocked = false;
+            _isLocked = UnityUtils.UnlockInspector(_isLocked);
+            UnityUtils.SelectGameObject(_crowdPath != null ? _crowdPath.gameObject : null);
         }
     }
 }
