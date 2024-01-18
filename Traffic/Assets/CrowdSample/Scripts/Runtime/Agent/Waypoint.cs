@@ -1,7 +1,7 @@
-using UnityEngine;
 using CrowdSample.Scripts.Utils;
+using UnityEngine;
 
-namespace CrowdSample.Scripts.Runtime.Crowd
+namespace CrowdSample.Scripts.Runtime.Agent
 {
     public class Waypoint : MonoBehaviour
     {
