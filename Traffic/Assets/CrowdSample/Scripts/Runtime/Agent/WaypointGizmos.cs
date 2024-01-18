@@ -14,7 +14,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
         {
             if (waypoint == null) waypoint = GetComponent<Waypoint>();
         }
-#endif
+
         private void OnDrawGizmos()
         {
             if (waypoint == null) return;
@@ -22,5 +22,6 @@ namespace CrowdSample.Scripts.Runtime.Agent
 
             GizmosUtils.Polygon(position, Color.green, waypoint.Radius, 32);
         }
+#endif
     }
 }

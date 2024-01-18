@@ -3,10 +3,18 @@ using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Agent
 {
+    [RequireComponent(typeof(PathController))]
+    [ExecuteInEditMode]
     public class PathGizmos : MonoBehaviour, IUpdatableGizmo
     {
         public PathController pathController;
         public Vector2        arrowScale = new Vector2(2f, 2f);
+
+#if UNITY_EDITOR
+        private void Awake()
+        {
+            if (pathController == null) pathController = GetComponent<PathController>();
+        }
 
         private void OnDrawGizmos()
         {
@@ -31,11 +39,11 @@ namespace CrowdSample.Scripts.Runtime.Agent
             }
         }
 
-
         public void UpdateGizmo()
         {
             if (pathController == null) return;
             pathController.UpdatePath();
         }
+#endif
     }
 }

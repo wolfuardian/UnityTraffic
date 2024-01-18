@@ -45,6 +45,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
 
         public Vector3 GetPointAt(float t)
         {
+            
             if (waypoints == null || waypoints.Length < 2)
             {
                 Debug.LogError("Path checkpoints are not set or insufficient.");

@@ -3,6 +3,8 @@ using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Agent
 {
+    [RequireComponent(typeof(Path))]
+    [ExecuteInEditMode]
     public class PathController : MonoBehaviour, IUpdatableGizmo
     {
         public Path path;
@@ -36,9 +38,27 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public void SetDirections(Vector3[] value) => directions = value;
         public void SetCurveus(float[]      value) => segments = value;
 
+#if UNITY_EDITOR
+        private void Awake()
+        {
+            if (path == null) path = GetComponent<Path>();
+        }
+
+        private void OnValidate()
+        {
+            UpdatePath();
+        }
+
+        public void UpdateGizmo()
+        {
+            UpdatePath();
+        }
+#endif
+
         public void UpdatePath()
         {
             if (path == null) return;
+            if (waypointTransforms.Length < 2) return;
 
             path.SetWaypoints(new Vector3[WaypointTransforms.Length]);
             for (var i = 0; i < WaypointTransforms.Length; i++)
@@ -98,16 +118,6 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     Segments[i]   =  curveu * waypointTransforms.Length;
                 }
             }
-        }
-
-        private void OnValidate()
-        {
-            UpdatePath();
-        }
-
-        public void UpdateGizmo()
-        {
-            UpdatePath();
         }
     }
 }
