@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Agent
 {
@@ -6,6 +7,8 @@ namespace CrowdSample.Scripts.Runtime.Agent
     {
         [SerializeField] private Vector3[] waypoints;
         public                   Vector3[] Waypoints => waypoints;
+        public                   bool      isClosed;
+
 
         public void SetWaypoints(Vector3[] newCheckpoints)
         {
@@ -17,7 +20,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
             waypoints[index] = newCheckpoints;
         }
 
-        private float GetTotalLength()
+        public float GetTotalLength()
         {
             if (waypoints == null || waypoints.Length < 2)
             {
@@ -26,15 +29,21 @@ namespace CrowdSample.Scripts.Runtime.Agent
             }
 
             float length = 0;
-            for (var i = 0; i < waypoints.Length; i++)
+            for (var i = 0; i < waypoints.Length - 1; i++)
             {
                 var currentPoint = waypoints[i];
-                var nextPoint    = (i == waypoints.Length - 1) ? waypoints[0] : waypoints[i + 1];
+                var nextPoint    = waypoints[i + 1];
                 length += Vector3.Distance(currentPoint, nextPoint);
+            }
+
+            if (isClosed && waypoints.Length > 2)
+            {
+                length += Vector3.Distance(waypoints[waypoints.Length - 1], waypoints[0]);
             }
 
             return length;
         }
+
 
         public Vector3 GetPointAt(float t)
         {
@@ -45,7 +54,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
             }
 
             if (t <= 0) return waypoints[0];
-            if (t >= 1) return waypoints[0]; // Return to the first point for a closed loop
+            if (t >= 1) return waypoints[0];
 
             var   totalLength      = GetTotalLength();
             var   targetLength     = t * totalLength;
@@ -67,7 +76,6 @@ namespace CrowdSample.Scripts.Runtime.Agent
                 cumulativeLength += segmentLength;
             }
 
-            // Fallback, should not reach here in a closed loop
             return waypoints[0];
         }
 
@@ -79,9 +87,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
                 return Vector3.zero;
             }
 
-            // 當 t 為 0 時，返回從第一個點到第二個點的方向
             if (t <= 0) return (waypoints[1] - waypoints[0]).normalized;
-            // 當 t 為 1 時，返回從最後一個點到第一個點的方向
             if (t >= 1) return (waypoints[0] - waypoints[waypoints.Length - 1]).normalized;
 
             var   totalLength      = GetTotalLength();
@@ -103,8 +109,70 @@ namespace CrowdSample.Scripts.Runtime.Agent
                 cumulativeLength += segmentLength;
             }
 
-            // Fallback, should not reach here in a closed loop
             return (waypoints[0] - waypoints[waypoints.Length - 1]).normalized;
+        }
+
+        public Vector3 GetPointAtDistance(float distance)
+        {
+            if (waypoints == null || waypoints.Length < 2)
+            {
+                Debug.LogError("Path checkpoints are not set or insufficient.");
+                return Vector3.zero;
+            }
+
+            var totalLength                      = GetTotalLength();
+            if (distance < 0) distance           = 0;
+            if (distance > totalLength) distance = totalLength;
+
+            float cumulativeLength = 0;
+
+            for (var i = 0; i < waypoints.Length; i++)
+            {
+                var currentPoint  = waypoints[i];
+                var nextPoint     = (i == waypoints.Length - 1) ? waypoints[0] : waypoints[i + 1];
+                var segment       = nextPoint - currentPoint;
+                var segmentLength = segment.magnitude;
+
+                if (cumulativeLength + segmentLength >= distance)
+                {
+                    var remainingLength = distance - cumulativeLength;
+                    return currentPoint + segment.normalized * remainingLength;
+                }
+
+                cumulativeLength += segmentLength;
+            }
+
+            return waypoints[0];
+        }
+
+        public Vector3 GetDirectionAtDistance(float distance)
+        {
+            if (Waypoints.Length < 2)
+            {
+                Debug.LogError("Insufficient waypoints to calculate direction.");
+                return Vector3.forward;
+            }
+
+            var totalLength = 0f;
+            for (var i = 0; i < Waypoints.Length; i++)
+            {
+                var startPoint    = Waypoints[i];
+                var endPoint      = Waypoints[(i + 1) % Waypoints.Length];
+                var segmentLength = Vector3.Distance(startPoint, endPoint);
+
+                if (totalLength + segmentLength >= distance)
+                {
+                    return (endPoint - startPoint).normalized;
+                }
+
+                totalLength += segmentLength;
+                if (totalLength > distance) break;
+            }
+
+            // 如果路徑封閉，從最後一個點指向第一個點
+            return isClosed
+                ? (Waypoints[0] - Waypoints[Waypoints.Length - 1]).normalized
+                : (Waypoints[Waypoints.Length - 1] - Waypoints[Waypoints.Length - 2]).normalized;
         }
     }
 }
