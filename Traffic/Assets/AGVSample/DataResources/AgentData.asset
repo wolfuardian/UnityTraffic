@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4558792433b941544ac8b7ae7249cedf, type: 3}
   m_Name: AgentData
   m_EditorClassIdentifier: 
-  crowdAgentPrefabs:
-  - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
-  permissionID: Denied
-  maxAgentCount: 5
-  spawnInterval: 1
+  agentPrefabs:
+  - {fileID: 919132149155446097, guid: 3ed05ffdbccc9d84d86da23e2de7160e, type: 3}
+  - {fileID: 919132149155446097, guid: 3c4f9ec2ecfc88640b03f05e73140254, type: 3}
+  permissionID: 0
   minSpeed: 4
   maxSpeed: 5
   angularSpeed: 5000

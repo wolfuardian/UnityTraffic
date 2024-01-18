@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AgentGenerationConfig
   m_EditorClassIdentifier: 
   generationMode: 0
-  isOneTimeGeneration: 0
-  isClosedPath: 1
-  onceGenerationCount: 0
-  perSecondGenerationCount: 17
-  maxGenerationCount: 21
+  spawnAgentOnce: 0
+  closedPath: 1
+  instantCount: 1
+  perSecondCount: 2
+  maxCount: 60
