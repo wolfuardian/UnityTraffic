@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4558792433b941544ac8b7ae7249cedf, type: 3}
+  m_Name: CrowdAgent
+  m_EditorClassIdentifier: 
+  crowdAgentPrefabs:
+  - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
+  permissionID: Denied
+  maxAgentCount: 5
+  spawnInterval: 1
+  minSpeed: 4
+  maxSpeed: 5
+  angularSpeed: 5000
+  acceleration: 100
+  turningRadius: 2
+  stoppingDistance: 1
