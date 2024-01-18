@@ -58,7 +58,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public void UpdatePath()
         {
             if (path == null) return;
-            if (waypointTransforms.Length < 2) return;
+            if (WaypointTransforms == null || WaypointTransforms.Length < 2) return;
 
             path.SetWaypoints(new Vector3[WaypointTransforms.Length]);
             for (var i = 0; i < WaypointTransforms.Length; i++)
@@ -103,7 +103,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     var curveu = distance / totalLength;
                     Positions[i]  = path.GetPointAt(curveu);
                     Directions[i] = path.GetDirectionAt(curveu);
-                    Segments[i]   = curveu * waypointTransforms.Length;
+                    Segments[i]   = curveu * WaypointTransforms.Length;
                 }
             }
             else
@@ -115,7 +115,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     curveu        %= 1.0f;
                     Positions[i]  =  path.GetPointAt(curveu);
                     Directions[i] =  path.GetDirectionAt(curveu);
-                    Segments[i]   =  curveu * waypointTransforms.Length;
+                    Segments[i]   =  curveu * WaypointTransforms.Length;
                 }
             }
         }

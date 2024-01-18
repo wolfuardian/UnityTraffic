@@ -20,6 +20,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
         {
             var path = pathController.path;
             if (pathController == null || path == null) return;
+            if (pathController.WaypointTransforms == null || pathController.WaypointTransforms.Length < 2) return;
 
             for (var i = 0; i < pathController.Positions.Length; i++)
             {
