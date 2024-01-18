@@ -1,4 +1,3 @@
-using CrowdSample.Scripts.Utils;
 using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Agent
@@ -10,12 +9,6 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public float Radius => radius;
 
         public void SetRadius(float value) => radius = value;
-
-        private void OnDrawGizmos()
-        {
-            var position = transform.position;
-            GizmosUtils.Polygon(position, Color.green, Radius, 32);
-        }
 
         private void Start()
         {
