@@ -9,7 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bd602543f4644279433e8ebf6d1e96c, type: 3}
-  m_Name: CrowdPath
+  m_Script: {fileID: 11500000, guid: ede7ccd0c0444485899ba14e18dd9ff8, type: 3}
+  m_Name: AgentGenerationConfig
   m_EditorClassIdentifier: 
-  pathMode: 0
+  generationMode: 0
+  isOneTimeGeneration: 0
+  isClosedPath: 1
+  onceGenerationCount: 0
+  perSecondGenerationCount: 17
+  maxGenerationCount: 21
