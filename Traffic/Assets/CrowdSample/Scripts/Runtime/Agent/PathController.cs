@@ -1,4 +1,5 @@
-﻿using CrowdSample.Scripts.Runtime.Data;
+﻿using System.Collections.Generic;
+using CrowdSample.Scripts.Runtime.Data;
 using UnityEngine;
 using CrowdSample.Scripts.Utils;
 
@@ -14,10 +15,10 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public Path                  Path                  => path;
         public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
 
-        public Transform[]    Waypoints      { get; private set; }
-        public AgentSpawnDB[] AgentSpawnData { get; private set; }
+        public List<Transform> Waypoints      { get; private set; }
+        public AgentSpawnDB[]  AgentSpawnData { get; private set; }
 
-        public void SetWaypoints(Transform[]         value) => Waypoints = value;
+        public void SetWaypoints(List<Transform>     value) => Waypoints = value;
         public void SetAgentSpawnData(AgentSpawnDB[] value) => AgentSpawnData = value;
 
 
@@ -83,7 +84,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
             var waypointComponents = transform.GetComponentsInChildren<Waypoint>();
             if (waypointComponents.Length > 0)
             {
-                SetWaypoints(new Transform[waypointComponents.Length]);
+                SetWaypoints(new List<Transform>(waypointComponents.Length));
                 for (var i = 0; i < waypointComponents.Length; i++)
                 {
                     Waypoints[i] = waypointComponents[i].transform;
@@ -98,11 +99,11 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public void UpdatePath()
         {
             if (path == null) return;
-            if (Waypoints == null || Waypoints.Length < 2) return;
+            if (Waypoints == null || Waypoints.Count < 2) return;
 
-            path.SetWaypoints(new Vector3[Waypoints.Length]);
+            path.SetWaypoints(new Vector3[Waypoints.Count]);
             path.SetClosedPath(ClosedPath);
-            for (var i = 0; i < Waypoints.Length; i++)
+            for (var i = 0; i < Waypoints.Count; i++)
             {
                 if (Waypoints[i] == null) continue;
                 path.Waypoints[i] = Waypoints[i].position;
@@ -142,7 +143,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     var curveNPos = distance / totalLength;
                     var position  = path.GetPositionAt(curveNPos);
                     var direction = path.GetDirectionAt(curveNPos);
-                    var curvePos  = curveNPos * Waypoints.Length;
+                    var curvePos  = curveNPos * Waypoints.Count;
                     AgentSpawnData[i] = new AgentSpawnDB(position, direction, curvePos);
                 }
             }
@@ -155,7 +156,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     curveNPos %= 1.0f;
                     var position  = path.GetPositionAt(curveNPos);
                     var direction = path.GetDirectionAt(curveNPos);
-                    var curvePos  = curveNPos * Waypoints.Length;
+                    var curvePos  = curveNPos * Waypoints.Count;
                     AgentSpawnData[i] = new AgentSpawnDB(position, direction, curvePos);
                 }
             }
