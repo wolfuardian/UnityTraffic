@@ -5,13 +5,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class Path : MonoBehaviour
     {
-        [SerializeField] private bool            closedPath;
-        [SerializeField] private List<Transform> waypoints;
+        [SerializeField] private bool             closedPath;
+        [SerializeField] private List<Transform>  waypoints;
+        [SerializeField] private AgentSpawnData[] agentSpawnData;
 
-        public bool            ClosedPath => closedPath;
-        public List<Transform> Waypoints  => waypoints;
+        public bool             ClosedPath     => closedPath;
+        public List<Transform>  Waypoints      => waypoints;
+        public AgentSpawnData[] AgentSpawnData => agentSpawnData;
 
-        public void SetClosedPath(bool           value) => closedPath = value;
         public void SetWaypoints(List<Transform> value) => waypoints = value;
 
         public float   GetTotalLength()        => PathResolver.GetTotalLength(Waypoints, ClosedPath);
