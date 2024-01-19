@@ -7,9 +7,9 @@ namespace CrowdSample.Scripts.Runtime.Data
     {
         public GenerationMode generationMode = GenerationMode.InfinityFlow;
 
-        [SerializeField] private bool  spawnAgentOnce = true;
-        [SerializeField] private bool  closedPath     = true;
-        [SerializeField] private bool  useSpacing     = true;
+        [SerializeField] private bool  isSpawnAgentOnce = true;
+        [SerializeField] private bool  isClosedPath     = true;
+        [SerializeField] private bool  isUseSpacing     = true;
         [SerializeField] private int   instantCount   = 15;
         [SerializeField] private int   perSecondCount = 2;
         [SerializeField] private int   maxCount       = 100;
@@ -24,33 +24,33 @@ namespace CrowdSample.Scripts.Runtime.Data
             Custom
         }
 
-        public bool SpawnAgentOnce
+        public bool IsSpawnAgentOnce
         {
-            get => spawnAgentOnce;
+            get => isSpawnAgentOnce;
             set
             {
-                if (generationMode == GenerationMode.Custom) spawnAgentOnce = value;
+                if (generationMode == GenerationMode.Custom) isSpawnAgentOnce = value;
             }
         }
 
-        public bool ClosedPath
+        public bool IsClosedPath
         {
-            get => closedPath;
+            get => isClosedPath;
             set
             {
                 if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow ||
                     generationMode == GenerationMode.SingleCircle)
-                    closedPath = value;
+                    isClosedPath = value;
             }
         }
 
-        public bool UseSpacing
+        public bool IsUseSpacing
         {
-            get => useSpacing;
+            get => isUseSpacing;
             set
             {
                 if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle)
-                    useSpacing = value;
+                    isUseSpacing = value;
             }
         }
 
@@ -111,17 +111,17 @@ namespace CrowdSample.Scripts.Runtime.Data
             switch (generationMode)
             {
                 case GenerationMode.InfinityFlow:
-                    spawnAgentOnce = false;
-                    closedPath     = false;
+                    isSpawnAgentOnce = false;
+                    isClosedPath     = false;
                     instantCount   = 1;
                     offset         = 0;
                     break;
                 case GenerationMode.MultipleCircle:
-                    spawnAgentOnce = true;
-                    closedPath     = true;
+                    isSpawnAgentOnce = true;
+                    isClosedPath     = true;
                     break;
                 case GenerationMode.SingleCircle:
-                    spawnAgentOnce = true;
+                    isSpawnAgentOnce = true;
                     instantCount   = 1;
                     maxCount       = 1;
                     break;

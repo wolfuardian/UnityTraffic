@@ -53,7 +53,7 @@ namespace CrowdSample.Scripts.Editor.Data
             DrawMaxCountOption(config);
             DrawOffsetOption(config);
             DrawUseSpacingOption(config);
-            if (config.UseSpacing)
+            if (config.IsUseSpacing)
             {
                 DrawSpacingOption(config);
             }
@@ -76,7 +76,7 @@ namespace CrowdSample.Scripts.Editor.Data
             DrawMaxCountOption(config);
             DrawOffsetOption(config);
             DrawUseSpacingOption(config);
-            if (config.UseSpacing)
+            if (config.IsUseSpacing)
             {
                 DrawSpacingOption(config);
             }
@@ -84,12 +84,12 @@ namespace CrowdSample.Scripts.Editor.Data
 
         private static void DrawSpawnAgentOnceOption(AgentGenerationConfig config)
         {
-            config.SpawnAgentOnce = EditorGUILayout.Toggle("一次性生成代理", config.SpawnAgentOnce);
+            config.IsSpawnAgentOnce = EditorGUILayout.Toggle("一次性生成代理", config.IsSpawnAgentOnce);
         }
 
         private static void DrawClosedPathOption(AgentGenerationConfig config)
         {
-            config.ClosedPath = EditorGUILayout.Toggle("封閉路徑", config.ClosedPath);
+            config.IsClosedPath = EditorGUILayout.Toggle("封閉路徑", config.IsClosedPath);
         }
 
         private static void DrawInstantCountOption(AgentGenerationConfig config)
@@ -115,7 +115,7 @@ namespace CrowdSample.Scripts.Editor.Data
 
         private static void DrawUseSpacingOption(AgentGenerationConfig config)
         {
-            config.UseSpacing = EditorGUILayout.Toggle("使用間距", config.UseSpacing);
+            config.IsUseSpacing = EditorGUILayout.Toggle("使用間距", config.IsUseSpacing);
         }
 
         private static void DrawSpacingOption(AgentGenerationConfig config)
