@@ -113,20 +113,15 @@ namespace CrowdSample.Scripts.Runtime.Data
                 case GenerationMode.InfinityFlow:
                     spawnAgentOnce = false;
                     closedPath     = false;
-                    instantCount   = 0;
-                    maxCount       = 100;
                     break;
                 case GenerationMode.MultipleCircle:
                     spawnAgentOnce = true;
                     closedPath     = true;
-                    perSecondCount = 0;
-                    spacing        = 5f;
                     break;
                 case GenerationMode.SingleCircle:
                     spawnAgentOnce = true;
                     instantCount   = 1;
-                    perSecondCount = 0;
-                    maxCount       = 0;
+                    maxCount       = 1;
                     break;
                 case GenerationMode.Custom:
                     break;
