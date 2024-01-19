@@ -1,6 +1,6 @@
 ﻿namespace CrowdSample.Scripts.Utils
 {
-    public interface IUpdatableGizmo
+    public interface IUpdatable
     {
         void UpdateGizmo();
     }
