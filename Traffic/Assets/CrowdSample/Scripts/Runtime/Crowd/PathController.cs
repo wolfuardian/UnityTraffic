@@ -11,13 +11,15 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         [SerializeField] private Path                  path;
         [SerializeField] private AgentGenerationConfig agentGenerationConfig;
+        [SerializeField] private AgentSpawnDB[]        agentSpawnDB;
 
         public Path                  Path                  => path;
         public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
+        public AgentSpawnDB[]        AgentSpawnDB          => agentSpawnDB;
 
-        public AgentSpawnDB[] AgentSpawnData { get; private set; }
 
-        public void SetAgentSpawnData(AgentSpawnDB[] value) => AgentSpawnData = value;
+        public void SetPath(Path                                   value) => path = value;
+        public void SetAgentSpawnDB(AgentSpawnDB[]                 value) => agentSpawnDB = value;
 
 
         #region Parameter Variables
@@ -36,7 +38,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public float Offset     => offset;
         public bool  UseSpacing => useSpacing;
 
-        public void SetPath(Path       value) => path = value;
         public void SetClosedPath(bool value) => closedPath = value;
         public void SetCount(int       value) => count = value;
         public void SetCountMax(int    value) => countMax = value;
@@ -112,7 +113,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var totalLength = Path.GetTotalLength();
             var maxCount    = Mathf.FloorToInt(totalLength / Spacing); // 根據總長度和間距計算最大數量
 
-            SetAgentSpawnData(new AgentSpawnDB[Count]);
+            SetAgentSpawnDB(new AgentSpawnDB[Count]);
 
             if (UseSpacing)
             {
@@ -135,7 +136,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var position  = Path.GetPositionAt(curveNPos);
                     var direction = Path.GetDirectionAt(curveNPos);
                     var curvePos  = curveNPos * Path.Waypoints.Count;
-                    AgentSpawnData[i] = new AgentSpawnDB(position, direction, curvePos);
+                    AgentSpawnDB[i] = new AgentSpawnDB(position, direction, curvePos);
                 }
             }
             else
@@ -148,7 +149,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var position  = Path.GetPositionAt(curveNPos);
                     var direction = Path.GetDirectionAt(curveNPos);
                     var curvePos  = curveNPos * Path.Waypoints.Count;
-                    AgentSpawnData[i] = new AgentSpawnDB(position, direction, curvePos);
+                    AgentSpawnDB[i] = new AgentSpawnDB(position, direction, curvePos);
                 }
             }
         }
