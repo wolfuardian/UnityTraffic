@@ -15,7 +15,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
         public AgentSpawnData[]      AgentSpawnData        => agentSpawnData;
 
-        public void SetWaypoints(List<Transform> value) => waypoints = value;
+        public void SetWaypoints(List<Transform>       value) => waypoints = value;
+        public void SetAgentSpawnData(AgentSpawnData[] value) => agentSpawnData = value;
 
         #region Parameter Variables
 
@@ -45,7 +46,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
-
         public float   GetTotalLength()        => PathResolver.GetTotalLength(Waypoints, IsClosedPath);
         public Vector3 GetPositionAt(float  t) => PathResolver.GetPositionAt(Waypoints, IsClosedPath, t);
         public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(Waypoints, IsClosedPath, t);
@@ -60,9 +60,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public void UpdateGizmo()
         {
             FetchGenerationConfigs();
+            UpdatePath();
         }
-
-        public void FetchWaypoints()
+#endif
+        private void FetchWaypoints()
         {
             SetWaypoints(new List<Transform>());
 
@@ -86,6 +87,62 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             SetOffset(AgentGenerationConfig.Offset);
             SetSpacing(AgentGenerationConfig.Spacing);
         }
-#endif
+
+        private void UpdatePath()
+        {
+            if (Waypoints == null || Waypoints.Count < 2) return;
+
+            SetCount(Mathf.Clamp(Count,     0,    CountMax));
+            SetSpacing(Mathf.Clamp(Spacing, 0.1f, float.MaxValue));
+            SetOffset(Mathf.Clamp(Offset,   0f,   float.MaxValue));
+
+            CalculatePositionsAndDirections();
+        }
+
+        private void CalculatePositionsAndDirections()
+        {
+            var totalLength = GetTotalLength();
+            var maxCount    = Mathf.FloorToInt(totalLength / Spacing);
+
+            SetAgentSpawnData(new AgentSpawnData[Count]);
+
+            if (IsUseSpacing)
+            {
+                SetCount(Mathf.Min(Count, maxCount));
+            }
+
+            for (var i = 0; i < Count; i++)
+            {
+                var distance = CalculateDistance(i, totalLength);
+                if (distance > totalLength && !IsClosedPath) break;
+
+                SetAgentData(i, distance, totalLength);
+            }
+        }
+
+        private float CalculateDistance(int index, float totalLength)
+        {
+            if (IsUseSpacing)
+            {
+                if (IsClosedPath)
+                {
+                    return (Offset + Spacing * index) % totalLength;
+                }
+
+                return Offset + Spacing * index;
+            }
+
+            var curveNPos = (float)index / Count;
+            return (curveNPos + Offset / totalLength) % 1.0f * totalLength;
+        }
+
+        private void SetAgentData(int index, float distance, float totalLength)
+        {
+            var curveNPos = distance / totalLength;
+            var position  = GetPositionAt(curveNPos);
+            var direction = GetDirectionAt(curveNPos);
+            var curvePos  = curveNPos * Waypoints.Count;
+            AgentSpawnData[index] = new AgentSpawnData(position, direction, curvePos);
+        }
     }
 }
