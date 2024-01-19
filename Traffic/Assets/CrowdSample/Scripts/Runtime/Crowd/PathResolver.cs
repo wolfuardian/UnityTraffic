@@ -5,44 +5,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public static class PathResolver
     {
-        public static AgentSpawnDB[] CalculatePositionsAndDirections(
-            Path  path,
-            bool  closedPath,
-            int   count,
-            float spacing,
-            float offset,
-            bool  useSpacing)
-        {
-            var agentSpawnDB = new AgentSpawnDB[count];
-            var totalLength  = path.GetTotalLength();
-            var maxCount     = Mathf.FloorToInt(totalLength / spacing);
-
-            for (var i = 0; i < count; i++)
-            {
-                float curveNPos;
-                if (useSpacing)
-                {
-                    count = Mathf.Min(count, maxCount);
-                    var distance = closedPath ? (offset + spacing * i) % totalLength : offset + spacing * i;
-                    if (!closedPath && distance > totalLength) break;
-                    curveNPos = distance / totalLength;
-                }
-                else
-                {
-                    curveNPos = (float)i / count + offset / totalLength;
-                    if (closedPath) curveNPos %= 1.0f;
-                }
-
-                var position  = path.GetPositionAt(curveNPos);
-                var direction = path.GetDirectionAt(curveNPos);
-                var curvePos  = curveNPos * path.Waypoints.Count;
-                agentSpawnDB[i] = new AgentSpawnDB(position, direction, curvePos);
-            }
-
-            return agentSpawnDB;
-        }
-
-
         public static float GetTotalLength(List<Transform> waypoints, bool isClosedPath)
         {
             if (waypoints == null || waypoints.Count < 2)
