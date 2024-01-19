@@ -111,47 +111,47 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void CalculatePositionsAndDirections()
         {
             var totalLength = Path.GetTotalLength();
-            var maxCount    = Mathf.FloorToInt(totalLength / Spacing); // 根據總長度和間距計算最大數量
+            var maxCount    = Mathf.FloorToInt(totalLength / Spacing);
 
             SetAgentSpawnDB(new AgentSpawnDB[Count]);
 
             if (UseSpacing)
             {
-                SetCount(Mathf.Min(Count, maxCount)); // 限制 count 不超過最大數量
-
-                for (var i = 0; i < Count; i++)
-                {
-                    float distance;
-                    if (ClosedPath)
-                    {
-                        distance = (Offset + Spacing * i) % totalLength; // 循環回路徑開始
-                    }
-                    else
-                    {
-                        distance = Offset + Spacing * i;
-                        if (distance > totalLength) break; // 如果不是封閉的，超出路徑就停止
-                    }
-
-                    var curveNPos = distance / totalLength;
-                    var position  = Path.GetPositionAt(curveNPos);
-                    var direction = Path.GetDirectionAt(curveNPos);
-                    var curvePos  = curveNPos * Path.Waypoints.Count;
-                    AgentSpawnDB[i] = new AgentSpawnDB(position, direction, curvePos);
-                }
+                SetCount(Mathf.Min(Count, maxCount));
             }
-            else
+
+            for (var i = 0; i < Count; i++)
             {
-                for (var i = 0; i < Count; i++)
-                {
-                    var curveNPos = (float)i / Count;
-                    curveNPos += Offset / totalLength;
-                    curveNPos %= 1.0f;
-                    var position  = Path.GetPositionAt(curveNPos);
-                    var direction = Path.GetDirectionAt(curveNPos);
-                    var curvePos  = curveNPos * Path.Waypoints.Count;
-                    AgentSpawnDB[i] = new AgentSpawnDB(position, direction, curvePos);
-                }
+                var distance = CalculateDistance(i, totalLength);
+                if (distance > totalLength && !ClosedPath) break;
+
+                SetAgentData(i, distance, totalLength);
             }
+        }
+
+        private float CalculateDistance(int index, float totalLength)
+        {
+            if (UseSpacing)
+            {
+                if (ClosedPath)
+                {
+                    return (Offset + Spacing * index) % totalLength;
+                }
+
+                return Offset + Spacing * index;
+            }
+
+            var curveNPos = (float)index / Count;
+            return (curveNPos + Offset / totalLength) % 1.0f * totalLength;
+        }
+
+        private void SetAgentData(int index, float distance, float totalLength)
+        {
+            var curveNPos = distance / totalLength;
+            var position  = Path.GetPositionAt(curveNPos);
+            var direction = Path.GetDirectionAt(curveNPos);
+            var curvePos  = curveNPos * Path.Waypoints.Count;
+            AgentSpawnDB[index] = new AgentSpawnDB(position, direction, curvePos);
         }
     }
 }
