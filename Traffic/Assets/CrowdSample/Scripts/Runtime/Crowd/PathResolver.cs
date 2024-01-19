@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public static class PathCalculator
+    public static class PathResolver
     {
         public static float GetTotalLength(List<Transform> waypoints, bool isClosedPath)
         {

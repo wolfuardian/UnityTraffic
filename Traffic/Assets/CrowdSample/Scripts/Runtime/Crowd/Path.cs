@@ -14,8 +14,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public void SetClosedPath(bool           value) => closedPath = value;
         public void SetWaypoints(List<Transform> value) => waypoints = value;
 
-        public float   GetTotalLength()        => PathCalculator.GetTotalLength(Waypoints, ClosedPath);
-        public Vector3 GetPositionAt(float  t) => PathCalculator.GetPositionAt(Waypoints, ClosedPath, t);
-        public Vector3 GetDirectionAt(float t) => PathCalculator.GetDirectionAt(Waypoints, ClosedPath, t);
+        public float   GetTotalLength()        => PathResolver.GetTotalLength(Waypoints, ClosedPath);
+        public Vector3 GetPositionAt(float  t) => PathResolver.GetPositionAt(Waypoints, ClosedPath, t);
+        public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(Waypoints, ClosedPath, t);
     }
 }
