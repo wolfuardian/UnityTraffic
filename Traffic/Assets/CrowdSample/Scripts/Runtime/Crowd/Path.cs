@@ -19,12 +19,21 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(Waypoints, ClosedPath, t);
 
 #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            FetchWaypoints();
+        }
+
         public void FetchWaypoints()
         {
             SetWaypoints(new List<Transform>());
-            foreach (Transform waypoint in transform)
+
+            var children = transform.GetComponentsInChildren<Waypoint>();
+            if (children.Length <= 0) return;
+
+            foreach (var child in children)
             {
-                Waypoints.Add(waypoint);
+                Waypoints.Add(child.transform);
             }
         }
 #endif
