@@ -43,7 +43,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var waypointCount = waypoints.Count;
 
             // 決定是否畫出封閉的路徑
-            var actualWaypointsCount = Path.ClosedPath ? waypointCount : waypointCount - 1;
+            var actualWaypointsCount = Path.IsClosedPath ? waypointCount : waypointCount - 1;
 
             for (var i = 0; i < actualWaypointsCount; i++)
             {
