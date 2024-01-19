@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using CrowdSample.Scripts.Utils;
-using CrowdSample.Scripts.Runtime.Agent;
+using CrowdSample.Scripts.Runtime.Crowd;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
@@ -13,10 +13,23 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void OnSceneGUI()
         {
             var waypointGizmos = (WaypointGizmos)target;
-            if (waypointGizmos.transform.position == previousPosition) return;
-            previousPosition = waypointGizmos.transform.position;
 
+            DetectWaypointPositionChange(waypointGizmos);
+        }
+
+        private void DetectWaypointPositionChange(WaypointGizmos waypointGizmos)
+        {
+            if (waypointGizmos.transform.position != previousPosition)
+            {
+                previousPosition = waypointGizmos.transform.position;
+                UpdateGizmos();
+            }
+        }
+
+        private void UpdateGizmos()
+        {
             UnityEditorUtils.UpdateAllGizmos();
+            SceneView.RepaintAll();
         }
     }
 }
