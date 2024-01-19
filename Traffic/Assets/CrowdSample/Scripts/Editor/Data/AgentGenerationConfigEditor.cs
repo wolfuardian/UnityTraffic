@@ -5,7 +5,7 @@ using CrowdSample.Scripts.Runtime.Data;
 namespace CrowdSample.Scripts.Editor.Data
 {
     [CustomEditor(typeof(AgentGenerationConfig))]
-    public class AgentSpawnerConfigEditor : UnityEditor.Editor
+    public class AgentGenerationConfigEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
