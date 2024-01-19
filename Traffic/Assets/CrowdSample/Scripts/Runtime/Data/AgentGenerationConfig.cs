@@ -7,11 +7,14 @@ namespace CrowdSample.Scripts.Runtime.Data
     {
         public GenerationMode generationMode = GenerationMode.InfinityFlow;
 
-        [SerializeField] private bool spawnAgentOnce = true;
-        [SerializeField] private bool closedPath     = true;
-        [SerializeField] private int  instantCount   = 15;
-        [SerializeField] private int  perSecondCount = 2;
-        [SerializeField] private int  maxCount       = 60;
+        [SerializeField] private bool  spawnAgentOnce = true;
+        [SerializeField] private bool  closedPath     = true;
+        [SerializeField] private bool  useSpacing     = true;
+        [SerializeField] private int   instantCount   = 15;
+        [SerializeField] private int   perSecondCount = 2;
+        [SerializeField] private int   maxCount       = 100;
+        [SerializeField] private float spacing        = 5f;
+        [SerializeField] private float offset;
 
         public enum GenerationMode
         {
@@ -35,8 +38,19 @@ namespace CrowdSample.Scripts.Runtime.Data
             get => closedPath;
             set
             {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.SingleCircle)
+                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow ||
+                    generationMode == GenerationMode.SingleCircle)
                     closedPath = value;
+            }
+        }
+
+        public bool UseSpacing
+        {
+            get => useSpacing;
+            set
+            {
+                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle)
+                    useSpacing = value;
             }
         }
 
@@ -65,35 +79,56 @@ namespace CrowdSample.Scripts.Runtime.Data
             get => maxCount;
             set
             {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow)
+                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow ||
+                    generationMode == GenerationMode.MultipleCircle)
                     maxCount = value;
             }
         }
 
-        private void OnValidate()
+        public float Spacing
+        {
+            get => spacing;
+            set
+            {
+                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle)
+                    spacing = value;
+            }
+        }
+
+        public float Offset
+        {
+            get => offset;
+            set
+            {
+                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle ||
+                    generationMode == GenerationMode.SingleCircle)
+                    offset = value;
+            }
+        }
+
+        public void ApplyPresetProperties()
         {
             switch (generationMode)
             {
                 case GenerationMode.InfinityFlow:
                     spawnAgentOnce = false;
-                    closedPath     = true;
+                    closedPath     = false;
                     instantCount   = 0;
+                    maxCount       = 100;
                     break;
                 case GenerationMode.MultipleCircle:
                     spawnAgentOnce = true;
                     closedPath     = true;
                     perSecondCount = 0;
-                    maxCount       = 0;
+                    spacing        = 5f;
                     break;
                 case GenerationMode.SingleCircle:
                     spawnAgentOnce = true;
-                    closedPath     = true; // 可修改
                     instantCount   = 1;
                     perSecondCount = 0;
                     maxCount       = 0;
                     break;
                 case GenerationMode.Custom:
-                    // 所有參數可自定義
                     break;
             }
         }
