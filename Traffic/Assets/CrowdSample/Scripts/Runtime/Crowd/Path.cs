@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
 using CrowdSample.Scripts.Runtime.Data;
 using CrowdSample.Scripts.Utils;
@@ -11,12 +12,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private AgentGenerationConfig agentGenerationConfig;
         [SerializeField] private AgentSpawnData[]      agentSpawnData;
 
-        public List<Transform>       Waypoints             => waypoints;
-        public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
-        public AgentSpawnData[]      AgentSpawnData        => agentSpawnData;
+        public List<Transform> Waypoints
+        {
+            get => waypoints ??= new List<Transform>();
+            set => waypoints = value;
+        }
 
-        public void SetWaypoints(List<Transform>       value) => waypoints = value;
-        public void SetAgentSpawnData(AgentSpawnData[] value) => agentSpawnData = value;
+        public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
+        public AgentSpawnData[]      AgentSpawnData        => agentSpawnData ??= new AgentSpawnData[0];
 
         #region Parameter Variables
 
@@ -28,21 +31,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private float spacing      = 1.0f;
         [SerializeField] private float offset;
 
+        // Properties for publicly exposing fields
         public bool  IsSpawnAgentOnce => isSpawnAgentOnce;
         public bool  IsClosedPath     => isClosedPath;
         public bool  IsUseSpacing     => isUseSpacing;
-        public int   Count            => count;
+        public int   Count            => Mathf.Clamp(count, 0, CountMax);
         public int   CountMax         => countMax;
-        public float Spacing          => spacing;
-        public float Offset           => offset;
-
-        public void SetIsSpawnAgentOnce(bool value) => isSpawnAgentOnce = value;
-        public void SetIsClosedPath(bool     value) => isClosedPath = value;
-        public void SetIsUseSpacing(bool     value) => isUseSpacing = value;
-        public void SetCount(int             value) => count = value;
-        public void SetCountMax(int          value) => countMax = value;
-        public void SetOffset(float          value) => offset = value;
-        public void SetSpacing(float         value) => spacing = value;
+        public float Spacing          => Mathf.Max(spacing, 0.1f);
+        public float Offset           => Mathf.Max(offset,  0f);
 
         #endregion
 
@@ -53,48 +49,47 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            FetchWaypoints();
-            FetchGenerationConfigs();
+            UpdatePathConfiguration();
         }
 
         public void UpdateGizmo()
         {
+            UpdatePathConfiguration();
+        }
+
+        public void UpdatePathConfiguration()
+        {
+            FetchWaypoints();
             FetchGenerationConfigs();
             UpdatePath();
         }
 #endif
+
         private void FetchWaypoints()
         {
-            SetWaypoints(new List<Transform>());
-
-            var children = transform.GetComponentsInChildren<Waypoint>();
-            if (children.Length <= 0) return;
-
-            foreach (var child in children)
-            {
-                Waypoints.Add(child.transform);
-            }
+            waypoints = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform).ToList();
         }
 
         private void FetchGenerationConfigs()
         {
             if (AgentGenerationConfig == null) return;
-            SetIsSpawnAgentOnce(AgentGenerationConfig.IsSpawnAgentOnce);
-            SetIsClosedPath(AgentGenerationConfig.IsClosedPath);
-            SetIsUseSpacing(AgentGenerationConfig.IsUseSpacing);
-            SetCount(AgentGenerationConfig.InstantCount);
-            SetCountMax(AgentGenerationConfig.MaxCount);
-            SetOffset(AgentGenerationConfig.Offset);
-            SetSpacing(AgentGenerationConfig.Spacing);
+            ApplyGenerationConfigSettings();
+        }
+
+        private void ApplyGenerationConfigSettings()
+        {
+            isSpawnAgentOnce = AgentGenerationConfig.IsSpawnAgentOnce;
+            isClosedPath     = AgentGenerationConfig.IsClosedPath;
+            isUseSpacing     = AgentGenerationConfig.IsUseSpacing;
+            count            = AgentGenerationConfig.InstantCount;
+            countMax         = AgentGenerationConfig.MaxCount;
+            offset           = AgentGenerationConfig.Offset;
+            spacing          = AgentGenerationConfig.Spacing;
         }
 
         private void UpdatePath()
         {
-            if (Waypoints == null || Waypoints.Count < 2) return;
-
-            SetCount(Mathf.Clamp(Count,     0,    CountMax));
-            SetSpacing(Mathf.Clamp(Spacing, 0.1f, float.MaxValue));
-            SetOffset(Mathf.Clamp(Offset,   0f,   float.MaxValue));
+            if (Waypoints.Count < 2) return;
 
             CalculatePositionsAndDirections();
         }
@@ -104,11 +99,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var totalLength = GetTotalLength();
             var maxCount    = Mathf.FloorToInt(totalLength / Spacing);
 
-            SetAgentSpawnData(new AgentSpawnData[Count]);
+            agentSpawnData = new AgentSpawnData[Count];
 
             if (IsUseSpacing)
             {
-                SetCount(Mathf.Min(Count, maxCount));
+                count = Mathf.Min(Count, maxCount);
             }
 
             for (var i = 0; i < Count; i++)
@@ -122,16 +117,19 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private float CalculateDistance(int index, float totalLength)
         {
-            if (IsUseSpacing)
-            {
-                if (IsClosedPath)
-                {
-                    return (Offset + Spacing * index) % totalLength;
-                }
+            return IsUseSpacing
+                ? CalculateSpacingDistance(index, totalLength)
+                : CalculateCurveDistance(index, totalLength);
+        }
 
-                return Offset + Spacing * index;
-            }
+        private float CalculateSpacingDistance(int index, float totalLength)
+        {
+            float distance = Offset + Spacing * index;
+            return IsClosedPath ? distance % totalLength : distance;
+        }
 
+        private float CalculateCurveDistance(int index, float totalLength)
+        {
             var curveNPos = (float)index / Count;
             return (curveNPos + Offset / totalLength) % 1.0f * totalLength;
         }
@@ -142,7 +140,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var position  = GetPositionAt(curveNPos);
             var direction = GetDirectionAt(curveNPos);
             var curvePos  = curveNPos * Waypoints.Count;
-            AgentSpawnData[index] = new AgentSpawnData(position, direction, curvePos);
+
+            agentSpawnData[index] = new AgentSpawnData(position, direction, curvePos);
         }
     }
 }
