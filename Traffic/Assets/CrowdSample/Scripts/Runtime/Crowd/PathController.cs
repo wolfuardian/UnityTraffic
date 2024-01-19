@@ -18,8 +18,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public AgentSpawnDB[]        AgentSpawnDB          => agentSpawnDB;
 
 
-        public void SetPath(Path                                   value) => path = value;
-        public void SetAgentSpawnDB(AgentSpawnDB[]                 value) => agentSpawnDB = value;
+        public void SetPath(Path                   value) => path = value;
+        public void SetAgentSpawnDB(AgentSpawnDB[] value) => agentSpawnDB = value;
 
 
         #region Parameter Variables
