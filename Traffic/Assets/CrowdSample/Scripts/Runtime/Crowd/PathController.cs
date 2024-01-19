@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using CrowdSample.Scripts.Runtime.Data;
-using UnityEngine;
+﻿using UnityEngine;
 using CrowdSample.Scripts.Utils;
+using System.Collections.Generic;
+using CrowdSample.Scripts.Runtime.Data;
 
-namespace CrowdSample.Scripts.Runtime.Agent
+namespace CrowdSample.Scripts.Runtime.Crowd
 {
     [RequireComponent(typeof(Path))]
     [ExecuteInEditMode]
@@ -15,10 +15,8 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public Path                  Path                  => path;
         public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
 
-        public List<Transform> Waypoints      { get; private set; }
-        public AgentSpawnDB[]  AgentSpawnData { get; private set; }
+        public AgentSpawnDB[] AgentSpawnData { get; private set; }
 
-        public void SetWaypoints(List<Transform>     value) => Waypoints = value;
         public void SetAgentSpawnData(AgentSpawnDB[] value) => AgentSpawnData = value;
 
 
@@ -38,6 +36,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
         public float Offset     => offset;
         public bool  UseSpacing => useSpacing;
 
+        public void SetPath(Path       value) => path = value;
         public void SetClosedPath(bool value) => closedPath = value;
         public void SetCount(int       value) => count = value;
         public void SetCountMax(int    value) => countMax = value;
@@ -51,7 +50,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
 #if UNITY_EDITOR
         private void Awake()
         {
-            if (path == null) path = GetComponent<Path>();
+            if (Path == null) SetPath(GetComponent<Path>());
         }
 
         private void OnValidate()
@@ -84,30 +83,22 @@ namespace CrowdSample.Scripts.Runtime.Agent
             var waypointComponents = transform.GetComponentsInChildren<Waypoint>();
             if (waypointComponents.Length > 0)
             {
-                SetWaypoints(new List<Transform>(waypointComponents.Length));
+                Path.SetWaypoints(new List<Transform>(waypointComponents.Length));
                 for (var i = 0; i < waypointComponents.Length; i++)
                 {
-                    Waypoints[i] = waypointComponents[i].transform;
+                    Path.Waypoints[i] = waypointComponents[i].transform;
                 }
             }
             else
             {
-                Waypoints = null;
+                Path.SetWaypoints(new List<Transform>());
             }
         }
 
         public void UpdatePath()
         {
-            if (path == null) return;
-            if (Waypoints == null || Waypoints.Count < 2) return;
-
-            path.SetWaypoints(new Vector3[Waypoints.Count]);
-            path.SetClosedPath(ClosedPath);
-            for (var i = 0; i < Waypoints.Count; i++)
-            {
-                if (Waypoints[i] == null) continue;
-                path.Waypoints[i] = Waypoints[i].position;
-            }
+            if (Path == null) return;
+            if (Path.Waypoints == null || Path.Waypoints.Count < 2) return;
 
             SetCount(Mathf.Clamp(Count,     0,    CountMax));
             SetSpacing(Mathf.Clamp(Spacing, 0.1f, float.MaxValue));
@@ -118,7 +109,7 @@ namespace CrowdSample.Scripts.Runtime.Agent
 
         private void CalculatePositionsAndDirections()
         {
-            var totalLength = path.GetTotalLength();
+            var totalLength = Path.GetTotalLength();
             var maxCount    = Mathf.FloorToInt(totalLength / Spacing); // 根據總長度和間距計算最大數量
 
             SetAgentSpawnData(new AgentSpawnDB[Count]);
@@ -141,9 +132,9 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     }
 
                     var curveNPos = distance / totalLength;
-                    var position  = path.GetPositionAt(curveNPos);
-                    var direction = path.GetDirectionAt(curveNPos);
-                    var curvePos  = curveNPos * Waypoints.Count;
+                    var position  = Path.GetPositionAt(curveNPos);
+                    var direction = Path.GetDirectionAt(curveNPos);
+                    var curvePos  = curveNPos * Path.Waypoints.Count;
                     AgentSpawnData[i] = new AgentSpawnDB(position, direction, curvePos);
                 }
             }
@@ -154,9 +145,9 @@ namespace CrowdSample.Scripts.Runtime.Agent
                     var curveNPos = (float)i / Count;
                     curveNPos += Offset / totalLength;
                     curveNPos %= 1.0f;
-                    var position  = path.GetPositionAt(curveNPos);
-                    var direction = path.GetDirectionAt(curveNPos);
-                    var curvePos  = curveNPos * Waypoints.Count;
+                    var position  = Path.GetPositionAt(curveNPos);
+                    var direction = Path.GetDirectionAt(curveNPos);
+                    var curvePos  = curveNPos * Path.Waypoints.Count;
                     AgentSpawnData[i] = new AgentSpawnDB(position, direction, curvePos);
                 }
             }
