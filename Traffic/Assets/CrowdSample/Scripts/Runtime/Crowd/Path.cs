@@ -17,5 +17,16 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public float   GetTotalLength()        => PathResolver.GetTotalLength(Waypoints, ClosedPath);
         public Vector3 GetPositionAt(float  t) => PathResolver.GetPositionAt(Waypoints, ClosedPath, t);
         public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(Waypoints, ClosedPath, t);
+
+#if UNITY_EDITOR
+        public void FetchWaypoints()
+        {
+            SetWaypoints(new List<Transform>());
+            foreach (Transform waypoint in transform)
+            {
+                Waypoints.Add(waypoint);
+            }
+        }
+#endif
     }
 }
