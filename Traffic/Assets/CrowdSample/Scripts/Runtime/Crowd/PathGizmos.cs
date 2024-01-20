@@ -55,13 +55,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private bool ValidatePath()
         {
-            if (Path.Waypoints.Count < 2)
-            {
-                Debug.LogWarning("路徑物件的Waypoints數量不足（至少需要2個）。");
-                return false;
-            }
-
-            return true;
+            return Path.Waypoints.Count >= 2;
         }
     }
 }
