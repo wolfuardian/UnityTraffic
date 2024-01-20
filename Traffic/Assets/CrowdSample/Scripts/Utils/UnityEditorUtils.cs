@@ -7,7 +7,7 @@ namespace CrowdSample.Scripts.Utils
     {
         public static void UpdateAllGizmos()
         {
-            foreach (var updatable in FindObjectsOfType<MonoBehaviour>().OfType<IUpdatableGizmo>())
+            foreach (var updatable in FindObjectsOfType<MonoBehaviour>().OfType<IUpdatable>())
             {
                 updatable.UpdateGizmo();
             }
