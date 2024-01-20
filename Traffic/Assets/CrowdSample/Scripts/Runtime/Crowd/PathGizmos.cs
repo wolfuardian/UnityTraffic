@@ -48,17 +48,19 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 if (waypoints[i] == null || waypoints[nextIndex] == null) continue;
 
                 Gizmos.DrawLine(waypoints[i].position, waypoints[nextIndex].position);
-                GizmosUtils.Arrow(waypoints[i].position, waypoints[nextIndex].position - waypoints[i].position, Color.cyan);
+                GizmosUtils.Arrow(waypoints[i].position, waypoints[nextIndex].position - waypoints[i].position,
+                    Color.cyan);
             }
         }
 
         private bool ValidatePath()
         {
-            if (Path == null || Path.Waypoints == null || Path.Waypoints.Count < 2)
+            if (Path.Waypoints.Count < 2)
             {
-                Debug.LogWarning("Path or waypoints not properly configured.");
+                Debug.LogWarning("路徑物件的Waypoints數量不足（至少需要2個）。");
                 return false;
             }
+
             return true;
         }
     }
