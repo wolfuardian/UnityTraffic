@@ -13,11 +13,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private AgentGenerationConfig agentGenerationConfig;
         [SerializeField] private AgentSpawnData[]      agentSpawnData;
 
-        public List<Transform> Waypoints
-        {
-            get => waypoints ??= new List<Transform>();
-            set => waypoints = value;
-        }
+        public List<Transform> Waypoints => waypoints ??= new List<Transform>();
 
         public AgentGenerationConfig       AgentGenerationConfig => agentGenerationConfig;
         public IEnumerable<AgentSpawnData> AgentSpawnData        => agentSpawnData ??= Array.Empty<AgentSpawnData>();
