@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using CrowdSample.Scripts.Runtime.Data;
@@ -18,8 +19,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => waypoints = value;
         }
 
-        public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
-        public AgentSpawnData[]      AgentSpawnData        => agentSpawnData ??= new AgentSpawnData[0];
+        public AgentGenerationConfig       AgentGenerationConfig => agentGenerationConfig;
+        public IEnumerable<AgentSpawnData> AgentSpawnData        => agentSpawnData ??= Array.Empty<AgentSpawnData>();
 
         #region Parameter Variables
 
