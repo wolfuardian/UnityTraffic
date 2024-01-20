@@ -7,12 +7,14 @@ namespace CrowdSample.Scripts.Utils
         public static void Arrow(Vector3 pos, Vector3 direction, float arrowHeadLength = 2.5f,
             float                        arrowHeadAngle = 20.0f)
         {
+            if (direction == Vector3.zero) return; // 檢查並跳過零向量
+
             Gizmos.DrawRay(pos, direction);
 
-            Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) *
-                            new Vector3(0, 0, 1);
-            Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) *
-                           new Vector3(0, 0, 1);
+            var right = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) *
+                        new Vector3(0, 0, 1);
+            var left = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) *
+                       new Vector3(0, 0, 1);
             Gizmos.DrawRay(pos + direction, right * arrowHeadLength);
             Gizmos.DrawRay(pos + direction, left * arrowHeadLength);
         }
@@ -20,13 +22,15 @@ namespace CrowdSample.Scripts.Utils
         public static void Arrow(Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 2.5f,
             float                        arrowHeadAngle = 20.0f)
         {
+            if (direction == Vector3.zero) return; // 檢查並跳過零向量
+
             Gizmos.color = color;
             Gizmos.DrawRay(pos, direction);
 
-            Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) *
-                            new Vector3(0, 0, 1);
-            Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) *
-                           new Vector3(0, 0, 1);
+            var right = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) *
+                        new Vector3(0, 0, 1);
+            var left = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) *
+                       new Vector3(0, 0, 1);
             Gizmos.DrawRay(pos + direction, right * arrowHeadLength);
             Gizmos.DrawRay(pos + direction, left * arrowHeadLength);
         }
@@ -94,6 +98,7 @@ namespace CrowdSample.Scripts.Utils
             Gizmos.DrawLine(headWidthRight,  bodyEnd + right);
             Gizmos.DrawLine(bodyEnd - right, headWidthLeft);
         }
+
         public static void ThicknessArrow(Vector3 pos, Vector3 direction, Color color, Vector2 scale)
         {
             Gizmos.color = color;
