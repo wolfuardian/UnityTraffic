@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Data
 {
-    [CreateAssetMenu(fileName = "AgentData", menuName = "CrowdWizard/Agent Data")]
-    public class AgentData : ScriptableObject
+    [CreateAssetMenu(fileName = "AgentDataConfig", menuName = "CrowdWizard/Agent Data Config")]
+    public class AgentDataConfig : ScriptableObject
     {
         public GameObject[] agentPrefabs;
 
