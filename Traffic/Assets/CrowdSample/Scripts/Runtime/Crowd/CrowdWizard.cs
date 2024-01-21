@@ -1,60 +1,72 @@
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class CrowdWizard : MonoBehaviour
     {
-        public GameObject path;
-        public GameObject crowdAgent;
-        public List<GameObject> pathInstances = new List<GameObject>();
-        public List<GameObject> crowdAgentInstances = new List<GameObject>();
+        public GameObject       rootPath;
+        public GameObject       rootAgent;
+        public List<GameObject> pathInstances  = new List<GameObject>();
+        public List<GameObject> agentInstances = new List<GameObject>();
 
+        public bool IsPathCreated  => rootPath != null;
+        public bool IsAgentCreated => rootAgent != null;
 
-        public bool IsPathCreated()
+        public void OnCreatePath()          => CreatePath();
+        public void OnCreateAgent()         => CreateAgent();
+        public void OnCreatePathInstance()  => CreatePathInstance();
+        public void OnCreateAgentInstance() => CreateAgentInstance();
+
+        private void CreatePath()
         {
-            return path != null;
+            if (IsPathCreated) return;
+
+            var newPath = new GameObject("Path");
+            newPath.transform.SetParent(transform);
+
+            rootPath = newPath;
+
+            pathInstances.Clear();
         }
 
-        public void CreatePath()
+        private void CreateAgent()
         {
-            if (IsPathCreated()) return;
+            if (IsAgentCreated) return;
 
-            path = new GameObject("Path");
-            path.transform.SetParent(transform);
+            var newAgent = new GameObject("Agent");
+            newAgent.transform.SetParent(transform);
+
+            rootAgent = newAgent;
+
+            agentInstances.Clear();
         }
 
-        public void CreatePathInstance()
+        private void CreatePathInstance()
         {
-            var pathInstance = new GameObject("Path" + pathInstances.Count);
-            pathInstance.transform.SetParent(path.transform);
+            var newPathInst = new GameObject("Path" + pathInstances.Count);
+            newPathInst.transform.SetParent(rootPath.transform);
 
-            pathInstance.AddComponent<CrowdPath>();
+            var path        = newPathInst.AddComponent<Path>();
+            var pathGizmos  = newPathInst.AddComponent<PathGizmos>();
+            var pathBuilder = newPathInst.AddComponent<PathBuilder>();
 
-            pathInstances.Add(pathInstance);
+            InternalEditorUtility.SetIsInspectorExpanded(path,        false);
+            InternalEditorUtility.SetIsInspectorExpanded(pathGizmos,  true);
+            InternalEditorUtility.SetIsInspectorExpanded(pathBuilder, true);
+
+            pathInstances.Add(newPathInst);
         }
 
-        public bool IsCrowdAgentCreated()
+        private void CreateAgentInstance()
         {
-            return crowdAgent != null;
-        }
+            var newAgentInst = new GameObject("Agent" + agentInstances.Count);
+            newAgentInst.transform.SetParent(rootAgent.transform);
 
-        public void CreateCrowdAgent()
-        {
-            if (IsCrowdAgentCreated()) return;
+            var agentFactory = newAgentInst.AddComponent<AgentFactory>();
 
-            crowdAgent = new GameObject("Agent");
-            crowdAgent.transform.SetParent(transform);
-        }
-
-        public void CreateCrowdAgentInstance()
-        {
-            var crowdAgentInstance = new GameObject("Agent" + crowdAgentInstances.Count);
-            crowdAgentInstance.transform.SetParent(crowdAgent.transform);
-
-            crowdAgentInstance.AddComponent<CrowdAgentFactory>();
-
-            crowdAgentInstances.Add(crowdAgentInstance);
+            agentInstances.Add(newAgentInst);
         }
     }
 }

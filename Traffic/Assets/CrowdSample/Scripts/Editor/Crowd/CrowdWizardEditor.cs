@@ -8,13 +8,11 @@ namespace CrowdSample.Scripts.Editor.Crowd
     [CustomEditor(typeof(CrowdWizard))]
     public class CrowdWizardEditor : UnityEditor.Editor
     {
-        private CrowdWizard _crowdWizard;
+        private CrowdWizard crowdWizard;
 
         private void OnEnable()
         {
-            _crowdWizard = (CrowdWizard)target;
-            serializedObject.FindProperty("crowdAgentPrefabs");
-            serializedObject.FindProperty("newCrowdAgentPrefab");
+            crowdWizard = (CrowdWizard)target;
         }
 
         public override void OnInspectorGUI()
@@ -25,17 +23,19 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUILayout.Space(10);
 
-            if (_crowdWizard.IsPathCreated())
+            if (crowdWizard.IsPathCreated)
             {
-                DrawSection("Path Instances", _crowdWizard.pathInstances, _crowdWizard.CreatePathInstance);
+                DrawSection("Path Instances", crowdWizard.pathInstances, crowdWizard.OnCreatePathInstance);
             }
 
             EditorGUILayout.Space(10);
 
-            if (_crowdWizard.IsCrowdAgentCreated())
+            if (crowdWizard.IsAgentCreated)
             {
-                DrawSection("Agent Instance", _crowdWizard.crowdAgentInstances, _crowdWizard.CreateCrowdAgentInstance);
+                DrawSection("Agent Instance", crowdWizard.agentInstances, crowdWizard.OnCreateAgentInstance);
             }
+
+            // UnityEditorUtils.UpdateAllGizmos();
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -43,18 +43,18 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawInitializationSection()
         {
             EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
-            EditorGUI.BeginDisabledGroup(_crowdWizard.IsPathCreated());
+            EditorGUI.BeginDisabledGroup(crowdWizard.IsPathCreated);
             if (GUILayout.Button("Create Path"))
             {
-                _crowdWizard.CreatePath();
+                crowdWizard.OnCreatePath();
             }
 
             EditorGUI.EndDisabledGroup();
 
-            EditorGUI.BeginDisabledGroup(_crowdWizard.IsCrowdAgentCreated());
+            EditorGUI.BeginDisabledGroup(crowdWizard.IsAgentCreated);
             if (GUILayout.Button("Create Agent"))
             {
-                _crowdWizard.CreateCrowdAgent();
+                crowdWizard.OnCreateAgent();
             }
 
             EditorGUI.EndDisabledGroup();
@@ -88,12 +88,15 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.EndVertical();
         }
 
-        private static void RemoveInstances(List<GameObject> instances, List<GameObject> toRemove)
+        private static void RemoveInstances(ICollection<GameObject> instances, List<GameObject> toRemove)
         {
             foreach (var remove in toRemove)
             {
-                DestroyImmediate(remove);
                 instances.Remove(remove);
+                
+                if (remove == null) continue;
+                
+                DestroyImmediate(remove);
             }
         }
     }
