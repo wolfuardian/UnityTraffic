@@ -169,7 +169,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawWaypointsConfig(Component component)
         {
             var waypointSo    = new SerializedObject(component);
-            var pathSo        = new SerializedObject(pathBuilder.Path);
             var pathBuilderSo = new SerializedObject(pathBuilder);
             waypointSo.Update();
 
@@ -185,17 +184,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
             {
                 DeleteItem(component);
-                // pathSo.ApplyModifiedProperties();
                 pathBuilderSo.ApplyModifiedProperties();
-            }
-        }
-
-        private static void DeleteItem(Component component)
-        {
-            if (component != null)
-            {
-                Undo.RecordObject(component.gameObject, "Delete Item");
-                Undo.DestroyObjectImmediate(component.gameObject);
             }
         }
 
@@ -236,6 +225,15 @@ namespace CrowdSample.Scripts.Editor.Crowd
             if (pathBuilder.editMode == PathBuilder.EditMode.Add)
             {
                 EditorGUILayout.HelpBox("Click on the scene to add path points", MessageType.Info);
+            }
+        }
+
+        private static void DeleteItem(Component component)
+        {
+            if (component != null)
+            {
+                Undo.RecordObject(component.gameObject, "Delete Item");
+                Undo.DestroyObjectImmediate(component.gameObject);
             }
         }
 
