@@ -1,18 +1,18 @@
-﻿using CrowdSample.Scripts.Data;
+﻿using UnityEngine;
 using CrowdSample.Scripts.Utils;
-using UnityEngine;
+using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class AgentSpawner
     {
-        private readonly CrowdAgentData _crowdAgentData;
-        private readonly CrowdPath      _crowdPath;
+        private readonly AgentDataConfig config;
+        private readonly Path            path;
 
-        public AgentSpawner(CrowdAgentData crowdAgentData, CrowdPath crowdPath)
+        public AgentSpawner(AgentDataConfig config, Path path)
         {
-            _crowdAgentData = crowdAgentData;
-            _crowdPath      = crowdPath;
+            this.config = config;
+            this.path   = path;
         }
 
         public GameObject SpawnAgent(GameObject prefab, Transform parent)
@@ -29,12 +29,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void ConfigureAgentEntity(GameObject agentInstance)
         {
             var entity = agentInstance.AddComponent<AgentEntity>();
-            entity.SetSpeed(Random.Range(_crowdAgentData.minSpeed, _crowdAgentData.maxSpeed));
-            entity.SetAgentID(_crowdAgentData.permissionID);
-            entity.SetAngularSpeed(_crowdAgentData.angularSpeed);
-            entity.SetAcceleration(_crowdAgentData.acceleration);
-            entity.SetTurningRadius(_crowdAgentData.turningRadius);
-            entity.SetStoppingDistance(_crowdAgentData.stoppingDistance);
+            entity.SetSpeed(Random.Range(config.MinSpeed, config.MaxSpeed));
+            entity.SetAgentID(config.permissionID);
+            entity.SetAngularSpeed(config.AngularSpeed);
+            entity.SetAcceleration(config.Acceleration);
+            entity.SetTurningRadius(config.TurningRadius);
+            entity.SetStoppingDistance(config.StoppingDistance);
             entity.SetLicensePlateNumber(GeneratorUtils.GenerateLicensePlateNumber());
         }
 
@@ -42,16 +42,16 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             var tracker = agentInstance.AddComponent<AgentTracker>();
             tracker.SetAgentEntity(agentInstance.GetComponent<AgentEntity>());
-            tracker.SetCrowdPath(_crowdPath);
+            tracker.SetPath(path);
             tracker.InitializeWaypoint();
-            tracker.SetTurningRadius(_crowdAgentData.turningRadius);
+            tracker.SetTurningRadius(config.TurningRadius);
         }
 
         private Vector3 GetSpawnPosition()
         {
-            var point          = _crowdPath.waypoints[0];
-            var crowdPathPoint = point.GetComponent<CrowdPathPoint>();
-            var radius         = crowdPathPoint.allowableRadius;
+            var point          = path.Waypoints[0];
+            var crowdPathPoint = point.GetComponent<Waypoint>();
+            var radius         = crowdPathPoint.Radius;
             var position       = point.transform.position;
             var spawnPosition  = SpatialUtils.GetRandomPointInRadius(position, radius);
             return spawnPosition;

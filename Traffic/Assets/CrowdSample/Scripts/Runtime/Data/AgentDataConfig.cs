@@ -5,21 +5,15 @@ namespace CrowdSample.Scripts.Runtime.Data
     [CreateAssetMenu(fileName = "AgentDataConfig", menuName = "CrowdWizard/Agent Data Config")]
     public class AgentDataConfig : ScriptableObject
     {
-        public GameObject[] agentPrefabs;
+        public PermissionID permissionID = PermissionID.None;
 
-        [Header("代理許可權")] public PermissionID permissionID = PermissionID.None;
-
-        [Header("代理行為設置")] public float minSpeed = 4f;
-
-        public float maxSpeed = 6f;
-
-        public float angularSpeed = 100f;
-
-        public float acceleration = 5f;
-
-        public float turningRadius = 2f;
-
-        public float stoppingDistance = 1f;
+        [SerializeField] private GameObject[] agentPrefabs;
+        [SerializeField] private float        minSpeed         = 4f;
+        [SerializeField] private float        maxSpeed         = 6f;
+        [SerializeField] private float        angularSpeed     = 100f;
+        [SerializeField] private float        acceleration     = 5f;
+        [SerializeField] private float        turningRadius    = 2f;
+        [SerializeField] private float        stoppingDistance = 1f;
 
         public enum PermissionID
         {
@@ -27,5 +21,13 @@ namespace CrowdSample.Scripts.Runtime.Data
             Approved,
             Rejected
         }
+
+        public GameObject[] AgentPrefabs     => agentPrefabs;
+        public float        MinSpeed         => minSpeed;
+        public float        MaxSpeed         => maxSpeed;
+        public float        AngularSpeed     => angularSpeed;
+        public float        Acceleration     => acceleration;
+        public float        TurningRadius    => turningRadius;
+        public float        StoppingDistance => stoppingDistance;
     }
 }

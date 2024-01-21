@@ -1,30 +1,30 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class AgentTracker : MonoBehaviour
     {
-        [SerializeField]                     private CrowdPath        crowdPath;
-        [SerializeField]                     private GameObject       previousTarget;
-        [SerializeField]                     private GameObject       target;
-        [SerializeField]                     private Vector3          desiredPosition;
-        [SerializeField]                     private int              waypointIndex;
-        [SerializeField] [Range(0.0f, 1.0f)] private float            globalJourney;
-        [SerializeField] [Range(0.0f, 1.0f)] private float            localJourney;
-        [SerializeField]                     private float            localDistance;
-        [SerializeField]                     private float            remainingDistance;
-        [SerializeField]                     private bool             isTrackable;
-        private                                      List<GameObject> _waypoints = new List<GameObject>();
-        private                                      AgentEntity      _agentEntity;
-        private                                      float            _turningRadius;
+        [SerializeField]                     private Path            path;
+        [SerializeField]                     private Transform       previousTarget;
+        [SerializeField]                     private Transform       target;
+        [SerializeField]                     private Vector3         desiredPosition;
+        [SerializeField]                     private int             waypointIndex;
+        [SerializeField] [Range(0.0f, 1.0f)] private float           globalJourney;
+        [SerializeField] [Range(0.0f, 1.0f)] private float           localJourney;
+        [SerializeField]                     private float           localDistance;
+        [SerializeField]                     private float           remainingDistance;
+        [SerializeField]                     private bool            isTrackable;
+        private                                      List<Transform> waypoints = new List<Transform>();
+        private                                      AgentEntity     agentEntity;
+        private                                      float           turningRadius;
 
 
-        public void SetWaypoints(List<GameObject> waypoints)     => _waypoints = waypoints;
-        public void SetAgentEntity(AgentEntity    agentEntity)   => _agentEntity = agentEntity;
-        public void SetTurningRadius(float        turningRadius) => _turningRadius = turningRadius;
+        public void SetWaypoints(List<Transform> newWaypoints)     => waypoints = newWaypoints;
+        public void SetAgentEntity(AgentEntity   newAgentEntity)   => agentEntity = newAgentEntity;
+        public void SetTurningRadius(float       newTurningRadius) => turningRadius = newTurningRadius;
 
 
         private void Start()
@@ -40,24 +40,24 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         }
 
 
-        public void SetCrowdPath(CrowdPath path)
+        public void SetPath(Path newPath)
         {
             // Set variable
-            crowdPath = path;
+            path = newPath;
 
             // Handle
-            SetWaypoints(crowdPath.waypoints);
+            SetWaypoints(newPath.Waypoints);
             waypointIndex = 0;
             MoveToNextWaypointImmediately();
         }
 
         public void InitializeWaypoint()
         {
-            _waypoints = crowdPath.waypoints;
-            if (_waypoints != null && _waypoints.Count > 0)
+            waypoints = path.Waypoints;
+            if (waypoints != null && waypoints.Count > 0)
             {
                 waypointIndex   = 0;
-                target          = _waypoints[0];
+                target          = waypoints[0];
                 previousTarget  = target;
                 desiredPosition = GetRandomPointInRadius(target);
                 localDistance   = Vector3.Distance(previousTarget.transform.position, desiredPosition);
@@ -72,7 +72,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void MoveToNextWaypoint()
         {
-            if (Vector3.Distance(transform.position, desiredPosition) < _turningRadius) FindNextWaypoint();
+            if (Vector3.Distance(transform.position, desiredPosition) < turningRadius) FindNextWaypoint();
             SetAgentDestination();
         }
 
@@ -87,57 +87,57 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             if (target == null)
             {
-                target = _waypoints[0];
+                target = waypoints[0];
             }
 
             previousTarget = target;
             if (previousTarget == target) desiredPosition = GetRandomPointInRadius(target);
 
-            if (waypointIndex < _waypoints.Count - 1)
+            if (waypointIndex < waypoints.Count - 1)
             {
                 waypointIndex++;
             }
 
-            if (waypointIndex < _waypoints.Count && waypointIndex >= 0)
+            if (waypointIndex < waypoints.Count && waypointIndex >= 0)
             {
-                target = _waypoints[waypointIndex];
+                target = waypoints[waypointIndex];
             }
         }
 
         public void SetCurrentWaypointAsTarget()
         {
-            target          = _waypoints[waypointIndex];
+            target          = waypoints[waypointIndex];
             desiredPosition = GetRandomPointInRadius(target);
         }
 
-        public void SetAgentDestination() => _agentEntity.SetDestination(desiredPosition);
+        public void SetAgentDestination() => agentEntity.SetDestination(desiredPosition);
 
         private void CalculateJourney()
         {
-            waypointIndex     = _waypoints.IndexOf(target);
-            remainingDistance = _agentEntity.NavMeshAgent.remainingDistance;
+            waypointIndex     = waypoints.IndexOf(target);
+            remainingDistance = agentEntity.NavMeshAgent.remainingDistance;
             localDistance     = Vector3.Distance(previousTarget.transform.position, desiredPosition);
             localJourney      = Mathf.Clamp(1 - remainingDistance / localDistance, 0f, 1f);
             if (previousTarget == target) localJourney = 1f;
 
-            globalJourney = (waypointIndex + localJourney) / _waypoints.Count;
+            globalJourney = (waypointIndex + localJourney) / waypoints.Count;
 
             if (Math.Abs(globalJourney - 1f) < 0.001f)
             {
-                _agentEntity.SetShouldDestroy(true);
+                agentEntity.SetShouldDestroy(true);
             }
         }
 
-        private static Vector3 GetRandomPointInRadius(GameObject point)
+        private static Vector3 GetRandomPointInRadius(Component point)
         {
-            var crowdPathPoint = point.GetComponent<CrowdPathPoint>();
+            var crowdPathPoint = point.GetComponent<Waypoint>();
             if (crowdPathPoint == null)
             {
                 Debug.LogWarning("CrowdPathPoint component is missing on the GameObject: " + point.name);
                 return point.transform.position;
             }
 
-            var radius          = crowdPathPoint.allowableRadius;
+            var radius          = crowdPathPoint.Radius;
             var randomDirection = Random.insideUnitSphere * radius;
             var position        = point.transform.position;
             randomDirection   += position;

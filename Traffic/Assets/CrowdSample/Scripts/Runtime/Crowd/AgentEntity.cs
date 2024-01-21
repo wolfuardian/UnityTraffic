@@ -1,25 +1,27 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
+using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
+    [RequireComponent(typeof(NavMeshAgent))]
     public class AgentEntity : MonoBehaviour
     {
-        [SerializeField] private NavMeshAgent navMeshAgent;
-        [SerializeField] private bool         shouldDestroy;
-        [SerializeField] private string       agentID;
-        [SerializeField] private string       licensePlateNumber;
-        [SerializeField] private float        originalSpeed;
-        [SerializeField] private float        turningRadius;
+        [SerializeField] private NavMeshAgent                 navMeshAgent;
+        [SerializeField] private bool                         shouldDestroy;
+        [SerializeField] private AgentDataConfig.PermissionID agentID;
+        [SerializeField] private string                       licensePlateNumber;
+        [SerializeField] private float                        originalSpeed;
+        [SerializeField] private float                        turningRadius;
 
         // onAgentExited事件在 AgentEntity 被銷毀時觸發。
         public Action<AgentEntity> onAgentExited;
 
-        public NavMeshAgent NavMeshAgent       => navMeshAgent;
-        public string       AgentID            => agentID;
-        public string       LicensePlateNumber => licensePlateNumber;
+        public NavMeshAgent                 NavMeshAgent       => navMeshAgent;
+        public AgentDataConfig.PermissionID AgentID            => agentID;
+        public string                       LicensePlateNumber => licensePlateNumber;
 
 
         private void OnEnable()
@@ -41,14 +43,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             Destroy(gameObject);
         }
 
-        public void SetShouldDestroy(bool        destroy)      => shouldDestroy = destroy;
-        public void SetAgentID(string            status)       => agentID = status;
-        public void SetLicensePlateNumber(string number)       => licensePlateNumber = number;
-        public void SetSpeed(float               speed)        => navMeshAgent.speed = speed;
-        public void SetAngularSpeed(float        angularSpeed) => navMeshAgent.angularSpeed = angularSpeed;
-        public void SetAcceleration(float        acceleration) => navMeshAgent.acceleration = acceleration;
-        public void SetTurningRadius(float       turnRadius)   => turningRadius = turnRadius;
-        public void SetStoppingDistance(float    stopDistance) => navMeshAgent.stoppingDistance = stopDistance;
+        public void SetShouldDestroy(bool destroy) => shouldDestroy = destroy;
+        public void SetAgentID(AgentDataConfig.PermissionID status) => agentID = status;
+        public void SetLicensePlateNumber(string number) => licensePlateNumber = number;
+        public void SetSpeed(float speed) => navMeshAgent.speed = speed;
+        public void SetAngularSpeed(float angularSpeed) => navMeshAgent.angularSpeed = angularSpeed;
+        public void SetAcceleration(float acceleration) => navMeshAgent.acceleration = acceleration;
+        public void SetTurningRadius(float turnRadius) => turningRadius = turnRadius;
+        public void SetStoppingDistance(float stopDistance) => navMeshAgent.stoppingDistance = stopDistance;
 
 
         public void SetDestination(Vector3 destination)
