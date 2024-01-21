@@ -33,7 +33,11 @@ namespace CrowdSample.Scripts.Editor.Data
 
             config.ApplyPresetProperties();
 
-            UnityEditorUtils.UpdateAllGizmos();
+            if (GUI.changed)
+            {
+                UnityEditorUtils.UpdateAllGizmos();
+            }
+
             SceneView.RepaintAll();
 
             serializedObject.ApplyModifiedProperties();
