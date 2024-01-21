@@ -10,7 +10,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private Waypoint waypoint;
 
         public  Waypoint Waypoint => waypoint ??= GetComponent<Waypoint>();
-        private Vector3  prevPosition;
+
+        public Vector3 PrevPosition { get; set; }
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -18,10 +19,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             if (Waypoint == null) return;
 
             var position = Waypoint.transform.position;
-            if (prevPosition != position)
+            if (PrevPosition != position)
             {
                 UnityEditorUtils.UpdateAllGizmos();
-                prevPosition = position;
+                PrevPosition = position;
             }
 
             DrawWaypointGizmo(position);

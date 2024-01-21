@@ -8,8 +8,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
     [CustomEditor(typeof(WaypointGizmos))]
     public class WaypointGizmosEditor : UnityEditor.Editor
     {
-        private Vector3 previousPosition;
-
         private void OnSceneGUI()
         {
             var waypointGizmos = (WaypointGizmos)target;
@@ -19,9 +17,9 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DetectWaypointPositionChange(WaypointGizmos waypointGizmos)
         {
-            if (waypointGizmos.transform.position != previousPosition)
+            if (waypointGizmos.transform.position != waypointGizmos.PrevPosition)
             {
-                previousPosition = waypointGizmos.transform.position;
+                waypointGizmos.PrevPosition = waypointGizmos.transform.position;
                 UpdateGizmos();
             }
         }
