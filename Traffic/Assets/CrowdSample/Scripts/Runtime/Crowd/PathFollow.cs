@@ -1,7 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 
+// TODO: 1. 串接 points -> 透過 Component:Path 的 points 來決定
+// TODO: 2. 串接 radius -> 透過 Component:Waypoint 的 radius 來決定
+// TODO: 3. 串接 navigateMode、reverse -> 透過 Component:PathController 的 navigateMode、reverse 來決定 *(這個要再考慮)
+// TODO: 4. 串接 agent -> 透過 Component:AgentFactory 的 agent 來決定
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class PathFollow : MonoBehaviour
