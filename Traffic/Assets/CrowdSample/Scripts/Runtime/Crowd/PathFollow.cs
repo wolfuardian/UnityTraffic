@@ -10,6 +10,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private NavigateMode  navigateMode = NavigateMode.Loop;
         [SerializeField] private int           currentIndex;
         [SerializeField] private bool          reverse;
+        [SerializeField] private float         radius;
 
         public enum NavigateMode
         {
@@ -17,6 +18,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             PingPong,
             Once
         }
+
+        # region Properties
 
         public List<Vector3> Points
         {
@@ -26,8 +29,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public int CurrentIndex
         {
-            get => Mathf.Clamp(currentIndex, 0, points.Count - 1);
-            set => currentIndex = Mathf.Clamp(value, 0, points.Count - 1);
+            get => currentIndex;
+            set => currentIndex = value;
         }
 
         public bool Reverse
@@ -35,6 +38,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             get => reverse;
             set => reverse = value;
         }
+
+        public float Radius
+        {
+            get => radius;
+            set => radius = value;
+        }
+
+        #endregion
 
         private NavMeshAgent navMeshAgent;
 
@@ -55,16 +66,35 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 return;
             }
 
-            if (navMeshAgent.pathPending)
+            if (navMeshAgent.pathPending || navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
             {
                 return;
             }
 
-            if (navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
-            {
-                return;
-            }
+            UpdateIndexBasedOnDirection();
 
+            UpdateCurrentIndex();
+
+            currentIndex = Mathf.Clamp(currentIndex, 0, points.Count - 1);
+
+            var destination = ScatterDestination(points[currentIndex], radius);
+            SetDestination(destination);
+        }
+
+        private void UpdateIndexBasedOnDirection()
+        {
+            if (reverse)
+            {
+                CurrentIndex -= 1;
+            }
+            else
+            {
+                CurrentIndex += 1;
+            }
+        }
+
+        private void UpdateCurrentIndex()
+        {
             switch (navigateMode)
             {
                 case NavigateMode.Loop:
@@ -77,26 +107,27 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     Once();
                     break;
             }
+        }
 
-            SetDestination(points[currentIndex]);
+        private static Vector3 ScatterDestination(Vector3 destination, float r)
+        {
+            return destination + new Vector3(Random.insideUnitCircle.x * r, 0f, Random.insideUnitCircle.y * r);
         }
 
         private void Loop()
         {
-            CurrentIndex = (CurrentIndex + 1) % points.Count;
+            if (CurrentIndex >= points.Count)
+            {
+                CurrentIndex = 0;
+            }
+            else if (CurrentIndex < 0)
+            {
+                CurrentIndex = points.Count - 1;
+            }
         }
 
         private void PingPong()
         {
-            if (reverse)
-            {
-                CurrentIndex -= 1;
-            }
-            else
-            {
-                CurrentIndex += 1;
-            }
-
             if (CurrentIndex >= points.Count - 1)
             {
                 reverse = true;
@@ -109,13 +140,23 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Once()
         {
-            CurrentIndex = Mathf.Clamp(CurrentIndex + 1, 0, points.Count - 1);
+            CurrentIndex = Mathf.Clamp(CurrentIndex, 0, points.Count - 1);
         }
 
 
         private void SetDestination(Vector3 destination)
         {
             navMeshAgent.destination = destination;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (navMeshAgent == null)
+            {
+                return;
+            }
+
+            Debug.DrawLine(transform.position, navMeshAgent.destination, Color.red);
         }
     }
 }
