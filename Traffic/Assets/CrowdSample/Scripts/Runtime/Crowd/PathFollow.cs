@@ -13,12 +13,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             Loop,
             PingPong,
-            Once
+            Once,
+            Custom
         }
 
         [SerializeField] private List<Vector3> points;
         [SerializeField] private NavigateMode  navigateMode = NavigateMode.Loop;
         [SerializeField] private int           currentIndex;
+        [SerializeField] private int           targetIndex;
         [SerializeField] private bool          reverse;
         [SerializeField] private float         radius;
 
@@ -38,6 +40,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             get => currentIndex;
             set => currentIndex = value;
+        }
+
+        public int TargetIndex
+        {
+            get => targetIndex;
+            set => targetIndex = value;
         }
 
         public bool Reverse
@@ -73,7 +81,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 return;
             }
 
-            UpdateIndexBasedOnDirection();
+            if (navigateMode != NavigateMode.Custom)
+            {
+                UpdateIndexBasedOnDirection();
+            }
+
             UpdateCurrentIndex();
             currentIndex = Mathf.Clamp(currentIndex, 0, points.Count - 1);
 
@@ -93,7 +105,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void UpdateIndexBasedOnDirection()
         {
-            CurrentIndex += reverse ? -1 : 1;
+            currentIndex += reverse ? -1 : 1;
         }
 
         private void UpdateCurrentIndex()
@@ -109,6 +121,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 case NavigateMode.Once:
                     Once();
                     break;
+                case NavigateMode.Custom:
+                    Custom();
+                    break;
             }
         }
 
@@ -119,23 +134,23 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Loop()
         {
-            if (CurrentIndex >= points.Count)
+            if (currentIndex >= points.Count)
             {
-                CurrentIndex = 0;
+                currentIndex = 0;
             }
-            else if (CurrentIndex < 0)
+            else if (currentIndex < 0)
             {
-                CurrentIndex = points.Count - 1;
+                currentIndex = points.Count - 1;
             }
         }
 
         private void PingPong()
         {
-            if (CurrentIndex >= points.Count - 1)
+            if (currentIndex >= points.Count - 1)
             {
                 reverse = true;
             }
-            else if (CurrentIndex <= 0)
+            else if (currentIndex <= 0)
             {
                 reverse = false;
             }
@@ -143,7 +158,24 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Once()
         {
-            CurrentIndex = Mathf.Clamp(CurrentIndex, 0, points.Count - 1);
+            currentIndex = Mathf.Clamp(currentIndex, 0, points.Count - 1);
+        }
+
+        private void Custom()
+        {
+            if (currentIndex == targetIndex)
+            {
+                return;
+            }
+
+            var direction = currentIndex < targetIndex ? 1 : -1; // 根據目標索引的位置決定方向
+            currentIndex += direction; // 根據方向更新索引
+
+            if ((direction == 1 && currentIndex > targetIndex) ||
+                (direction == -1 && currentIndex < targetIndex))
+            {
+                currentIndex = targetIndex; // 如果超過目標索引，則設置為目標索引
+            }
         }
 
         private void SetDestination(Vector3 destination)
