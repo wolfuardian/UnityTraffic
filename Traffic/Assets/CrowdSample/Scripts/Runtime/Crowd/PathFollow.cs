@@ -18,6 +18,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         }
 
         [SerializeField] private List<Vector3> points;
+        [SerializeField] private List<float>   ranges;
         [SerializeField] private NavigateMode  navigateMode = NavigateMode.Loop;
         [SerializeField] private int           currentIndex;
         [SerializeField] private int           targetIndex;
@@ -36,6 +37,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             get => points ??= new List<Vector3>();
             set => points = value;
+        }
+
+        public List<float> Ranges
+        {
+            get => ranges ??= new List<float>();
+            set => ranges = value;
         }
 
         public int CurrentIndex
@@ -110,6 +117,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             targetIndex = Mathf.Clamp(targetIndex, 0, points.Count - 1);
 
             UpdateCurrentIndex();
+
+            radius = ranges[targetIndex];
 
             var destination = ScatterDestination(points[targetIndex], radius);
             SetDestination(destination);
