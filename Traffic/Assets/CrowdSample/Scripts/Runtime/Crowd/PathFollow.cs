@@ -2,19 +2,11 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 
-// TODO: 1. 串接 points -> 透過 Component:Path 的 points 來決定
-// TODO: 2. 串接 radius -> 透過 Component:Waypoint 的 radius 來決定
-// TODO: 3. 串接 navigateMode、reverse -> 透過 Component:PathController 的 navigateMode、reverse 來決定 *(這個要再考慮)
-// TODO: 4. 串接 agent -> 透過 Component:AgentFactory 的 agent 來決定
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class PathFollow : MonoBehaviour
     {
-        [SerializeField] public  List<Vector3> points;
-        [SerializeField] private NavigateMode  navigateMode = NavigateMode.Loop;
-        [SerializeField] private int           currentIndex;
-        [SerializeField] private bool          reverse;
-        [SerializeField] private float         radius;
+        #region Field Declarations
 
         public enum NavigateMode
         {
@@ -23,7 +15,17 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             Once
         }
 
-        # region Properties
+        [SerializeField] private List<Vector3> points;
+        [SerializeField] private NavigateMode  navigateMode = NavigateMode.Loop;
+        [SerializeField] private int           currentIndex;
+        [SerializeField] private bool          reverse;
+        [SerializeField] private float         radius;
+
+        private NavMeshAgent navMeshAgent;
+
+        #endregion
+
+        #region Properties
 
         public List<Vector3> Points
         {
@@ -51,8 +53,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
-        private NavMeshAgent navMeshAgent;
-
+        #region Unity Methods
 
         private void Awake()
         {
@@ -65,36 +66,33 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Update()
         {
-            if (points.Count == 0)
-            {
-                return;
-            }
-
-            if (navMeshAgent.pathPending || navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
+            if (points.Count == 0 || navMeshAgent.pathPending ||
+                navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
             {
                 return;
             }
 
             UpdateIndexBasedOnDirection();
-
             UpdateCurrentIndex();
-
             currentIndex = Mathf.Clamp(currentIndex, 0, points.Count - 1);
 
-            var destination = ScatterDestination(points[currentIndex], radius);
+            Vector3 destination = ScatterDestination(points[currentIndex], radius);
             SetDestination(destination);
         }
 
+        #endregion
+
+        #region Public Methods
+
+        // 如果有公共方法，放在這裡
+
+        #endregion
+
+        #region Private Methods
+
         private void UpdateIndexBasedOnDirection()
         {
-            if (reverse)
-            {
-                CurrentIndex -= 1;
-            }
-            else
-            {
-                CurrentIndex += 1;
-            }
+            CurrentIndex += reverse ? -1 : 1;
         }
 
         private void UpdateCurrentIndex()
@@ -147,11 +145,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             CurrentIndex = Mathf.Clamp(CurrentIndex, 0, points.Count - 1);
         }
 
-
         private void SetDestination(Vector3 destination)
         {
             navMeshAgent.destination = destination;
         }
+
+        #endregion
+
+        #region Debug and Visualization Methods
 
         private void OnDrawGizmos()
         {
@@ -162,5 +163,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             Debug.DrawLine(transform.position, navMeshAgent.destination, Color.red);
         }
+
+        #endregion
     }
 }
