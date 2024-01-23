@@ -141,7 +141,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Public Methods
 
-        // 如果有公共方法，放在這裡
+        public void SetNavigateMode(NavigateMode mode)
+        {
+            navigateMode = mode;
+        }
 
         #endregion
 
