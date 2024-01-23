@@ -76,7 +76,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             UpdateCurrentIndex();
             currentIndex = Mathf.Clamp(currentIndex, 0, points.Count - 1);
 
-            Vector3 destination = ScatterDestination(points[currentIndex], radius);
+            var destination = ScatterDestination(points[currentIndex], radius);
             SetDestination(destination);
         }
 
@@ -111,9 +111,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             }
         }
 
-        private static Vector3 ScatterDestination(Vector3 destination, float r)
+        private static Vector3 ScatterDestination(Vector3 dest, float r)
         {
-            return destination + new Vector3(Random.insideUnitCircle.x * r, 0f, Random.insideUnitCircle.y * r);
+            return dest + new Vector3(Random.insideUnitCircle.x * r, 0f, Random.insideUnitCircle.y * r);
         }
 
         private void Loop()
