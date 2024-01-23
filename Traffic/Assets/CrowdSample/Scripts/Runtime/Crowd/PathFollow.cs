@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
@@ -25,9 +26,16 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private int           forceTargetIndex;
         [SerializeField] private bool          stopOnNextPoint;
         [SerializeField] private bool          reverse;
+        [SerializeField] private bool          shouldDestroyOnGoal;
+
 
         private NavMeshAgent navMeshAgent;
         private float        radius;
+        private Vector3      destination;
+        private float        localDistance;
+        private float        localJourney;
+        private float        globalJourney;
+        private float        remainingDistance;
 
         #endregion
 
@@ -75,6 +83,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => reverse = value;
         }
 
+        public bool ShouldDestroyOnGoal
+        {
+            get => shouldDestroyOnGoal;
+            set => shouldDestroyOnGoal = value;
+        }
+
         #endregion
 
         #region Unity Methods
@@ -101,6 +115,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 return;
             }
 
+            UpdateCurrentIndex();
+
             if (navigateMode != NavigateMode.Custom)
             {
                 UpdateIndexBasedOnDirection();
@@ -110,12 +126,25 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             targetIndex = Mathf.Clamp(targetIndex, 0, points.Count - 1);
 
-            UpdateCurrentIndex();
-
             UpdateRadius();
 
-            var destination = ScatterDestination(points[targetIndex], radius);
-            SetDestination(destination);
+            destination = points[targetIndex];
+            destination = ScatterDestination(destination, radius);
+
+            navMeshAgent.destination = destination;
+        }
+
+        private void LateUpdate()
+        {
+            localDistance     = Vector3.Distance(points[currentIndex], destination);
+            localJourney      = Mathf.Clamp(1 - navMeshAgent.remainingDistance / localDistance, 0f, 1f);
+            globalJourney     = currentIndex + localJourney;
+            remainingDistance = navMeshAgent.remainingDistance;
+
+            if (ShouldDestroyOnGoal && currentIndex == targetIndex)
+            {
+                Destroy(gameObject);
+            }
         }
 
         private void UpdateRadius()
@@ -130,10 +159,26 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void UpdateCurrentIndex()
         {
-            currentIndex = targetIndex - 1;
-            if (currentIndex < 0)
+            if (reverse)
+
+                if (currentIndex <= targetIndex)
+                {
+                    currentIndex = targetIndex;
+                }
+                else
+                {
+                    currentIndex--;
+                }
+            else
             {
-                currentIndex = points.Count - 1;
+                if (currentIndex >= targetIndex)
+                {
+                    currentIndex = targetIndex;
+                }
+                else
+                {
+                    currentIndex++;
+                }
             }
         }
 
@@ -223,11 +268,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             {
                 targetIndex = forceTargetIndex;
             }
-        }
-
-        private void SetDestination(Vector3 destination)
-        {
-            navMeshAgent.destination = destination;
         }
 
         #endregion
