@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
+    [DisallowMultipleComponent]
     public class PathFollow : MonoBehaviour
     {
         #region Field Declarations
@@ -60,7 +61,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             navMeshAgent = GetComponent<NavMeshAgent>();
             if (navMeshAgent == null)
             {
-                navMeshAgent = gameObject.AddComponent<NavMeshAgent>();
+                Debug.LogError($"[錯誤] 物件 '{name}' 上找不到 NavMeshAgent 組件。請確認物件上已正確添加 NavMeshAgent 組件。", this);
             }
         }
 
