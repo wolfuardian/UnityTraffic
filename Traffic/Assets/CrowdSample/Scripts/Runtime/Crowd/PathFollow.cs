@@ -22,7 +22,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private int           currentIndex;
         [SerializeField] private int           targetIndex;
         [SerializeField] private int           forceTargetIndex;
-        [SerializeField] private bool          stop;
+        [SerializeField] private bool          stopOnNextPoint;
         [SerializeField] private bool          reverse;
         [SerializeField] private float         radius;
 
@@ -56,10 +56,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => forceTargetIndex = value;
         }
 
-        public bool Stop
+        public bool StopOnNextPoint
         {
-            get => stop;
-            set => stop = value;
+            get => stopOnNextPoint;
+            set => stopOnNextPoint = value;
         }
 
         public bool Reverse
@@ -89,7 +89,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Update()
         {
-            if (stop)
+            if (stopOnNextPoint)
             {
                 return;
             }
