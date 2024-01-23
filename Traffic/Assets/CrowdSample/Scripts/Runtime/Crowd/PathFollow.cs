@@ -118,10 +118,20 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             UpdateCurrentIndex();
 
-            radius = ranges[targetIndex];
+            UpdateRadius();
 
             var destination = ScatterDestination(points[targetIndex], radius);
             SetDestination(destination);
+        }
+
+        private void UpdateRadius()
+        {
+            if (ranges.Count == 0)
+            {
+                return;
+            }
+
+            radius = ranges[targetIndex];
         }
 
         private void UpdateCurrentIndex()
