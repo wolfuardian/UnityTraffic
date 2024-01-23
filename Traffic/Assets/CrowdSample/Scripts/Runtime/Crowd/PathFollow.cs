@@ -22,6 +22,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private int           currentIndex;
         [SerializeField] private int           targetIndex;
         [SerializeField] private int           forceTargetIndex;
+        [SerializeField] private bool          stop;
         [SerializeField] private bool          reverse;
         [SerializeField] private float         radius;
 
@@ -55,6 +56,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => forceTargetIndex = value;
         }
 
+        public bool Stop
+        {
+            get => stop;
+            set => stop = value;
+        }
+
         public bool Reverse
         {
             get => reverse;
@@ -82,6 +89,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Update()
         {
+            if (stop)
+            {
+                return;
+            }
+
             if (points.Count == 0 || navMeshAgent.pathPending ||
                 navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
             {
