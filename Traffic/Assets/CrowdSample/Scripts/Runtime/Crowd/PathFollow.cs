@@ -25,9 +25,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private int           forceTargetIndex;
         [SerializeField] private bool          stopOnNextPoint;
         [SerializeField] private bool          reverse;
-        [SerializeField] private float         radius;
 
         private NavMeshAgent navMeshAgent;
+        private float        radius;
 
         #endregion
 
@@ -73,12 +73,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             get => reverse;
             set => reverse = value;
-        }
-
-        public float Radius
-        {
-            get => radius;
-            set => radius = value;
         }
 
         #endregion
