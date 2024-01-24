@@ -1,5 +1,5 @@
-﻿using UnityEditorInternal;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEditorInternal;
 using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
@@ -34,13 +34,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private static void ConfigureGroupInstance(GameObject inst)
         {
-            // var path        = inst.AddComponent<Path>();
-            // var pathGizmos  = inst.AddComponent<PathGizmos>();
-            // var pathBuilder = inst.AddComponent<PathBuilder>();
-
-            // InternalEditorUtility.SetIsInspectorExpanded(path,        false);
-            // InternalEditorUtility.SetIsInspectorExpanded(pathGizmos,  true);
-            // InternalEditorUtility.SetIsInspectorExpanded(pathBuilder, true);
+            var crowdGenerator = inst.AddComponent<CrowdGenerator>();
+            InternalEditorUtility.SetIsInspectorExpanded(crowdGenerator, false);
         }
 
         #endregion
