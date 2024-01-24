@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Data
 {
-    [CreateAssetMenu(fileName = "AgentDataConfig", menuName = "CrowdWizard/Agent Data Config")]
-    public class AgentDataConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "CrowdAgentConfig", menuName = "CrowdWizard/Crowd Agent Config")]
+    public class CrowdAgentConfig : ScriptableObject
     {
         public PermissionID permissionID = PermissionID.None;
 

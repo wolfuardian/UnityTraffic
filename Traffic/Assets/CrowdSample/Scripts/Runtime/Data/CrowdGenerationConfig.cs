@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Data
 {
-    [CreateAssetMenu(fileName = "AgentGenerationConfig", menuName = "CrowdWizard/Agent Generation Config")]
-    public class AgentGenerationConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "CrowdGenerationConfig", menuName = "CrowdWizard/Crowd Generation Config")]
+    public class CrowdGenerationConfig : ScriptableObject
     {
         public GenerationMode generationMode = GenerationMode.InfinityFlow;
 
