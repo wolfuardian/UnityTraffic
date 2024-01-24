@@ -86,15 +86,15 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     agentInstance.name               += CurrentAgentCount;
 
                     var entity = agentInstance.GetComponent<AgentEntity>();
-                    var follow = agentInstance.GetComponent<PathFollow>();
+                    var follow = agentInstance.GetComponent<CrowdPathFollow>();
 
                     follow.TargetIndex = path.AgentGenerationConfig.IsReverseDirection
                         ? Mathf.CeilToInt(spawnData.curvePos)
                         : Mathf.FloorToInt(spawnData.curvePos);
 
                     follow.SetNavigateMode(path.AgentGenerationConfig.IsClosedPath
-                        ? PathFollow.NavigateMode.Loop
-                        : PathFollow.NavigateMode.PingPong);
+                        ? CrowdPathFollow.NavigateMode.Loop
+                        : CrowdPathFollow.NavigateMode.PingPong);
 
                     follow.Reverse = path.AgentGenerationConfig.IsReverseDirection;
                 }
@@ -131,12 +131,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
                     var entity = agentInstance.GetComponent<AgentEntity>();
 
-                    var follow = agentInstance.GetComponent<PathFollow>();
+                    var follow = agentInstance.GetComponent<CrowdPathFollow>();
                     follow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
                     follow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius)
                         .ToList();
                     follow.ShouldDestroyOnGoal = true;
-                    follow.SetNavigateMode(PathFollow.NavigateMode.Once);
+                    follow.SetNavigateMode(CrowdPathFollow.NavigateMode.Once);
                     follow.TargetIndex  =  0;
                     follow.DestroyEvent += () => { currentAgentCount--; };
                     follow.DestroyEvent += () => { trackingAgents.Remove(agentInstance.transform); };

@@ -50,7 +50,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void ConfigurePathFollow(GameObject agentInstance, AgentSpawnData spawnData)
         {
-            var follow = agentInstance.AddComponent<PathFollow>();
+            var follow = agentInstance.AddComponent<CrowdPathFollow>();
             follow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
             follow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
             follow.ShouldDestroyOnGoal = true;

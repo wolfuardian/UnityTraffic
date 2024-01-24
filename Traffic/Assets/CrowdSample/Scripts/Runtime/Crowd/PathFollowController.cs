@@ -9,7 +9,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         [SerializeField] private Path path;
 
-        private PathFollow pathFollow;
+        private CrowdPathFollow crowdPathFollow;
 
         #endregion
 
@@ -23,8 +23,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Awake()
         {
-            pathFollow = GetComponent<PathFollow>();
-            if (pathFollow == null)
+            crowdPathFollow = GetComponent<CrowdPathFollow>();
+            if (crowdPathFollow == null)
             {
                 Debug.LogWarning($"物件: {name} 找不到 PathFollow 腳本，請確認是否有設定。", this);
             }
@@ -37,8 +37,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Start()
         {
-            pathFollow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
-            pathFollow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
+            crowdPathFollow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
+            crowdPathFollow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
         }
 
         #endregion

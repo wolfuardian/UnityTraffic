@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public class PathFollow : MonoBehaviour
+    public class CrowdPathFollow : MonoBehaviour
     {
         #region Field Declarations
 
@@ -172,11 +172,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 Destroy(gameObject);
             }
 
-            createdIndex      = transform.parent.GetComponent<AgentFactory>().TrackingAgents.IndexOf(transform);
+            createdIndex = transform.parent.GetComponent<AgentFactory>().TrackingAgents.IndexOf(transform);
             totalCreatedCount = transform.parent.GetComponent<AgentFactory>().TrackingAgents.Count;
-            percentage        = createdIndex / (float)totalCreatedCount;
+            percentage = createdIndex / (float)totalCreatedCount;
             newPriority = (int)(percentage * 100);
-            navMeshAgent.avoidancePriority =newPriority;
+            navMeshAgent.avoidancePriority = newPriority;
         }
 
         private void OnDestroy()
