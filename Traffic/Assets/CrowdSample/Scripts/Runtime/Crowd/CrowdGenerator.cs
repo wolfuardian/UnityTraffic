@@ -7,13 +7,16 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        //
+        [SerializeField] private GameObject pathSingleton;
+        [SerializeField] private GameObject crowdSingleton;
 
         #endregion
 
         #region Properties
 
-        //
+        public bool IsPathCreated  => pathSingleton != null;
+        public bool IsCrowdCreated => crowdSingleton != null;
+        public bool Initialized    => IsPathCreated && IsCrowdCreated;
 
         #endregion
 
@@ -25,9 +28,24 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Public Methods
 
-        public void UpdateGizmo()
+        public void CreatePathSingleton()
         {
-            throw new System.NotImplementedException();
+            if (IsPathCreated) return;
+
+            var newPath = new GameObject("Path");
+            newPath.transform.SetParent(transform);
+
+            pathSingleton = newPath;
+        }
+
+        public void CreateCrowdSingleton()
+        {
+            if (IsCrowdCreated) return;
+
+            var newCrowd = new GameObject("Crowd");
+            newCrowd.transform.SetParent(transform);
+
+            crowdSingleton = newCrowd;
         }
 
         #endregion
@@ -46,7 +64,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Debug and Visualization Methods
 
-        //
+        public void UpdateGizmo()
+        {
+            throw new System.NotImplementedException();
+        }
 
         #endregion
     }
