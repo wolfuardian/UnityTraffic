@@ -8,7 +8,7 @@ using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdAgentFactoryController : MonoBehaviour, IUpdatable
+    public class CrowdFactoryController : MonoBehaviour, IUpdatable
     {
         public                   Path            path;
         private                  CrowdAgentFactory    crowdAgentFactory;
