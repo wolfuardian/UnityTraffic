@@ -24,9 +24,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         public override void OnInspectorGUI()
         {
             EditorGUILayout.BeginVertical("box");
-
             DrawSection(crowdWizard.GroupInstances, crowdWizard.AddGroupInstance);
-
             EditorGUILayout.EndVertical();
         }
 
@@ -44,8 +42,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("|編輯名稱", EditorStyles.boldLabel, GUILayout.Width(alignedFieldWidth));
             EditorGUILayout.LabelField("|人流群組", EditorStyles.boldLabel);
-
-
             EditorGUILayout.EndHorizontal();
 
             instances.RemoveAll(item => item == null);
@@ -54,8 +50,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
             foreach (var instance in instances)
             {
                 EditorGUILayout.BeginHorizontal();
-
-
                 var textProp = EditorGUILayout.TextField(instance.name, GUILayout.Width(alignedFieldWidth));
                 if (textProp != instance.name)
                 {
