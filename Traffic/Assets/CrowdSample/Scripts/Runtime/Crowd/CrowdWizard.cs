@@ -64,7 +64,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var newAgentInst = new GameObject("Agent" + agentInstances.Count);
             newAgentInst.transform.SetParent(rootAgent.transform);
 
-            var agentFactory = newAgentInst.AddComponent<AgentFactory>();
+            var agentFactory = newAgentInst.AddComponent<CrowdAgentFactoryController>();
 
             agentInstances.Add(newAgentInst);
         }

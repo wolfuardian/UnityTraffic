@@ -8,7 +8,7 @@ using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class AgentFactory : MonoBehaviour, IUpdatable
+    public class CrowdAgentFactoryController : MonoBehaviour, IUpdatable
     {
         public                   Path            path;
         private                  AgentSpawner    agentSpawner;
@@ -79,7 +79,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var prefab      = AgentDataConfig.AgentPrefabs[prefabIndex];
                     var parent      = transform;
 
-                    var agentInstance = agentSpawner.SpawnAgent(prefab, parent, spawnData);
+                    var agentInstance = agentSpawner.InstantiateAgent(prefab, parent, spawnData);
 
 
                     agentInstance.transform.position =  spawnData.position;
@@ -120,7 +120,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var parent      = transform;
 
                     var spawnData     = path.AgentSpawnData[0];
-                    var agentInstance = agentSpawner.SpawnAgent(prefab, parent, spawnData);
+                    var agentInstance = agentSpawner.InstantiateAgent(prefab, parent, spawnData);
 
 
                     agentInstance.transform.position    =  spawnData.position;
@@ -158,40 +158,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
                 yield return null;
             }
-        }
-
-        private void SpawnAgent()
-        {
-            var prefabIndex = Random.Range(0, AgentDataConfig.AgentPrefabs.Length);
-            Debug.Log(
-                "prefabIndex: " + prefabIndex + ", Prefab name: " + AgentDataConfig.AgentPrefabs[prefabIndex].name);
-            // var crowdAgentInstance = agentSpawner.SpawnAgent(CrowdAgentPrefabs[prefabIndex], transform);
-            // agentSpawner.SetSpawnPosition(pathController.GetRandomPointInRadius());
-            // agentSpawner.SetSpawnRotation(pathController.GetRandomRotation());
-            // crowdAgentInstance.name += CurrentAgentCount;
-
-            // var entity = crowdAgentInstance.GetComponent<AgentEntity>();
-            // entity.onAgentExited += OnCrowdAgentExited;
-
-            SetCurrentAgentCount(CurrentAgentCount + 1);
-        }
-
-        private void SpawnAgent(int currentCount)
-        {
-            var prefabIndex = Random.Range(0, AgentDataConfig.AgentPrefabs.Length);
-
-            Debug.Log("currentCount: " + currentCount);
-            Debug.Log(
-                "prefabIndex: " + prefabIndex + ", Prefab name: " + AgentDataConfig.AgentPrefabs[prefabIndex].name);
-            // var agentInst = agentSpawner.SpawnAgent(AgentDataConfig.AgentPrefabs[prefabIndex], transform);
-            // agentInst.transform.position = SpatialUtils.GetRandomPointInRadius(path.Waypoints[0].transform.position,
-            // path.Waypoints[0].GetComponent<Waypoint>().Radius);
-            // agentInst.name += CurrentAgentCount;
-
-            // var entity = crowdAgentInstance.GetComponent<AgentEntity>();
-            // entity.onAgentExited += OnCrowdAgentExited;
-
-            SetCurrentAgentCount(CurrentAgentCount + 1);
         }
 
         // private void OnCrowdAgentExited(AgentEntity agent)
