@@ -5,12 +5,12 @@ using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdAgentFactory
+    public class CrowdFactory
     {
         private readonly AgentDataConfig config;
         private readonly Path            path;
 
-        public CrowdAgentFactory(AgentDataConfig config, Path path)
+        public CrowdFactory(AgentDataConfig config, Path path)
         {
             this.config = config;
             this.path   = path;
