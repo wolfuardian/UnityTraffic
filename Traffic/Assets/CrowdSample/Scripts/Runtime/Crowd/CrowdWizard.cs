@@ -1,72 +1,61 @@
-using System.Collections.Generic;
-using UnityEditorInternal;
+﻿using UnityEditorInternal;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class CrowdWizard : MonoBehaviour
     {
-        public GameObject       rootPath;
-        public GameObject       rootAgent;
-        public List<GameObject> pathInstances  = new List<GameObject>();
-        public List<GameObject> agentInstances = new List<GameObject>();
+        #region Field Declarations
 
-        public bool IsPathCreated  => rootPath != null;
-        public bool IsAgentCreated => rootAgent != null;
+        [SerializeField] internal GameObject       groupRoot;
+        [SerializeField] internal List<GameObject> groupInstances = new List<GameObject>();
 
-        public void OnCreatePath()          => CreatePath();
-        public void OnCreateAgent()         => CreateAgent();
-        public void OnCreatePathInstance()  => CreatePathInstance();
-        public void OnCreateAgentInstance() => CreateAgentInstance();
+        #endregion
 
-        private void CreatePath()
+        #region Properties
+
+        public bool Initialized => groupRoot != null;
+
+        #endregion
+
+        #region Public Methods
+
+        public void CreateGroupRoot()
         {
-            if (IsPathCreated) return;
+            if (Initialized) return;
 
-            var newPath = new GameObject("Path");
-            newPath.transform.SetParent(transform);
+            var newGroupRoot = new GameObject("GroupRoot");
+            newGroupRoot.transform.SetParent(transform);
 
-            rootPath = newPath;
+            groupRoot = newGroupRoot;
 
-            pathInstances.Clear();
+            groupInstances.Clear();
         }
 
-        private void CreateAgent()
+        public void AddGroupInstance()
         {
-            if (IsAgentCreated) return;
-
-            var newAgent = new GameObject("Agent");
-            newAgent.transform.SetParent(transform);
-
-            rootAgent = newAgent;
-
-            agentInstances.Clear();
+            var newGroupInst = new GameObject("CrowdGroup_" + groupInstances.Count);
+            newGroupInst.transform.SetParent(groupRoot.transform);
+            groupInstances.Add(newGroupInst);
+            ConfigureGroupInstance(newGroupInst);
         }
 
-        private void CreatePathInstance()
+        #endregion
+
+        #region Private Methods
+
+        private static void ConfigureGroupInstance(GameObject inst)
         {
-            var newPathInst = new GameObject("Path" + pathInstances.Count);
-            newPathInst.transform.SetParent(rootPath.transform);
+            // var path        = inst.AddComponent<Path>();
+            // var pathGizmos  = inst.AddComponent<PathGizmos>();
+            // var pathBuilder = inst.AddComponent<PathBuilder>();
 
-            var path        = newPathInst.AddComponent<Path>();
-            var pathGizmos  = newPathInst.AddComponent<PathGizmos>();
-            var pathBuilder = newPathInst.AddComponent<PathBuilder>();
-
-            InternalEditorUtility.SetIsInspectorExpanded(path,        false);
-            InternalEditorUtility.SetIsInspectorExpanded(pathGizmos,  true);
-            InternalEditorUtility.SetIsInspectorExpanded(pathBuilder, true);
-
-            pathInstances.Add(newPathInst);
+            // InternalEditorUtility.SetIsInspectorExpanded(path,        false);
+            // InternalEditorUtility.SetIsInspectorExpanded(pathGizmos,  true);
+            // InternalEditorUtility.SetIsInspectorExpanded(pathBuilder, true);
         }
 
-        private void CreateAgentInstance()
-        {
-            var newAgentInst = new GameObject("Agent" + agentInstances.Count);
-            newAgentInst.transform.SetParent(rootAgent.transform);
-
-            var agentFactory = newAgentInst.AddComponent<CrowdAgentFactoryController>();
-
-            agentInstances.Add(newAgentInst);
-        }
+        #endregion
     }
 }

@@ -1,14 +1,20 @@
-﻿using System.Collections.Generic;
-using CrowdSample.Scripts.Runtime.Crowd;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
+using CrowdSample.Scripts.Runtime.Crowd;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
     [CustomEditor(typeof(CrowdWizard))]
     public class CrowdWizardEditor : UnityEditor.Editor
     {
+        #region Field Declarations
+
         private CrowdWizard crowdWizard;
+
+        #endregion
+
+        #region Unity Methods
 
         private void OnEnable()
         {
@@ -20,56 +26,59 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.BeginVertical("box");
             DrawInitializationSection();
             EditorGUILayout.EndVertical();
-
-            EditorGUILayout.Space(10);
-
-            if (crowdWizard.IsPathCreated)
-            {
-                DrawSection("Path Instances", crowdWizard.pathInstances, crowdWizard.OnCreatePathInstance);
-            }
-
-            EditorGUILayout.Space(10);
-
-            if (crowdWizard.IsAgentCreated)
-            {
-                DrawSection("Agent Instance", crowdWizard.agentInstances, crowdWizard.OnCreateAgentInstance);
-            }
-
-            // UnityEditorUtils.UpdateAllGizmos();
-
-            serializedObject.ApplyModifiedProperties();
         }
+
+        #endregion
+
+
+        #region Private Methods
 
         private void DrawInitializationSection()
         {
-            EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
-            EditorGUI.BeginDisabledGroup(crowdWizard.IsPathCreated);
-            if (GUILayout.Button("Create Path"))
+            EditorGUILayout.LabelField("初始化", EditorStyles.boldLabel);
+            EditorGUI.BeginDisabledGroup(crowdWizard.Initialized);
+            if (GUILayout.Button("Create GroupRoot"))
             {
-                crowdWizard.OnCreatePath();
+                crowdWizard.CreateGroupRoot();
             }
 
             EditorGUI.EndDisabledGroup();
 
-            EditorGUI.BeginDisabledGroup(crowdWizard.IsAgentCreated);
-            if (GUILayout.Button("Create Agent"))
-            {
-                crowdWizard.OnCreateAgent();
-            }
+            EditorGUILayout.Space(10);
 
-            EditorGUI.EndDisabledGroup();
+            if (crowdWizard.Initialized)
+            {
+                DrawSection(crowdWizard.groupInstances, crowdWizard.AddGroupInstance);
+            }
         }
 
-        private static void DrawSection(string label, List<GameObject> instances, System.Action addInstanceAction)
+        private void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
         {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("群組 (Instances)", EditorStyles.boldLabel);
+
+            var alignedFieldWidth = EditorGUIUtility.currentViewWidth * 0.25f;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("|編輯名稱", EditorStyles.boldLabel, GUILayout.Width(alignedFieldWidth));
+            EditorGUILayout.LabelField("|人流群組", EditorStyles.boldLabel);
+
+
+            EditorGUILayout.EndHorizontal();
 
             var toRemove = new List<GameObject>();
             foreach (var instance in instances)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.ObjectField("Instance", instance, typeof(GameObject), true);
+
+
+                var textProp = EditorGUILayout.TextField(instance.name, GUILayout.Width(alignedFieldWidth));
+                if (textProp != instance.name)
+                {
+                    instance.name = textProp;
+                }
+
+                EditorGUILayout.ObjectField("", instance, typeof(GameObject), true);
                 if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
                 {
                     toRemove.Add(instance);
@@ -80,7 +89,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             RemoveInstances(instances, toRemove);
 
-            if (GUILayout.Button($"Add {label}"))
+            if (GUILayout.Button("Add Group Instance"))
             {
                 addInstanceAction?.Invoke();
             }
@@ -93,11 +102,13 @@ namespace CrowdSample.Scripts.Editor.Crowd
             foreach (var remove in toRemove)
             {
                 instances.Remove(remove);
-                
+
                 if (remove == null) continue;
-                
+
                 DestroyImmediate(remove);
             }
         }
+
+        #endregion
     }
 }
