@@ -5,18 +5,18 @@ using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class AgentSpawner
+    public class CrowdAgentFactory
     {
         private readonly AgentDataConfig config;
         private readonly Path            path;
 
-        public AgentSpawner(AgentDataConfig config, Path path)
+        public CrowdAgentFactory(AgentDataConfig config, Path path)
         {
             this.config = config;
             this.path   = path;
         }
 
-        public GameObject SpawnAgent(GameObject prefab, Transform parent, AgentSpawnData spawnData)
+        public GameObject InstantiateAgent(GameObject prefab, Transform parent, AgentSpawnData spawnData)
         {
             var agentInstance = Object.Instantiate(prefab, GetSpawnPosition(), Quaternion.identity, parent);
             agentInstance.name = prefab.name;

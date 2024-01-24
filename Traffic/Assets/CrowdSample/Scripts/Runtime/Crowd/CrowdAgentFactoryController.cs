@@ -11,7 +11,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     public class CrowdAgentFactoryController : MonoBehaviour, IUpdatable
     {
         public                   Path            path;
-        private                  AgentSpawner    agentSpawner;
+        private                  CrowdAgentFactory    crowdAgentFactory;
         [SerializeField] private List<Transform> trackingAgents = new List<Transform>();
 
         private Coroutine spawnRoutineCoroutine;
@@ -68,7 +68,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             if (!isSpawnable) return;
 
-            agentSpawner = new AgentSpawner(agentDataConfig, path);
+            crowdAgentFactory = new CrowdAgentFactory(agentDataConfig, path);
 
             if (path.IsSpawnAgentOnce)
             {
@@ -79,7 +79,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var prefab      = AgentDataConfig.AgentPrefabs[prefabIndex];
                     var parent      = transform;
 
-                    var agentInstance = agentSpawner.InstantiateAgent(prefab, parent, spawnData);
+                    var agentInstance = crowdAgentFactory.InstantiateAgent(prefab, parent, spawnData);
 
 
                     agentInstance.transform.position =  spawnData.position;
@@ -120,7 +120,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var parent      = transform;
 
                     var spawnData     = path.AgentSpawnData[0];
-                    var agentInstance = agentSpawner.InstantiateAgent(prefab, parent, spawnData);
+                    var agentInstance = crowdAgentFactory.InstantiateAgent(prefab, parent, spawnData);
 
 
                     agentInstance.transform.position    =  spawnData.position;
