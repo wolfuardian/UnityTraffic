@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace CrowdSample.Scripts.Utils
 {
-    public class UnityEditorUtils : Editor
+    public class UnityEditorUtils : UnityEditor.Editor
     {
         public static void UpdateAllGizmos()
         {
@@ -21,7 +21,7 @@ namespace CrowdSample.Scripts.Utils
             try
             {
                 // Get the Inspector window type
-                var inspectorWindowType = typeof(Editor).Assembly.GetType("UnityEditor.InspectorWindow");
+                var inspectorWindowType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.InspectorWindow");
                 if (inspectorWindowType == null)
                 {
                     throw new InvalidOperationException("Could not find InspectorWindow type.");

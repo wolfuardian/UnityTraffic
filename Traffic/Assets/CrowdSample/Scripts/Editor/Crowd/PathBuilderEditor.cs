@@ -26,11 +26,26 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             serializedObject.Update();
 
+            if (!Validate()) return;
+
             DrawEditModeSwitch();
             DrawActionsSection();
             DrawPointConfigSection();
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private bool Validate()
+        {
+            var valid = true;
+
+            if (pathBuilder.Path == null)
+            {
+                Debug.LogError("路徑物件為空，請確認是否有設定。", this);
+                valid = false;
+            }
+
+            return valid;
         }
 
         private void OnSceneGUI()
@@ -143,6 +158,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawWaypointsConfigPanel()
         {
             EditorGUI.indentLevel++;
+
 
             for (var i = 0; i < waypointsProp.arraySize; i++)
             {

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Data
@@ -8,12 +9,13 @@ namespace CrowdSample.Scripts.Runtime.Data
         public GenerationMode generationMode = GenerationMode.InfinityFlow;
 
         [SerializeField] private bool  isSpawnAgentOnce = true;
-        [SerializeField] private bool  isClosedPath     = true;
-        [SerializeField] private bool  isUseSpacing     = true;
-        [SerializeField] private int   instantCount   = 15;
-        [SerializeField] private int   perSecondCount = 2;
-        [SerializeField] private int   maxCount       = 100;
-        [SerializeField] private float spacing        = 5f;
+        [SerializeField] private bool  isReverseDirection;
+        [SerializeField] private bool  isClosedPath  = true;
+        [SerializeField] private bool  isUseSpacing  = true;
+        [SerializeField] private int   instantCount  = 15;
+        [SerializeField] private float spawnInterval = 2f;
+        [SerializeField] private int   maxCount      = 100;
+        [SerializeField] private float spacing       = 5f;
         [SerializeField] private float offset;
 
         public enum GenerationMode
@@ -27,83 +29,66 @@ namespace CrowdSample.Scripts.Runtime.Data
         public bool IsSpawnAgentOnce
         {
             get => isSpawnAgentOnce;
-            set
-            {
-                if (generationMode == GenerationMode.Custom) isSpawnAgentOnce = value;
-            }
+            set => SetFieldValue(ref isSpawnAgentOnce, value, GenerationMode.Custom);
+        }
+
+        public bool IsReverseDirection
+        {
+            get => isReverseDirection;
+            set => SetFieldValue(ref isReverseDirection, value, GenerationMode.Custom, GenerationMode.MultipleCircle,
+                GenerationMode.SingleCircle);
         }
 
         public bool IsClosedPath
         {
             get => isClosedPath;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow ||
-                    generationMode == GenerationMode.SingleCircle)
-                    isClosedPath = value;
-            }
+            set => SetFieldValue(ref isClosedPath, value, GenerationMode.Custom, GenerationMode.InfinityFlow,
+                GenerationMode.SingleCircle);
         }
+
 
         public bool IsUseSpacing
         {
             get => isUseSpacing;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle)
-                    isUseSpacing = value;
-            }
+            set => SetFieldValue(ref isUseSpacing, value, GenerationMode.Custom, GenerationMode.MultipleCircle);
         }
 
         public int InstantCount
         {
             get => instantCount;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle)
-                    instantCount = value;
-            }
+            set => SetFieldValue(ref instantCount, value, GenerationMode.Custom, GenerationMode.MultipleCircle);
         }
 
-        public int PerSecondCount
+        public float SpawnInterval
         {
-            get => perSecondCount;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow)
-                    perSecondCount = value;
-            }
+            get => spawnInterval;
+            set => SetFieldValue(ref spawnInterval, value, GenerationMode.Custom, GenerationMode.InfinityFlow);
         }
 
         public int MaxCount
         {
             get => maxCount;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.InfinityFlow ||
-                    generationMode == GenerationMode.MultipleCircle)
-                    maxCount = value;
-            }
+            set => SetFieldValue(ref maxCount, value, GenerationMode.Custom, GenerationMode.InfinityFlow,
+                GenerationMode.MultipleCircle);
         }
 
         public float Spacing
         {
             get => spacing;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle)
-                    spacing = value;
-            }
+            set => SetFieldValue(ref spacing, value, GenerationMode.Custom, GenerationMode.MultipleCircle);
         }
 
         public float Offset
         {
             get => offset;
-            set
-            {
-                if (generationMode == GenerationMode.Custom || generationMode == GenerationMode.MultipleCircle ||
-                    generationMode == GenerationMode.SingleCircle)
-                    offset = value;
-            }
+            set => SetFieldValue(ref offset, value, GenerationMode.Custom, GenerationMode.MultipleCircle,
+                GenerationMode.SingleCircle);
+        }
+
+        private void SetFieldValue<T>(ref T field, T value, params GenerationMode[] modes)
+        {
+            if (modes.Contains(generationMode))
+                field = value;
         }
 
         public void ApplyPresetProperties()
@@ -113,8 +98,8 @@ namespace CrowdSample.Scripts.Runtime.Data
                 case GenerationMode.InfinityFlow:
                     isSpawnAgentOnce = false;
                     isClosedPath     = false;
-                    instantCount   = 1;
-                    offset         = 0;
+                    instantCount     = 1;
+                    offset           = 0;
                     break;
                 case GenerationMode.MultipleCircle:
                     isSpawnAgentOnce = true;
@@ -122,8 +107,8 @@ namespace CrowdSample.Scripts.Runtime.Data
                     break;
                 case GenerationMode.SingleCircle:
                     isSpawnAgentOnce = true;
-                    instantCount   = 1;
-                    maxCount       = 1;
+                    instantCount     = 1;
+                    maxCount         = 1;
                     break;
                 case GenerationMode.Custom:
                     break;

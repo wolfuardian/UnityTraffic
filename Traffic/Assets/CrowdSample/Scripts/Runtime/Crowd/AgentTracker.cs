@@ -1,131 +1,202 @@
 using System;
 using UnityEngine;
-using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class AgentTracker : MonoBehaviour
     {
-        [SerializeField]                     private Path            path;
-        [SerializeField]                     private Transform       previousTarget;
-        [SerializeField]                     private Transform       target;
-        [SerializeField]                     private Vector3         desiredPosition;
-        [SerializeField]                     private int             waypointIndex;
-        [SerializeField] [Range(0.0f, 1.0f)] private float           globalJourney;
-        [SerializeField] [Range(0.0f, 1.0f)] private float           localJourney;
-        [SerializeField]                     private float           localDistance;
-        [SerializeField]                     private float           remainingDistance;
-        [SerializeField]                     private bool            isTrackable;
-        private                                      List<Transform> waypoints = new List<Transform>();
-        private                                      AgentEntity     agentEntity;
-        private                                      float           turningRadius;
+        #region Private Variables
 
+        [SerializeField]                    private Path        _path;
+        [SerializeField]                    private AgentEntity _agentEntity;
+        [SerializeField]                    private Transform   _previousTarget;
+        [SerializeField]                    private Transform   _target;
+        [SerializeField]                    private Vector3     _desiredPosition;
+        [SerializeField]                    private int         _targetIndex;
+        [SerializeField, Range(0.0f, 1.0f)] private float       _globalJourney;
+        [SerializeField, Range(0.0f, 1.0f)] private float       _localJourney;
+        [SerializeField]                    private float       _localDistance;
+        [SerializeField]                    private float       _remainingDistance;
+        [SerializeField]                    private bool        _isTrackable;
+        [SerializeField]                    private float       _turningRadius;
 
-        public void SetWaypoints(List<Transform> newWaypoints)     => waypoints = newWaypoints;
-        public void SetAgentEntity(AgentEntity   newAgentEntity)   => agentEntity = newAgentEntity;
-        public void SetTurningRadius(float       newTurningRadius) => turningRadius = newTurningRadius;
+        /// <summary> 獲取路徑實例。 </summary>
+        public Path PathInstance => _path ??= transform.parent.GetComponent<Path>();
 
+        /// <summary> 獲取或設置代理實體。 </summary>
+        public AgentEntity AgentEntityInstance
+        {
+            get => _agentEntity;
+            set => _agentEntity = value;
+        }
+
+        /// <summary> 獲取或設置之前的目標轉換。 </summary>
+        public Transform PreviousTarget
+        {
+            get => _previousTarget;
+            set => _previousTarget = value;
+        }
+
+        /// <summary> 獲取或設置當前目標轉換。 </summary>
+        public Transform CurrentTarget
+        {
+            get => _target;
+            set => _target = value;
+        }
+
+        /// <summary> 獲取或設置代理的期望位置。 </summary>
+        public Vector3 DesiredPosition
+        {
+            get => _desiredPosition;
+            set => _desiredPosition = value;
+        }
+
+        /// <summary> 獲取或設置目標索引。 </summary>
+        public int TargetIndex
+        {
+            get => _targetIndex;
+            set => _targetIndex = value % _path.Waypoints.Count;
+        }
+
+        /// <summary> 獲取或設置全局旅程的進度。 </summary>
+        public float GlobalJourney
+        {
+            get => _globalJourney;
+            set => _globalJourney = value;
+        }
+
+        /// <summary> 獲取或設置局部旅程的進度。 </summary>
+        public float LocalJourney
+        {
+            get => _localJourney;
+            set => _localJourney = Mathf.Clamp01(value);
+        }
+
+        /// <summary> 獲取或設置局部距離。 </summary>
+        public float LocalDistance
+        {
+            get => _localDistance;
+            set => _localDistance = Mathf.Max(value, 0f);
+        }
+
+        /// <summary> 獲取或設置剩餘距離。 </summary>
+        public float RemainingDistance
+        {
+            get => _remainingDistance;
+            set => _remainingDistance = Mathf.Max(value, 0f);
+        }
+
+        /// <summary>
+        /// 指示代理是否可被追蹤。
+        /// </summary>
+        public bool IsTrackable
+        {
+            get => _isTrackable;
+            set => _isTrackable = value;
+        }
+
+        /// <summary>
+        /// 獲取或設置轉向半徑。
+        /// </summary>
+        public float TurningRadius
+        {
+            get => _turningRadius;
+            set => _turningRadius = Mathf.Max(value, 0f);
+        }
+
+        #endregion
 
         private void Start()
         {
-            InitializeWaypoint();
+            _previousTarget = _target;
+            Initialize();
         }
 
         private void Update()
         {
-            if (!isTrackable) return;
-            MoveToNextWaypoint();
-            CalculateJourney();
-        }
+            if (!_isTrackable) return;
 
+            Debug.Log($"GlobalJourney: {_globalJourney}");
 
-        public void SetPath(Path newPath)
-        {
-            // Set variable
-            path = newPath;
+            _targetIndex = GlobalJourneyToTargetIndex(_globalJourney);
+            Debug.Log($"TargetIndex: {_targetIndex}");
 
-            // Handle
-            SetWaypoints(newPath.Waypoints);
-            waypointIndex = 0;
-            MoveToNextWaypointImmediately();
-        }
+            _target = _path.Waypoints[_targetIndex];
+            Debug.Log($"Target: {_target.name}");
 
-        public void InitializeWaypoint()
-        {
-            waypoints = path.Waypoints;
-            if (waypoints != null && waypoints.Count > 0)
-            {
-                waypointIndex   = 0;
-                target          = waypoints[0];
-                previousTarget  = target;
-                desiredPosition = GetRandomPointInRadius(target);
-                localDistance   = Vector3.Distance(previousTarget.transform.position, desiredPosition);
-                SetAgentDestination();
-                isTrackable = true;
-            }
-            else
-            {
-                Debug.LogError("Waypoints list is empty or null! Make sure you have set the waypoints.");
-            }
-        }
+            _desiredPosition = GetRandomPointInRadius(_target);
+            Debug.Log($"DesiredPosition: {_desiredPosition}");
 
-        private void MoveToNextWaypoint()
-        {
-            if (Vector3.Distance(transform.position, desiredPosition) < turningRadius) FindNextWaypoint();
             SetAgentDestination();
-        }
+            Debug.Log($"AgentDestination: {_agentEntity.NavMeshAgent.destination}");
 
-        private void MoveToNextWaypointImmediately()
-        {
-            FindNextWaypoint();
-            SetCurrentWaypointAsTarget();
-            SetAgentDestination();
-        }
-
-        private void FindNextWaypoint()
-        {
-            if (target == null)
+            if (!_agentEntity.NavMeshAgent.pathPending && _agentEntity.NavMeshAgent.remainingDistance < 0.5f)
             {
-                target = waypoints[0];
+                _agentEntity.NavMeshAgent.destination = _path.Waypoints[_targetIndex].position;
+
+                _targetIndex = (_targetIndex + 1) % _path.Waypoints.Count;
             }
 
-            previousTarget = target;
-            if (previousTarget == target) desiredPosition = GetRandomPointInRadius(target);
-
-            if (waypointIndex < waypoints.Count - 1)
-            {
-                waypointIndex++;
-            }
-
-            if (waypointIndex < waypoints.Count && waypointIndex >= 0)
-            {
-                target = waypoints[waypointIndex];
-            }
+            Debug.Log($"RemainingDistance: {_agentEntity.NavMeshAgent.remainingDistance}");
         }
 
-        public void SetCurrentWaypointAsTarget()
+        private void LateUpdate()
         {
-            target          = waypoints[waypointIndex];
-            desiredPosition = GetRandomPointInRadius(target);
+            _remainingDistance = _agentEntity.NavMeshAgent.remainingDistance;
+            _localDistance     = Vector3.Distance(_previousTarget.transform.position, _desiredPosition);
+            _localJourney      = Mathf.Clamp(1 - _remainingDistance / _localDistance, 0f, 1f);
+            _globalJourney     = (_targetIndex + _localJourney) / _path.Waypoints.Count;
+            Debug.Log($"GlobalJourneyLate: {_globalJourney}");
         }
 
-        public void SetAgentDestination() => agentEntity.SetDestination(desiredPosition);
-
-        private void CalculateJourney()
+        public void Construct(Path path)
         {
-            waypointIndex     = waypoints.IndexOf(target);
-            remainingDistance = agentEntity.NavMeshAgent.remainingDistance;
-            localDistance     = Vector3.Distance(previousTarget.transform.position, desiredPosition);
-            localJourney      = Mathf.Clamp(1 - remainingDistance / localDistance, 0f, 1f);
-            if (previousTarget == target) localJourney = 1f;
+            _path = path;
+        }
 
-            globalJourney = (waypointIndex + localJourney) / waypoints.Count;
+        public void Initialize()
+        {
+            // _targetIndex    = GlobalJourneyToTargetIndex(_globalJourney);
+            _target         = _path.Waypoints[_targetIndex];
+            _previousTarget = _target;
+            _localDistance  = 0f;
+            _isTrackable    = true;
+        }
 
-            if (Math.Abs(globalJourney - 1f) < 0.001f)
+
+        public void SetAgentDestination()
+        {
+            if (_agentEntity == null)
             {
-                agentEntity.SetShouldDestroy(true);
+                Debug.LogWarning("AgentEntity is null.");
+                return;
             }
+
+            _agentEntity.SetDestination(_desiredPosition);
+        }
+
+
+        private int GlobalJourneyToTargetIndex(float journey)
+        {
+            if (_path == null)
+            {
+                Debug.LogWarning("Path is null.");
+            }
+
+            if (_path.Waypoints == null)
+            {
+                Debug.LogWarning("Path.Waypoints is null.");
+            }
+
+            if (_path.Waypoints.Count == 0)
+            {
+                Debug.LogWarning("Path.Waypoints.Count is 0.");
+            }
+
+            var index = (int)(journey * _path.Waypoints.Count);
+            index %= _path.Waypoints.Count;
+            return index;
         }
 
         private static Vector3 GetRandomPointInRadius(Component point)
@@ -133,7 +204,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var crowdPathPoint = point.GetComponent<Waypoint>();
             if (crowdPathPoint == null)
             {
-                Debug.LogWarning("CrowdPathPoint component is missing on the GameObject: " + point.name);
+                Debug.LogWarning($"CrowdPathPoint component is missing on the GameObject: {point.name}");
                 return point.transform.position;
             }
 
@@ -147,10 +218,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void OnDrawGizmos()
         {
-            if (target == null) return;
+            if (_target == null) return;
 
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, desiredPosition);
+            Gizmos.DrawLine(transform.position, _desiredPosition);
         }
     }
 }

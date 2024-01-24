@@ -45,8 +45,8 @@ namespace CrowdSample.Scripts.Editor.Data
 
         private static void DisplayInfinityFlowOptions(AgentGenerationConfig config)
         {
-            EditorGUILayout.HelpBox("InfinityFlow：按指定的速率持續生成代理。", MessageType.Info);
-            DrawPerSecondCountOption(config);
+            EditorGUILayout.HelpBox("InfinityFlow：按指定的生成間隔持續生成代理。", MessageType.Info);
+            DrawSpawnIntervalOption(config);
             DrawMaxCountOption(config);
         }
 
@@ -54,6 +54,7 @@ namespace CrowdSample.Scripts.Editor.Data
         {
             EditorGUILayout.HelpBox("MultipleCircle：一次性生成指定數量的代理。", MessageType.Info);
             DrawInstantCountOption(config);
+            DrawReverseDirectionOption(config);
             DrawMaxCountOption(config);
             DrawOffsetOption(config);
             DrawUseSpacingOption(config);
@@ -67,6 +68,7 @@ namespace CrowdSample.Scripts.Editor.Data
         {
             EditorGUILayout.HelpBox("SingleCircle：生成單個代理，並可設置路徑為開放或封閉。", MessageType.Info);
             DrawClosedPathOption(config);
+            DrawReverseDirectionOption(config);
             DrawOffsetOption(config);
         }
 
@@ -75,8 +77,9 @@ namespace CrowdSample.Scripts.Editor.Data
             EditorGUILayout.HelpBox("Custom：允許自定義所有參數。", MessageType.Info);
             DrawSpawnAgentOnceOption(config);
             DrawClosedPathOption(config);
+            DrawReverseDirectionOption(config);
             DrawInstantCountOption(config);
-            DrawPerSecondCountOption(config);
+            DrawSpawnIntervalOption(config);
             DrawMaxCountOption(config);
             DrawOffsetOption(config);
             DrawUseSpacingOption(config);
@@ -96,14 +99,19 @@ namespace CrowdSample.Scripts.Editor.Data
             config.IsClosedPath = EditorGUILayout.Toggle("封閉路徑", config.IsClosedPath);
         }
 
+        private static void DrawReverseDirectionOption(AgentGenerationConfig config)
+        {
+            config.IsReverseDirection = EditorGUILayout.Toggle("反轉路徑", config.IsReverseDirection);
+        }
+
         private static void DrawInstantCountOption(AgentGenerationConfig config)
         {
             config.InstantCount = EditorGUILayout.IntSlider("一次性生成數量", config.InstantCount, 1, 100);
         }
 
-        private static void DrawPerSecondCountOption(AgentGenerationConfig config)
+        private static void DrawSpawnIntervalOption(AgentGenerationConfig config)
         {
-            config.PerSecondCount = EditorGUILayout.IntSlider("生成數量 / 秒", config.PerSecondCount, 1, 10);
+            config.SpawnInterval = EditorGUILayout.Slider("生成間隔", config.SpawnInterval, 0.1f, 10f);
         }
 
         private static void DrawMaxCountOption(AgentGenerationConfig config)

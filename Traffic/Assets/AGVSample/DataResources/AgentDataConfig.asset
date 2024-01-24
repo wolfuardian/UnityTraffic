@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4558792433b941544ac8b7ae7249cedf, type: 3}
   m_Name: AgentDataConfig
   m_EditorClassIdentifier: 
+  permissionID: 0
   agentPrefabs:
   - {fileID: 919132149155446097, guid: 3ed05ffdbccc9d84d86da23e2de7160e, type: 3}
   - {fileID: 919132149155446097, guid: 3c4f9ec2ecfc88640b03f05e73140254, type: 3}
-  permissionID: 0
-  minSpeed: 4
+  minSpeed: 5
   maxSpeed: 5
-  angularSpeed: 5000
-  acceleration: 100
-  turningRadius: 2
-  stoppingDistance: 1
+  angularSpeed: 3600
+  acceleration: 5000
+  turningRadius: 50
+  stoppingDistance: 0.35

@@ -2,6 +2,7 @@
 using System.Collections;
 using CrowdSample.Scripts.Utils;
 using System.Collections.Generic;
+using System.Linq;
 using Random = UnityEngine.Random;
 using CrowdSample.Scripts.Runtime.Data;
 
@@ -9,8 +10,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class AgentFactory : MonoBehaviour, IUpdatable
     {
-        public  Path         path;
-        private AgentSpawner agentSpawner;
+        public                   Path            path;
+        private                  AgentSpawner    agentSpawner;
+        [SerializeField] private List<Transform> trackingAgents = new List<Transform>();
 
         private Coroutine spawnRoutineCoroutine;
 
@@ -21,6 +23,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         // [SerializeField] private List<GameObject>      crowdAgentPrefabs = new List<GameObject>();
         [SerializeField] private int currentAgentCount;
+        [SerializeField] private int totalCreatedCount;
 
 
         public AgentDataConfig AgentDataConfig => agentDataConfig;
@@ -29,19 +32,17 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         // public List<GameObject>      CrowdAgentPrefabs     => crowdAgentPrefabs;
         public int CurrentAgentCount => currentAgentCount;
+        public int TotalCreatedCount => totalCreatedCount;
 
         public void SetCurrentAgentCount(int value) => currentAgentCount = value;
 
-        private bool isSpawnable = true;
+        [SerializeField] private bool isSpawnable = true;
 
+        public List<Transform> TrackingAgents => trackingAgents;
 
         #region Parameter Variables
 
-        [SerializeField] private bool spawnAgentOnce;
-
-        public bool SpawnAgentOnce => spawnAgentOnce;
-
-        public void SetSpawnAgentOnce(bool value) => spawnAgentOnce = value;
+        //
 
         #endregion
 
@@ -69,11 +70,33 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             agentSpawner = new AgentSpawner(agentDataConfig, path);
 
-            if (spawnAgentOnce)
+            if (path.IsSpawnAgentOnce)
             {
-                for (var currentCount = 0; currentCount < agentGenerationConfig.InstantCount; currentCount++)
+                var agentSpawnData = path.AgentSpawnData;
+                foreach (var spawnData in agentSpawnData)
                 {
-                    SpawnAgent(currentCount);
+                    var prefabIndex = Random.Range(0, AgentDataConfig.AgentPrefabs.Length);
+                    var prefab      = AgentDataConfig.AgentPrefabs[prefabIndex];
+                    var parent      = transform;
+
+                    var agentInstance = agentSpawner.SpawnAgent(prefab, parent, spawnData);
+
+
+                    agentInstance.transform.position =  spawnData.position;
+                    agentInstance.name               += CurrentAgentCount;
+
+                    var entity = agentInstance.GetComponent<AgentEntity>();
+                    var follow = agentInstance.GetComponent<PathFollow>();
+
+                    follow.TargetIndex = path.AgentGenerationConfig.IsReverseDirection
+                        ? Mathf.CeilToInt(spawnData.curvePos)
+                        : Mathf.FloorToInt(spawnData.curvePos);
+
+                    follow.SetNavigateMode(path.AgentGenerationConfig.IsClosedPath
+                        ? PathFollow.NavigateMode.Loop
+                        : PathFollow.NavigateMode.PingPong);
+
+                    follow.Reverse = path.AgentGenerationConfig.IsReverseDirection;
                 }
             }
             else
@@ -84,17 +107,55 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private IEnumerator SpawnRoutine()
         {
+            var createdIndex = 0;
+
             while (gameObject.activeSelf)
             {
-                // if (CurrentAgentCount < AgentData.maxAgentCount)
-                // {
-                //     SpawnAgent();
-                //     yield return new WaitForSeconds(AgentData.spawnInterval);
-                // }
-                // else
-                // {
-                //     yield return null;
-                // }
+                // Debug.Log("CurrentAgentCount: " + CurrentAgentCount);
+                // Debug.Log("agentGenerationConfig.MaxCount: " + agentGenerationConfig.MaxCount);
+                if (CurrentAgentCount < agentGenerationConfig.MaxCount)
+                {
+                    var prefabIndex = Random.Range(0, AgentDataConfig.AgentPrefabs.Length);
+                    var prefab      = AgentDataConfig.AgentPrefabs[prefabIndex];
+                    var parent      = transform;
+
+                    var spawnData     = path.AgentSpawnData[0];
+                    var agentInstance = agentSpawner.SpawnAgent(prefab, parent, spawnData);
+
+
+                    agentInstance.transform.position    =  spawnData.position;
+                    agentInstance.transform.eulerAngles =  Quaternion.LookRotation(spawnData.direction).eulerAngles;
+                    agentInstance.name                  += CurrentAgentCount;
+
+                    trackingAgents.Add(agentInstance.transform);
+
+                    var entity = agentInstance.GetComponent<AgentEntity>();
+
+                    var follow = agentInstance.GetComponent<PathFollow>();
+                    follow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
+                    follow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius)
+                        .ToList();
+                    follow.ShouldDestroyOnGoal = true;
+                    follow.SetNavigateMode(PathFollow.NavigateMode.Once);
+                    follow.TargetIndex  =  0;
+                    follow.DestroyEvent += () => { currentAgentCount--; };
+                    follow.DestroyEvent += () => { trackingAgents.Remove(agentInstance.transform); };
+                    follow.CreatedIndex =  createdIndex;
+
+                    currentAgentCount++;
+                    totalCreatedCount++;
+                    createdIndex++;
+
+                    Debug.Log("gentGenerationConfig.SpawnInterval: " + agentGenerationConfig.SpawnInterval);
+
+
+                    yield return new WaitForSeconds(agentGenerationConfig.SpawnInterval);
+                }
+                else
+                {
+                    yield return null;
+                }
+
                 yield return null;
             }
         }
@@ -122,10 +183,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             Debug.Log("currentCount: " + currentCount);
             Debug.Log(
                 "prefabIndex: " + prefabIndex + ", Prefab name: " + AgentDataConfig.AgentPrefabs[prefabIndex].name);
-            var agentInst = agentSpawner.SpawnAgent(AgentDataConfig.AgentPrefabs[prefabIndex], transform);
-            agentInst.transform.position = SpatialUtils.GetRandomPointInRadius(path.Waypoints[0].transform.position,
-                path.Waypoints[0].GetComponent<Waypoint>().Radius);
-            agentInst.name += CurrentAgentCount;
+            // var agentInst = agentSpawner.SpawnAgent(AgentDataConfig.AgentPrefabs[prefabIndex], transform);
+            // agentInst.transform.position = SpatialUtils.GetRandomPointInRadius(path.Waypoints[0].transform.position,
+            // path.Waypoints[0].GetComponent<Waypoint>().Radius);
+            // agentInst.name += CurrentAgentCount;
 
             // var entity = crowdAgentInstance.GetComponent<AgentEntity>();
             // entity.onAgentExited += OnCrowdAgentExited;
@@ -152,8 +213,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void FetchGenerationConfigs()
         {
-            if (AgentGenerationConfig == null) return;
-            SetSpawnAgentOnce(AgentGenerationConfig.IsSpawnAgentOnce);
+            // if (AgentGenerationConfig == null) return;
+            // SetSpawnAgentOnce(AgentGenerationConfig.IsSpawnAgentOnce);
         }
 
         private void FetchAgentDataConfig()

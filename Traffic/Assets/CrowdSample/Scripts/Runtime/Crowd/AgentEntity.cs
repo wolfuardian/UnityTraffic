@@ -9,55 +9,78 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     [RequireComponent(typeof(NavMeshAgent))]
     public class AgentEntity : MonoBehaviour
     {
-        [SerializeField] private NavMeshAgent                 navMeshAgent;
-        [SerializeField] private bool                         shouldDestroy;
-        [SerializeField] private AgentDataConfig.PermissionID agentID;
-        [SerializeField] private string                       licensePlateNumber;
-        [SerializeField] private float                        originalSpeed;
-        [SerializeField] private float                        turningRadius;
+        [SerializeField] private NavMeshAgent _navMeshAgent;
 
-        // onAgentExited事件在 AgentEntity 被銷毀時觸發。
-        public Action<AgentEntity> onAgentExited;
+        [SerializeField] private bool                         _shouldNotDestroyed;
+        [SerializeField] private bool                         _destroyOnNextGoalReached;
+        [SerializeField] private AgentDataConfig.PermissionID _agentID;
+        [SerializeField] private string                       _licensePlateNumber;
+        [SerializeField] private float                        _originalSpeed;
+        [SerializeField] private float                        _turningRadius;
+        [SerializeField] private bool                         _isNaveMeshAgentStale;
 
-        public NavMeshAgent                 NavMeshAgent       => navMeshAgent;
-        public AgentDataConfig.PermissionID AgentID            => agentID;
-        public string                       LicensePlateNumber => licensePlateNumber;
+        public Action<AgentEntity> OnAgentExited;
+        public bool                ShouldNotDestroyed       => _shouldNotDestroyed;
+        public bool                DestroyOnNextGoalReached => _destroyOnNextGoalReached;
 
+        public NavMeshAgent                 NavMeshAgent
+        {
+            get => _navMeshAgent;
+            set => _navMeshAgent = value;
+        }
+
+        public AgentDataConfig.PermissionID AgentID            => _agentID;
+        public string                       LicensePlateNumber => _licensePlateNumber;
+
+        private bool IsReachGoal => _navMeshAgent.remainingDistance < _turningRadius;
 
         private void OnEnable()
         {
-            navMeshAgent  = GetComponent<NavMeshAgent>();
-            originalSpeed = navMeshAgent.speed;
+            _navMeshAgent  = GetComponent<NavMeshAgent>();
+            _originalSpeed = _navMeshAgent.speed;
         }
 
         private void Update()
         {
             DestroyWhenReachedGoal();
+            _isNaveMeshAgentStale = _navMeshAgent.isPathStale;
         }
 
         private void DestroyWhenReachedGoal()
         {
-            if (!shouldDestroy || navMeshAgent.pathPending ||
-                !(navMeshAgent.remainingDistance < turningRadius)) return;
+            if (ShouldNotDestroyed)
+            {
+                return;
+            }
 
-            Destroy(gameObject);
+            if (_navMeshAgent.pathPending)
+            {
+                return;
+            }
+
+            if (DestroyOnNextGoalReached && IsReachGoal)
+            {
+                Destroy(gameObject);
+            }
         }
 
-        public void SetShouldDestroy(bool destroy) => shouldDestroy = destroy;
-        public void SetAgentID(AgentDataConfig.PermissionID status) => agentID = status;
-        public void SetLicensePlateNumber(string number) => licensePlateNumber = number;
-        public void SetSpeed(float speed) => navMeshAgent.speed = speed;
-        public void SetAngularSpeed(float angularSpeed) => navMeshAgent.angularSpeed = angularSpeed;
-        public void SetAcceleration(float acceleration) => navMeshAgent.acceleration = acceleration;
-        public void SetTurningRadius(float turnRadius) => turningRadius = turnRadius;
-        public void SetStoppingDistance(float stopDistance) => navMeshAgent.stoppingDistance = stopDistance;
+
+        public void SetShouldNotDestroy(bool                value) => _shouldNotDestroyed = value;
+        public void SetDestroyOnNextGoalReached(bool        value) => _destroyOnNextGoalReached = value;
+        public void SetAgentID(AgentDataConfig.PermissionID value) => _agentID = value;
+        public void SetLicensePlateNumber(string            value) => _licensePlateNumber = value;
+        public void SetSpeed(float                          value) => _navMeshAgent.speed = value;
+        public void SetAngularSpeed(float                   value) => _navMeshAgent.angularSpeed = value;
+        public void SetAcceleration(float                   value) => _navMeshAgent.acceleration = value;
+        public void SetTurningRadius(float                  value) => _turningRadius = value;
+        public void SetStoppingDistance(float               value) => _navMeshAgent.stoppingDistance = value;
 
 
         public void SetDestination(Vector3 destination)
         {
-            if (navMeshAgent != null)
+            if (_navMeshAgent != null)
             {
-                navMeshAgent.SetDestination(destination);
+                _navMeshAgent.SetDestination(destination);
             }
             else
             {
@@ -75,10 +98,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             yield return new WaitForSeconds(interval);
             SetSpeed(minSpeed);
             yield return new WaitForSeconds(duration);
-            SetSpeed(originalSpeed);
+            SetSpeed(_originalSpeed);
         }
 
-        // 觸發事件，通知訂閱者此 AgentEntity 即將銷毀。 (CrowdAgentFactory.cs)
-        private void OnDestroy() => onAgentExited?.Invoke(this);
+        private void OnDestroy() => OnAgentExited?.Invoke(this);
     }
 }

@@ -43,6 +43,29 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             return CalculateDirectionAlongPath(waypoints, targetLength, isClosedPath);
         }
 
+        public static Vector3 GetRotationAt(List<Transform> waypoints, bool isClosedPath, float t)
+        {
+            if (!ValidateWaypoints(waypoints)) return Vector3.zero;
+
+            if (t <= 0)
+            {
+                return Quaternion.LookRotation(waypoints[1].position - waypoints[0].position).eulerAngles;
+            }
+
+            if (t >= 1)
+            {
+                return Quaternion
+                    .LookRotation(waypoints[waypoints.Count - 1].position - waypoints[waypoints.Count - 2].position)
+                    .eulerAngles;
+            }
+
+            var     totalLength  = GetTotalLength(waypoints, isClosedPath);
+            var     targetLength = t * totalLength;
+            Vector3 direction    = CalculateDirectionAlongPath(waypoints, targetLength, isClosedPath);
+
+            return Quaternion.LookRotation(direction).eulerAngles;
+        }
+
         private static bool ValidateWaypoints(List<Transform> waypoints)
         {
             if (waypoints == null || waypoints.Count < 2)

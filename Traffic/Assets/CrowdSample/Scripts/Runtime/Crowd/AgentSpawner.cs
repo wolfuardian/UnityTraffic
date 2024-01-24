@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using CrowdSample.Scripts.Utils;
 using CrowdSample.Scripts.Runtime.Data;
 
@@ -15,36 +16,46 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             this.path   = path;
         }
 
-        public GameObject SpawnAgent(GameObject prefab, Transform parent)
+        public GameObject SpawnAgent(GameObject prefab, Transform parent, AgentSpawnData spawnData)
         {
             var agentInstance = Object.Instantiate(prefab, GetSpawnPosition(), Quaternion.identity, parent);
             agentInstance.name = prefab.name;
 
-            ConfigureAgentEntity(agentInstance);
-            ConfigureAgentTracker(agentInstance);
+            ConfigureAgentEntity(agentInstance, spawnData);
+            // ConfigureAgentTracker(agentInstance, spawnData);
+            ConfigurePathFollow(agentInstance, spawnData);
 
             return agentInstance;
         }
 
-        private void ConfigureAgentEntity(GameObject agentInstance)
+        private void ConfigureAgentEntity(GameObject agentInstance, AgentSpawnData spawnData)
         {
             var entity = agentInstance.AddComponent<AgentEntity>();
+            entity.SetShouldNotDestroy(path.IsSpawnAgentOnce);
             entity.SetSpeed(Random.Range(config.MinSpeed, config.MaxSpeed));
             entity.SetAgentID(config.permissionID);
             entity.SetAngularSpeed(config.AngularSpeed);
             entity.SetAcceleration(config.Acceleration);
-            entity.SetTurningRadius(config.TurningRadius);
             entity.SetStoppingDistance(config.StoppingDistance);
             entity.SetLicensePlateNumber(GeneratorUtils.GenerateLicensePlateNumber());
+            entity.NavMeshAgent.autoBraking = false;
         }
 
-        private void ConfigureAgentTracker(GameObject agentInstance)
+        private void ConfigureAgentTracker(GameObject agentInstance, AgentSpawnData spawnData)
         {
             var tracker = agentInstance.AddComponent<AgentTracker>();
-            tracker.SetAgentEntity(agentInstance.GetComponent<AgentEntity>());
-            tracker.SetPath(path);
-            tracker.InitializeWaypoint();
-            tracker.SetTurningRadius(config.TurningRadius);
+            tracker.AgentEntityInstance = agentInstance.GetComponent<AgentEntity>();
+            tracker.GlobalJourney       = spawnData.curvePos;
+        }
+
+        private void ConfigurePathFollow(GameObject agentInstance, AgentSpawnData spawnData)
+        {
+            var follow = agentInstance.AddComponent<PathFollow>();
+            follow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
+            follow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
+            follow.ShouldDestroyOnGoal = true;
+            follow.TargetIndex = Mathf.FloorToInt(spawnData.curvePos) % path.Waypoints.Count;
+            // follow.TargetIndex  = spawnData.targetIndex;
         }
 
         private Vector3 GetSpawnPosition()

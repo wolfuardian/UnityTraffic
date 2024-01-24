@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(NavMeshAgent))]
     public class PathFollow : MonoBehaviour
     {
         #region Field Declarations
@@ -29,13 +30,19 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private bool          shouldDestroyOnGoal;
 
 
-        private NavMeshAgent navMeshAgent;
-        private float        radius;
-        private Vector3      destination;
-        private float        localDistance;
-        private float        localJourney;
-        private float        globalJourney;
-        private float        remainingDistance;
+        [SerializeField] private NavMeshAgent navMeshAgent;
+        [SerializeField] private float        radius;
+        [SerializeField] private Vector3      destination;
+        [SerializeField] private float        localDistance;
+        [SerializeField] private float        localJourney;
+        [SerializeField] private float        globalJourney;
+        [SerializeField] private float        remainingDistance;
+        [SerializeField] private int          count;
+        [SerializeField] private int          totalCreatedCount;
+        [SerializeField] private int          createdIndex;
+        [SerializeField] private float        percentage;
+        [SerializeField] private int          newPriority;
+        private                  bool         isInitialized;
 
         #endregion
 
@@ -89,6 +96,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => shouldDestroyOnGoal = value;
         }
 
+        public int CreatedIndex
+        {
+            get => createdIndex;
+            set => createdIndex = value;
+        }
+
+        public UnityAction DestroyEvent;
+
         #endregion
 
         #region Unity Methods
@@ -109,8 +124,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 return;
             }
 
-            if (points.Count == 0 || navMeshAgent.pathPending ||
-                navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
+            if (points.Count == 0)
+            {
+                return;
+            }
+
+            if (navMeshAgent.pathPending || navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
             {
                 return;
             }
@@ -132,10 +151,17 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             destination = ScatterDestination(destination, radius);
 
             navMeshAgent.destination = destination;
+
+            isInitialized = true;
         }
 
         private void LateUpdate()
         {
+            if (!isInitialized)
+            {
+                return;
+            }
+
             localDistance     = Vector3.Distance(points[currentIndex], destination);
             localJourney      = Mathf.Clamp(1 - navMeshAgent.remainingDistance / localDistance, 0f, 1f);
             globalJourney     = currentIndex + localJourney;
@@ -145,17 +171,31 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             {
                 Destroy(gameObject);
             }
+
+            createdIndex      = transform.parent.GetComponent<AgentFactory>().TrackingAgents.IndexOf(transform);
+            totalCreatedCount = transform.parent.GetComponent<AgentFactory>().TrackingAgents.Count;
+            percentage        = createdIndex / (float)totalCreatedCount;
+            newPriority = (int)(percentage * 100);
+            navMeshAgent.avoidancePriority =newPriority;
         }
 
-        private void UpdateRadius()
+        private void OnDestroy()
         {
-            if (ranges.Count == 0)
-            {
-                return;
-            }
-
-            radius = ranges[targetIndex];
+            DestroyEvent?.Invoke();
         }
+
+        #endregion
+
+        #region Public Methods
+
+        public void SetNavigateMode(NavigateMode mode)
+        {
+            navigateMode = mode;
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private void UpdateCurrentIndex()
         {
@@ -182,19 +222,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             }
         }
 
-        #endregion
-
-        #region Public Methods
-
-        public void SetNavigateMode(NavigateMode mode)
-        {
-            navigateMode = mode;
-        }
-
-        #endregion
-
-        #region Private Methods
-
         private void UpdateIndexBasedOnDirection()
         {
             targetIndex += reverse ? -1 : 1;
@@ -217,6 +244,16 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     Custom();
                     break;
             }
+        }
+
+        private void UpdateRadius()
+        {
+            if (ranges.Count == 0)
+            {
+                return;
+            }
+
+            radius = ranges[targetIndex];
         }
 
         private static Vector3 ScatterDestination(Vector3 dest, float r)
@@ -271,6 +308,13 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         }
 
         #endregion
+
+        #region Unity Event Methods
+
+        //
+
+        #endregion
+
 
         #region Debug and Visualization Methods
 
