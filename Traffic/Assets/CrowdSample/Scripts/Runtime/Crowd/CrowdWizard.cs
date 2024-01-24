@@ -35,7 +35,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private static void ConfigureGroupInstance(GameObject inst)
         {
             var crowdGenerator = inst.AddComponent<CrowdGenerator>();
-            InternalEditorUtility.SetIsInspectorExpanded(crowdGenerator, false);
+            InternalEditorUtility.SetIsInspectorExpanded(crowdGenerator, true);
         }
 
         #endregion
