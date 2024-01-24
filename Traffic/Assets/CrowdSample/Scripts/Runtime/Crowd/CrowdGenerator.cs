@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdProducer : MonoBehaviour, IUpdatable
+    public class CrowdGenerator : MonoBehaviour, IUpdatable
     {
         #region Field Declarations
 
