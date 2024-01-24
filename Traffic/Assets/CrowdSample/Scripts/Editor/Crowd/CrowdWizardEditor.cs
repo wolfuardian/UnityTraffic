@@ -48,6 +48,8 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUILayout.EndHorizontal();
 
+            instances.RemoveAll(item => item == null);
+
             var toRemove = new List<GameObject>();
             foreach (var instance in instances)
             {
