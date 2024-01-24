@@ -1,4 +1,5 @@
-﻿using CrowdSample.Scripts.Utils;
+﻿using CrowdSample.Scripts.Runtime.Data;
+using CrowdSample.Scripts.Utils;
 using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
@@ -7,8 +8,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private GameObject pathSingleton;
-        [SerializeField] private GameObject crowdSingleton;
+        [SerializeField] private GameObject            pathSingleton;
+        [SerializeField] private GameObject            crowdSingleton;
+        [SerializeField] private CrowdAgentConfig      crowdAgentConfig;
+        [SerializeField] private CrowdGenerationConfig crowdGenerationConfig;
 
         #endregion
 

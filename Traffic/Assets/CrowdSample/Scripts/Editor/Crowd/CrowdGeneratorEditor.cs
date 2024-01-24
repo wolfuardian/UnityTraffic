@@ -10,7 +10,9 @@ namespace CrowdSample.Scripts.Editor.Crowd
     {
         #region Field Declarations
 
-        private CrowdGenerator crowdGenerator;
+        private CrowdGenerator     crowdGenerator;
+        private SerializedProperty crowdAgentConfigProp;
+        private SerializedProperty crowdGenerationConfigProp;
 
         #endregion
 
@@ -18,21 +20,35 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void OnEnable()
         {
-            crowdGenerator = (CrowdGenerator)target;
+            crowdGenerator            = (CrowdGenerator)target;
+            crowdAgentConfigProp      = serializedObject.FindProperty("crowdAgentConfig");
+            crowdGenerationConfigProp = serializedObject.FindProperty("crowdGenerationConfig");
         }
 
         public override void OnInspectorGUI()
         {
             EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("初始化", EditorStyles.boldLabel);
             DrawInitializationSection();
             EditorGUILayout.EndVertical();
 
+            if (!crowdGenerator.Initialized) return;
+
+            EditorGUILayout.Space(1);
 
             EditorGUILayout.BeginVertical("box");
-
-            // DrawSection(crowdGenerator.GroupInstances, crowdGenerator.AddGroupInstance);
-
+            EditorGUILayout.LabelField("人流生成", EditorStyles.boldLabel);
+            DrawCrowConfigSection();
             EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(1);
+
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("個體", EditorStyles.boldLabel);
+            DrawAgentConfigSection();
+            EditorGUILayout.EndVertical();
+
+            serializedObject.ApplyModifiedProperties();
         }
 
         #endregion
@@ -41,7 +57,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DrawInitializationSection()
         {
-            EditorGUILayout.LabelField("初始化", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(crowdGenerator.IsPathCreated);
             if (GUILayout.Button("Create Path"))
             {
@@ -59,20 +74,22 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUI.EndDisabledGroup();
 
-            if (!crowdGenerator.Initialized)
-            {
-                var errorCount = 0;
-                if (!crowdGenerator.IsPathCreated) errorCount++;
-                if (!crowdGenerator.IsCrowdCreated) errorCount++;
-                EditorGUILayout.HelpBox($"請先完成初始化。還有 {errorCount} 個物件還沒初始化", MessageType.Warning);
-                return;
-            }
-            
-            EditorGUILayout.Space(10);
-            
-            EditorGUILayout.LabelField("設定檔配置", EditorStyles.boldLabel);
-            
-            // TODO: 這裡要改成可以選擇設定檔
+            if (crowdGenerator.Initialized) return;
+
+            var errorCount = 0;
+            if (!crowdGenerator.IsPathCreated) errorCount++;
+            if (!crowdGenerator.IsCrowdCreated) errorCount++;
+            EditorGUILayout.HelpBox($"請先完成初始化。還有 {errorCount} 個物件還沒初始化", MessageType.Warning);
+        }
+
+        private void DrawCrowConfigSection()
+        {
+            EditorGUILayout.PropertyField(crowdGenerationConfigProp, new GUIContent("人流生成設定"));
+        }
+
+        private void DrawAgentConfigSection()
+        {
+            EditorGUILayout.PropertyField(crowdAgentConfigProp, new GUIContent("個體設定"));
         }
 
         private static void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
