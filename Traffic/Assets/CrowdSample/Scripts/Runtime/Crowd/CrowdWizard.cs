@@ -8,35 +8,22 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] internal GameObject       groupRoot;
-        [SerializeField] internal List<GameObject> groupInstances = new List<GameObject>();
+        [SerializeField] private List<GameObject> groupInstances = new List<GameObject>();
 
         #endregion
 
         #region Properties
 
-        public bool Initialized => groupRoot != null;
+        public List<GameObject> GroupInstances => groupInstances;
 
         #endregion
 
         #region Public Methods
 
-        public void CreateGroupRoot()
-        {
-            if (Initialized) return;
-
-            var newGroupRoot = new GameObject("GroupRoot");
-            newGroupRoot.transform.SetParent(transform);
-
-            groupRoot = newGroupRoot;
-
-            groupInstances.Clear();
-        }
-
         public void AddGroupInstance()
         {
             var newGroupInst = new GameObject("CrowdGroup_" + groupInstances.Count);
-            newGroupInst.transform.SetParent(groupRoot.transform);
+            newGroupInst.transform.SetParent(transform);
             groupInstances.Add(newGroupInst);
             ConfigureGroupInstance(newGroupInst);
         }

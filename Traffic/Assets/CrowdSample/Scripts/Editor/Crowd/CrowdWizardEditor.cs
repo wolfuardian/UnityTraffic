@@ -24,35 +24,17 @@ namespace CrowdSample.Scripts.Editor.Crowd
         public override void OnInspectorGUI()
         {
             EditorGUILayout.BeginVertical("box");
-            DrawInitializationSection();
+
+            DrawSection(crowdWizard.GroupInstances, crowdWizard.AddGroupInstance);
+
             EditorGUILayout.EndVertical();
         }
 
         #endregion
 
-
         #region Private Methods
 
-        private void DrawInitializationSection()
-        {
-            EditorGUILayout.LabelField("初始化", EditorStyles.boldLabel);
-            EditorGUI.BeginDisabledGroup(crowdWizard.Initialized);
-            if (GUILayout.Button("Create GroupRoot"))
-            {
-                crowdWizard.CreateGroupRoot();
-            }
-
-            EditorGUI.EndDisabledGroup();
-
-            EditorGUILayout.Space(10);
-
-            if (crowdWizard.Initialized)
-            {
-                DrawSection(crowdWizard.groupInstances, crowdWizard.AddGroupInstance);
-            }
-        }
-
-        private void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
+        private static void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("群組 (Instances)", EditorStyles.boldLabel);
