@@ -8,11 +8,11 @@ namespace CrowdSample.Scripts.Utils
 {
     public class UnityEditorUtils : UnityEditor.Editor
     {
-        public static void UpdateAllGizmos()
+        public static void UpdateAll()
         {
-            foreach (var updatable in FindObjectsOfType<MonoBehaviour>().OfType<IUpdatable>())
+            foreach (var updatable in FindObjectsOfType<MonoBehaviour>().OfType<IUpdateReceiver>())
             {
-                updatable.UpdateGizmo();
+                updatable.UpdateImmediately();
             }
         }
 
