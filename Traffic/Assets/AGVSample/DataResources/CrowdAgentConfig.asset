@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4558792433b941544ac8b7ae7249cedf, type: 3}
-  m_Name: AgentDataConfig
+  m_Name: CrowdAgentConfig
   m_EditorClassIdentifier: 
   permissionID: 0
   agentPrefabs:
