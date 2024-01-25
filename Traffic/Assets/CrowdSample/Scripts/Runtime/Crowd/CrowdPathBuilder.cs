@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 using CrowdSample.Scripts.Utils;
@@ -11,6 +10,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     public class CrowdPathBuilder : MonoBehaviour, IUpdateReceiver
     {
         #region Field Declarations
+
+        public EditMode editMode = EditMode.None;
 
         [SerializeField] private CrowdPath       crowdPath;
         [SerializeField] private List<Transform> waypoints;
@@ -25,15 +26,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
-        public bool     isOpenPointConfigPanel;
-        public EditMode editMode;
-
         public enum EditMode
         {
             None = 0,
             Add  = 1
         }
-
 
         #region Unity Methods
 
@@ -54,12 +51,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
-        #region Public Methods
-
-        //
-
-        #endregion
-
         #region Private Methods
 
         private bool ValidatePath()
@@ -71,12 +62,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             waypoints = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform).ToList();
         }
-
-        #endregion
-
-        #region Unity Event Methods
-
-        //
 
         #endregion
 
