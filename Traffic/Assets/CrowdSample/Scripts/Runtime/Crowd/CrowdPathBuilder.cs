@@ -17,6 +17,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private List<Transform> waypoints;
         [SerializeField] private Vector2         arrowScale = new Vector2(2f, 2f);
 
+        public enum EditMode
+        {
+            None = 0,
+            Add  = 1
+        }
+
         #endregion
 
         #region Properties
@@ -27,11 +33,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
-        public enum EditMode
-        {
-            None = 0,
-            Add  = 1
-        }
 
         #region Unity Methods
 
