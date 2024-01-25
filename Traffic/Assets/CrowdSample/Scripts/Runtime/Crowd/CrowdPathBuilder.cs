@@ -28,9 +28,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         #region Properties
 
         public CrowdPathController CrowdPathController => crowdPathController ??= GetComponent<CrowdPathController>();
-        public List<Transform>     Waypoints           => waypoints ??= new List<Transform>();
-        public Vector2             ArrowScale          => arrowScale;
-        public bool                IsPathValid         => crowdPathController.PointsSet.Count >= 2;
+        public IEnumerable<Transform> Waypoints => waypoints ??= new List<Transform>();
+        public Vector2 ArrowScale => arrowScale;
+        public bool IsPathValid => crowdPathController.PointsSet.Count >= 2;
 
         #endregion
 
