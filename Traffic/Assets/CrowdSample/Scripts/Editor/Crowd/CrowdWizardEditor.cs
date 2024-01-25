@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using CrowdSample.Scripts.Utils;
 using CrowdSample.Scripts.Runtime.Crowd;
 
 namespace CrowdSample.Scripts.Editor.Crowd
@@ -30,7 +31,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         #endregion
 
-        #region Private Methods
+        #region GUI Methods
 
         private static void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
         {
@@ -65,7 +66,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
                 EditorGUILayout.EndHorizontal();
             }
 
-            RemoveInstances(instances, toRemove);
+            UnityUtils.RemoveInstances(instances, toRemove);
 
             if (GUILayout.Button("Add Group Instance"))
             {
@@ -73,18 +74,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
             }
 
             EditorGUILayout.EndVertical();
-        }
-
-        private static void RemoveInstances(ICollection<GameObject> instances, List<GameObject> toRemove)
-        {
-            foreach (var remove in toRemove)
-            {
-                instances.Remove(remove);
-
-                if (remove == null) continue;
-
-                DestroyImmediate(remove);
-            }
         }
 
         #endregion

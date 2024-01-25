@@ -1,9 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
 using CrowdSample.Scripts.Runtime.Crowd;
 using CrowdSample.Scripts.Runtime.Data;
-using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
@@ -51,7 +49,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("人流生成", EditorStyles.boldLabel);
-            DrawInitCrowdConfigSection();
+            DrawInitializeCrowdConfigSection();
             DrawCrowdSection(crowdGenerator.CrowdGenerationConfig);
             EditorGUILayout.EndVertical();
 
@@ -59,7 +57,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("個體", EditorStyles.boldLabel);
-            DrawInitAgentConfigSection();
+            DrawInitializeAgentConfigSection();
             DrawAgentSection(crowdGenerator.CrowdAgentConfig);
             EditorGUILayout.EndVertical();
 
@@ -68,7 +66,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         #endregion
 
-        #region Private Methods
+        #region GUI Methods
 
         private void DrawInitializationSection()
         {
@@ -101,7 +99,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawInitCrowdConfigSection()
+        private void DrawInitializeCrowdConfigSection()
         {
             EditorGUILayout.PropertyField(crowdGenerationConfigProp, new GUIContent("生成設定"));
         }
@@ -110,60 +108,13 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
         }
 
-        private void DrawInitAgentConfigSection()
+        private void DrawInitializeAgentConfigSection()
         {
             EditorGUILayout.PropertyField(crowdAgentConfigProp, new GUIContent("代理設定"));
         }
 
         private void DrawAgentSection(CrowdAgentConfig config)
         {
-        }
-
-        private static void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
-        {
-            EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("群組 (Instances)", EditorStyles.boldLabel);
-
-            var alignedFieldWidth = EditorGUIUtility.currentViewWidth * 0.25f;
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("|編輯名稱", EditorStyles.boldLabel, GUILayout.Width(alignedFieldWidth));
-            EditorGUILayout.LabelField("|人流群組", EditorStyles.boldLabel);
-
-
-            EditorGUILayout.EndHorizontal();
-
-            instances.RemoveAll(item => item == null);
-
-            var toRemove = new List<GameObject>();
-            foreach (var instance in instances)
-            {
-                EditorGUILayout.BeginHorizontal();
-
-
-                var textProp = EditorGUILayout.TextField(instance.name, GUILayout.Width(alignedFieldWidth));
-                if (textProp != instance.name)
-                {
-                    instance.name = textProp;
-                }
-
-                EditorGUILayout.ObjectField("", instance, typeof(GameObject), true);
-                if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
-                {
-                    toRemove.Add(instance);
-                }
-
-                EditorGUILayout.EndHorizontal();
-            }
-
-            UnityUtils.RemoveInstances(instances, toRemove);
-
-            if (GUILayout.Button("Add Group Instance"))
-            {
-                addInstanceAction?.Invoke();
-            }
-
-            EditorGUILayout.EndVertical();
         }
 
         #endregion
