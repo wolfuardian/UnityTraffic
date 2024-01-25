@@ -16,9 +16,15 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void OnEnable()
         {
-            crowdPathBuilder = (CrowdPathBuilder)target;
-
-            waypointsProp = new SerializedObject(crowdPathBuilder.CrowdPath).FindProperty("waypoints");
+            try
+            {
+                crowdPathBuilder = (CrowdPathBuilder)target;
+                waypointsProp    = serializedObject.FindProperty("waypoints");
+            }
+            catch (Exception)
+            {
+                // ignored 找不到原因，只好先這樣處理
+            }
         }
 
         public override void OnInspectorGUI()
