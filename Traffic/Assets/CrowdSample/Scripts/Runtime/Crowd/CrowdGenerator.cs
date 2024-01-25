@@ -1,4 +1,4 @@
-using CrowdSample.Scripts.Runtime.Data;
+﻿using CrowdSample.Scripts.Runtime.Data;
 using CrowdSample.Scripts.Utils;
 using UnityEngine;
 
@@ -42,6 +42,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             var newPath = new GameObject("Path_Root");
             newPath.transform.SetParent(transform);
+            newPath.AddComponent<PathBuilder>();
 
             pathSingleton = newPath;
         }
