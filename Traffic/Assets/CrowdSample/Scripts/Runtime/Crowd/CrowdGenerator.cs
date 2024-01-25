@@ -44,6 +44,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void OnValidate()
         {
             FetchCrowdGenerationConfigs();
+            UnityEditorUtils.UpdateAllReceiverImmediately();
         }
 #endif
 

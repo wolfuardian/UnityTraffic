@@ -114,23 +114,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             radiusSet = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.Radius).ToList();
         }
 
-        // private void FetchGenerationConfigs()
-        // {
-        //     if (CrowdGenerationConfig == null) return;
-        //     ApplyGenerationConfigSettings();
-        // }
-        //
-        // private void ApplyGenerationConfigSettings()
-        // {
-        //     isSpawnAgentOnce = CrowdGenerationConfig.IsSpawnAgentOnce;
-        //     isClosedPath     = CrowdGenerationConfig.IsClosedPath;
-        //     isUseSpacing     = CrowdGenerationConfig.IsUseSpacing;
-        //     count            = CrowdGenerationConfig.InstantCount;
-        //     countMax         = CrowdGenerationConfig.MaxCount;
-        //     offset           = CrowdGenerationConfig.Offset;
-        //     spacing          = CrowdGenerationConfig.Spacing;
-        // }
-
         private void UpdatePath()
         {
             if (PointsSet.Count < 2) return;
