@@ -16,8 +16,8 @@ MonoBehaviour:
   agentPrefabs:
   - {fileID: 919132149155446097, guid: 3ed05ffdbccc9d84d86da23e2de7160e, type: 3}
   - {fileID: 919132149155446097, guid: 3c4f9ec2ecfc88640b03f05e73140254, type: 3}
-  minSpeed: 5
-  maxSpeed: 5
+  minSpeed: 50
+  maxSpeed: 50
   angularSpeed: 3600
   acceleration: 5000
   turningRadius: 50
