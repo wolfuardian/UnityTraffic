@@ -13,24 +13,21 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private List<Vector3>    pointsSet;
         [SerializeField] private List<float>      radiusSet;
         [SerializeField] private AgentSpawnData[] agentSpawnData;
+        [SerializeField] private int              count    = 10;
+        [SerializeField] private int              countMax = 60;
+        [SerializeField] private float            spacing  = 1.0f;
+        [SerializeField] private float            offset;
         [SerializeField] private bool             isSpawnAgentOnce;
         [SerializeField] private bool             isClosedPath;
         [SerializeField] private bool             isUseSpacing = true;
-        [SerializeField] private int              count        = 10;
-        [SerializeField] private int              countMax     = 60;
-        [SerializeField] private float            spacing      = 1.0f;
-        [SerializeField] private float            offset;
 
         #endregion
 
         #region Properties
 
-        public List<Vector3>    PointsSet        => pointsSet ??= new List<Vector3>();
-        public List<float>      RadiusSet        => radiusSet ??= new List<float>();
-        public AgentSpawnData[] AgentSpawnData   => agentSpawnData ??= Array.Empty<AgentSpawnData>();
-        public bool             IsSpawnAgentOnce => isSpawnAgentOnce;
-        public bool             IsClosedPath     => isClosedPath;
-        public bool             IsUseSpacing     => isUseSpacing;
+        public List<Vector3>    PointsSet      => pointsSet ??= new List<Vector3>();
+        public List<float>      RadiusSet      => radiusSet ??= new List<float>();
+        public AgentSpawnData[] AgentSpawnData => agentSpawnData ??= Array.Empty<AgentSpawnData>();
 
         public int Count
         {
@@ -38,7 +35,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => count = Mathf.Clamp(value, 0, countMax);
         }
 
-        public int CountMax => countMax;
+        public int CountMax
+        {
+            get => countMax;
+            set => countMax = value;
+        }
 
         public float Spacing
         {
@@ -52,9 +53,27 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => offset = Mathf.Max(value, 0f);
         }
 
+        public bool IsSpawnAgentOnce
+        {
+            get => isSpawnAgentOnce;
+            set => isSpawnAgentOnce = value;
+        }
+
+        public bool IsClosedPath
+        {
+            get => isClosedPath;
+            set => isClosedPath = value;
+        }
+
+        public bool IsUseSpacing
+        {
+            get => isUseSpacing;
+            set => isUseSpacing = value;
+        }
+
         public float   GetTotalLength()        => PathResolver.GetTotalLength(PointsSet, IsClosedPath);
-        public Vector3 GetPositionAt(float  t) => PathResolver.GetPositionAt(PointsSet, IsClosedPath, t);
-        public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(PointsSet, IsClosedPath, t);
+        public Vector3 GetPositionAt(float  u) => PathResolver.GetPositionAt(PointsSet, IsClosedPath, u);
+        public Vector3 GetDirectionAt(float u) => PathResolver.GetDirectionAt(PointsSet, IsClosedPath, u);
 
         #endregion
 
@@ -81,7 +100,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public void FetchAllNeeded()
         {
             FetchWaypoints();
-            FetchGenerationConfigs();
             UpdatePath();
         }
 #endif
@@ -96,22 +114,22 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             radiusSet = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.Radius).ToList();
         }
 
-        private void FetchGenerationConfigs()
-        {
-            // if (CrowdGenerationConfig == null) return;
-            // ApplyGenerationConfigSettings();
-        }
-
-        private void ApplyGenerationConfigSettings()
-        {
-            // isSpawnAgentOnce = CrowdGenerationConfig.IsSpawnAgentOnce;
-            // isClosedPath     = CrowdGenerationConfig.IsClosedPath;
-            // isUseSpacing     = CrowdGenerationConfig.IsUseSpacing;
-            // count            = CrowdGenerationConfig.InstantCount;
-            // countMax         = CrowdGenerationConfig.MaxCount;
-            // offset           = CrowdGenerationConfig.Offset;
-            // spacing          = CrowdGenerationConfig.Spacing;
-        }
+        // private void FetchGenerationConfigs()
+        // {
+        //     if (CrowdGenerationConfig == null) return;
+        //     ApplyGenerationConfigSettings();
+        // }
+        //
+        // private void ApplyGenerationConfigSettings()
+        // {
+        //     isSpawnAgentOnce = CrowdGenerationConfig.IsSpawnAgentOnce;
+        //     isClosedPath     = CrowdGenerationConfig.IsClosedPath;
+        //     isUseSpacing     = CrowdGenerationConfig.IsUseSpacing;
+        //     count            = CrowdGenerationConfig.InstantCount;
+        //     countMax         = CrowdGenerationConfig.MaxCount;
+        //     offset           = CrowdGenerationConfig.Offset;
+        //     spacing          = CrowdGenerationConfig.Spacing;
+        // }
 
         private void UpdatePath()
         {
@@ -170,10 +188,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void SetAgentData(int index, float distance, float totalLength)
         {
-            var curveNPos = distance / totalLength;
-            var position  = GetPositionAt(curveNPos);
-            var direction = GetDirectionAt(curveNPos);
-            var curvePos  = curveNPos * PointsSet.Count;
+            var curveU    = distance / totalLength;
+            var position  = GetPositionAt(curveU);
+            var direction = GetDirectionAt(curveU);
+            var curvePos  = curveU * PointsSet.Count;
 
             agentSpawnData[index] = new AgentSpawnData(position, direction, curvePos);
         }
