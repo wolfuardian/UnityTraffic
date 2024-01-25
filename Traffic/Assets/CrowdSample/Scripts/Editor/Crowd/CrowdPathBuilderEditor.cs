@@ -11,47 +11,26 @@ namespace CrowdSample.Scripts.Editor.Crowd
     [CustomEditor(typeof(CrowdPathBuilder))]
     public class CrowdPathBuilderEditor : UnityEditor.Editor
     {
+        #region Field Declarations
+
         private CrowdPathBuilder   crowdPathBuilder;
         private SerializedProperty crowdPathProp;
         private SerializedProperty waypointsProp;
 
-        private void OnEnable()
-        {
-            try
-            {
-                crowdPathBuilder = (CrowdPathBuilder)target;
-                crowdPathProp    = serializedObject.FindProperty("crowdPath");
-                waypointsProp    = serializedObject.FindProperty("waypoints");
-            }
-            catch (Exception)
-            {
-                // ignored 找不到原因，只好先這樣處理
-            }
-        }
+        private bool isConfigPanelExpanded;
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
+        #endregion
 
-            if (!IsPathBuilderValid()) return;
+        #region Properties
 
-            DrawEditModeSwitch();
+        #endregion
 
-            var isLockInspectorInEditing = crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add;
-            EditorGUI.BeginDisabledGroup(isLockInspectorInEditing);
 
-            DrawActionsSection();
-            DrawPointConfigSection();
+        #region Public Methods
 
-            EditorGUI.EndDisabledGroup();
+        #endregion
 
-            serializedObject.ApplyModifiedProperties();
-        }
-
-        private void OnSceneGUI()
-        {
-            HandleSceneClickToAddWaypoint();
-        }
+        #region Private Methods
 
         private bool IsPathBuilderValid()
         {
@@ -147,14 +126,14 @@ namespace CrowdSample.Scripts.Editor.Crowd
             var headerStyle = UnityEditorUtils.CreateHeaderStyle(FontStyle.Bold, 12);
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Point Config", headerStyle);
-            if (GUILayout.Button(crowdPathBuilder.isOpenPointConfigPanel
+            if (GUILayout.Button(isConfigPanelExpanded
                     ? "Close Waypoint Config Panel"
                     : "Open Waypoint Config Panel"))
             {
                 TogglePointConfigPanel();
             }
 
-            if (crowdPathBuilder.isOpenPointConfigPanel)
+            if (isConfigPanelExpanded)
             {
                 DrawWaypointsConfigPanel();
             }
@@ -220,7 +199,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void TogglePointConfigPanel()
         {
-            crowdPathBuilder.isOpenPointConfigPanel = !crowdPathBuilder.isOpenPointConfigPanel;
+            isConfigPanelExpanded = !isConfigPanelExpanded;
         }
 
         private void ToggleEditMode()
@@ -276,5 +255,49 @@ namespace CrowdSample.Scripts.Editor.Crowd
                 Undo.DestroyObjectImmediate(waypoint.gameObject);
             }
         }
+
+        #endregion
+
+        #region Unity Methods
+
+        private void OnEnable()
+        {
+            try
+            {
+                crowdPathBuilder = (CrowdPathBuilder)target;
+                crowdPathProp    = serializedObject.FindProperty("crowdPath");
+                waypointsProp    = serializedObject.FindProperty("waypoints");
+            }
+            catch (Exception)
+            {
+                // ignored 找不到原因，只好先這樣處理
+            }
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            if (!IsPathBuilderValid()) return;
+
+            DrawEditModeSwitch();
+
+            var isLockInspectorInEditing = crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add;
+            EditorGUI.BeginDisabledGroup(isLockInspectorInEditing);
+
+            DrawActionsSection();
+            DrawPointConfigSection();
+
+            EditorGUI.EndDisabledGroup();
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void OnSceneGUI()
+        {
+            HandleSceneClickToAddWaypoint();
+        }
+
+        #endregion
     }
 }
