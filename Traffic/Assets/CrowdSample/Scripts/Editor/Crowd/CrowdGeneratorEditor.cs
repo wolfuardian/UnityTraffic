@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using CrowdSample.Scripts.Runtime.Crowd;
@@ -13,6 +13,13 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private CrowdGenerator     crowdGenerator;
         private SerializedProperty crowdAgentConfigProp;
         private SerializedProperty crowdGenerationConfigProp;
+
+        #endregion
+
+        #region Properties
+
+        public bool IsCrowdAgentConfigAssigned      => crowdAgentConfigProp.objectReferenceValue != null;
+        public bool IsCrowdGenerationConfigAssigned => crowdGenerationConfigProp.objectReferenceValue != null;
 
         #endregion
 
@@ -58,20 +65,22 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawInitializationSection()
         {
             EditorGUI.BeginDisabledGroup(crowdGenerator.IsPathCreated);
-            if (GUILayout.Button("Create Path"))
+            if (GUILayout.Button("Create Path_Root"))
             {
                 crowdGenerator.CreatePathSingleton();
             }
 
+            EditorGUILayout.ObjectField("", crowdGenerator.PathSingleton, typeof(GameObject), true);
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.BeginDisabledGroup(crowdGenerator.IsCrowdCreated);
 
-            if (GUILayout.Button("Create Crowd"))
+            if (GUILayout.Button("Create Crowd_Root"))
             {
                 crowdGenerator.CreateCrowdSingleton();
             }
 
+            EditorGUILayout.ObjectField("", crowdGenerator.CrowdSingleton, typeof(GameObject), true);
             EditorGUI.EndDisabledGroup();
 
             if (crowdGenerator.Initialized) return;

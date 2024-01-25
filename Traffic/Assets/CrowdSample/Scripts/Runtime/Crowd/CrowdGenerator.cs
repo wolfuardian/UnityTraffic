@@ -1,4 +1,4 @@
-﻿using CrowdSample.Scripts.Runtime.Data;
+using CrowdSample.Scripts.Runtime.Data;
 using CrowdSample.Scripts.Utils;
 using UnityEngine;
 
@@ -16,6 +16,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         #endregion
 
         #region Properties
+
+        public GameObject            PathSingleton         => pathSingleton;
+        public GameObject            CrowdSingleton        => crowdSingleton;
+        public CrowdAgentConfig      CrowdAgentConfig      => crowdAgentConfig;
+        public CrowdGenerationConfig CrowdGenerationConfig => crowdGenerationConfig;
 
         public bool IsPathCreated  => pathSingleton != null;
         public bool IsCrowdCreated => crowdSingleton != null;
@@ -35,7 +40,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             if (IsPathCreated) return;
 
-            var newPath = new GameObject("Path");
+            var newPath = new GameObject("Path_Root");
             newPath.transform.SetParent(transform);
 
             pathSingleton = newPath;
@@ -45,7 +50,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         {
             if (IsCrowdCreated) return;
 
-            var newCrowd = new GameObject("Crowd");
+            var newCrowd = new GameObject("Crowd_Root");
             newCrowd.transform.SetParent(transform);
 
             crowdSingleton = newCrowd;
