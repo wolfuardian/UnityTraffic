@@ -43,7 +43,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             DrawInitializationSection();
             EditorGUILayout.EndVertical();
 
-            if (!crowdGenerator.Initialized) return;
+            if (!crowdGenerator.IsInitialized) return;
 
             EditorGUILayout.Space(1);
 
@@ -89,7 +89,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.PropertyField(crowdAgentGoProp, new GUIContent("人流代理物件"));
             EditorGUI.EndDisabledGroup();
 
-            if (crowdGenerator.Initialized) return;
+            if (crowdGenerator.IsInitialized) return;
 
             var errorCount = 0;
             if (!crowdGenerator.IsPathGoCreated) errorCount++;

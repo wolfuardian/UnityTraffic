@@ -1,10 +1,9 @@
-﻿using CrowdSample.Scripts.Runtime.Data;
-using CrowdSample.Scripts.Utils;
-using UnityEngine;
+﻿using UnityEngine;
+using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdGenerator : MonoBehaviour, IUpdateReceiver
+    public class CrowdGenerator : MonoBehaviour
     {
         #region Field Declarations
 
@@ -34,13 +33,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public bool IsPathGoCreated       => pathGo != null;
         public bool IsCrowdAgentGoCreated => crowdAgentGo != null;
-        public bool Initialized           => IsPathGoCreated && IsCrowdAgentGoCreated;
-
-        #endregion
-
-        #region Unity Methods
-
-        //
+        public bool IsInitialized           => IsPathGoCreated && IsCrowdAgentGoCreated;
 
         #endregion
 
@@ -65,26 +58,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             newCrowdAgentGo.transform.SetParent(transform);
 
             crowdAgentGo = newCrowdAgentGo;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        //
-
-        #endregion
-
-        #region Unity Event Methods
-
-        //
-
-        #endregion
-
-        #region Debug and Visualization Methods
-
-        public void UpdateImmediately()
-        {
         }
 
         #endregion
