@@ -13,7 +13,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         [SerializeField] private bool                         _shouldNotDestroyed;
         [SerializeField] private bool                         _destroyOnNextGoalReached;
-        [SerializeField] private AgentDataConfig.PermissionID _agentID;
+        [SerializeField] private CrowdAgentConfig.PermissionID _agentID;
         [SerializeField] private string                       _licensePlateNumber;
         [SerializeField] private float                        _originalSpeed;
         [SerializeField] private float                        _turningRadius;
@@ -29,7 +29,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => _navMeshAgent = value;
         }
 
-        public AgentDataConfig.PermissionID AgentID            => _agentID;
+        public CrowdAgentConfig.PermissionID AgentID            => _agentID;
         public string                       LicensePlateNumber => _licensePlateNumber;
 
         private bool IsReachGoal => _navMeshAgent.remainingDistance < _turningRadius;
@@ -67,7 +67,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public void SetShouldNotDestroy(bool                value) => _shouldNotDestroyed = value;
         public void SetDestroyOnNextGoalReached(bool        value) => _destroyOnNextGoalReached = value;
-        public void SetAgentID(AgentDataConfig.PermissionID value) => _agentID = value;
+        public void SetAgentID(CrowdAgentConfig.PermissionID value) => _agentID = value;
         public void SetLicensePlateNumber(string            value) => _licensePlateNumber = value;
         public void SetSpeed(float                          value) => _navMeshAgent.speed = value;
         public void SetAngularSpeed(float                   value) => _navMeshAgent.angularSpeed = value;

@@ -8,16 +8,17 @@ using CrowdSample.Scripts.Runtime.Crowd;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
-    [CustomEditor(typeof(PathBuilder))]
+    [CustomEditor(typeof(CrowdPathBuilder))]
     public class PathBuilderEditor : UnityEditor.Editor
     {
-        private PathBuilder        pathBuilder;
+        private CrowdPathBuilder        crowdPathBuilder;
         private SerializedProperty waypointsProp;
 
         private void OnEnable()
         {
-            pathBuilder   = (PathBuilder)target;
-            waypointsProp = new SerializedObject(pathBuilder.Path).FindProperty("waypoints");
+            crowdPathBuilder   = (CrowdPathBuilder)target;
+            
+            waypointsProp = new SerializedObject(crowdPathBuilder.CrowdPath).FindProperty("waypoints");
         }
 
         public override void OnInspectorGUI()
@@ -39,7 +40,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             var valid = true;
 
-            if (pathBuilder.Path == null)
+            if (crowdPathBuilder.CrowdPath == null)
             {
                 Debug.LogError("路徑物件為空，請確認是否有設定。", this);
                 valid = false;
@@ -55,7 +56,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void HandleSceneClickToAddWaypoint()
         {
-            if (pathBuilder.editMode != PathBuilder.EditMode.Add || !UnityUtils.IsLeftMouseButtonDown()) return;
+            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add || !UnityUtils.IsLeftMouseButtonDown()) return;
             OnAddWaypoint();
             Event.current.Use();
         }
@@ -63,19 +64,19 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void OnAddWaypoint()
         {
             if (!UnityUtils.TryGetRaycastHit(out var hitPoint)) return;
-            if (pathBuilder.editMode != PathBuilder.EditMode.Add) return;
+            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add) return;
 
             var newWaypoint = CreateWaypointObject(hitPoint);
-            var path        = pathBuilder.Path;
+            var path        = crowdPathBuilder.CrowdPath;
             path.Waypoints.Add(newWaypoint);
         }
 
         private Transform CreateWaypointObject(Vector3 position)
         {
-            var path        = pathBuilder.Path;
+            var path        = crowdPathBuilder.CrowdPath;
             var newWaypoint = new GameObject("Waypoint" + path.Waypoints.Count).transform;
             newWaypoint.position = position;
-            newWaypoint.SetParent(pathBuilder.transform);
+            newWaypoint.SetParent(crowdPathBuilder.transform);
 
             SetupWaypointMesh(newWaypoint);
             return newWaypoint;
@@ -119,7 +120,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
 
-            EditorGUI.BeginDisabledGroup(pathBuilder.editMode == PathBuilder.EditMode.Add);
+            EditorGUI.BeginDisabledGroup(crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add);
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset All Waypoints", GUILayout.Height(48)))
             {
@@ -136,9 +137,9 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             var headerStyle = UnityEditorUtils.CreateHeaderStyle(FontStyle.Bold, 12);
             EditorGUILayout.BeginVertical("box");
-            EditorGUI.BeginDisabledGroup(pathBuilder.editMode == PathBuilder.EditMode.Add);
+            EditorGUI.BeginDisabledGroup(crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add);
             EditorGUILayout.LabelField("Point Config", headerStyle);
-            if (GUILayout.Button(pathBuilder.isOpenPointConfigPanel
+            if (GUILayout.Button(crowdPathBuilder.isOpenPointConfigPanel
                     ? "Close Waypoint Config Panel"
                     : "Open Waypoint Config Panel"))
             {
@@ -147,7 +148,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUI.EndDisabledGroup();
 
-            if (pathBuilder.isOpenPointConfigPanel)
+            if (crowdPathBuilder.isOpenPointConfigPanel)
             {
                 DrawWaypointsConfigPanel();
             }
@@ -185,7 +186,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawWaypointsConfig(Component component)
         {
             var waypointSo    = new SerializedObject(component);
-            var pathBuilderSo = new SerializedObject(pathBuilder);
+            var pathBuilderSo = new SerializedObject(crowdPathBuilder);
             waypointSo.Update();
 
             var radiusProp = waypointSo.FindProperty("radius");
@@ -206,39 +207,39 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void TogglePointConfigPanel()
         {
-            pathBuilder.isOpenPointConfigPanel = !pathBuilder.isOpenPointConfigPanel;
+            crowdPathBuilder.isOpenPointConfigPanel = !crowdPathBuilder.isOpenPointConfigPanel;
         }
 
         private void ToggleEditMode()
         {
-            pathBuilder.editMode = (PathBuilder.EditMode)(((int)pathBuilder.editMode + 1) %
-                                                          Enum.GetNames(typeof(PathBuilder.EditMode)).Length);
+            crowdPathBuilder.editMode = (CrowdPathBuilder.EditMode)(((int)crowdPathBuilder.editMode + 1) %
+                                                          Enum.GetNames(typeof(CrowdPathBuilder.EditMode)).Length);
 
-            switch (pathBuilder.editMode)
+            switch (crowdPathBuilder.editMode)
             {
-                case PathBuilder.EditMode.None:
+                case CrowdPathBuilder.EditMode.None:
                     UnityEditorUtils.SetInspectorLock(false);
                     break;
-                case PathBuilder.EditMode.Add:
+                case CrowdPathBuilder.EditMode.Add:
                     UnityEditorUtils.SetInspectorLock(true);
                     break;
             }
 
-            Selection.activeObject = pathBuilder.gameObject;
+            Selection.activeObject = crowdPathBuilder.gameObject;
         }
 
         private void DisplayCurrentEditMode()
         {
             var customStyle = new GUIStyle(EditorStyles.helpBox) { fontSize = 14 };
-            var modeLabel = pathBuilder.editMode switch
+            var modeLabel = crowdPathBuilder.editMode switch
             {
-                PathBuilder.EditMode.None => "Current Mode: None",
-                PathBuilder.EditMode.Add => "Current Mode: Add Mode",
+                CrowdPathBuilder.EditMode.None => "Current Mode: None",
+                CrowdPathBuilder.EditMode.Add => "Current Mode: Add Mode",
                 _ => "Unknown Mode"
             };
             GUILayout.Label(modeLabel, customStyle, GUILayout.Height(24f));
 
-            if (pathBuilder.editMode == PathBuilder.EditMode.Add)
+            if (crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add)
             {
                 EditorGUILayout.HelpBox("Click on the scene to add path points", MessageType.Info);
             }
@@ -256,7 +257,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void ClearPoints()
         {
             Undo.SetCurrentGroupName("Clear Path Points");
-            foreach (var waypoint in pathBuilder.Path.Waypoints.Where(point => point != null))
+            foreach (var waypoint in crowdPathBuilder.CrowdPath.Waypoints.Where(point => point != null))
             {
                 Undo.DestroyObjectImmediate(waypoint.gameObject);
             }

@@ -8,7 +8,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Private Variables
 
-        [SerializeField]                    private Path        _path;
+        [SerializeField]                    private CrowdPath        crowdPath;
         [SerializeField]                    private AgentEntity _agentEntity;
         [SerializeField]                    private Transform   _previousTarget;
         [SerializeField]                    private Transform   _target;
@@ -22,7 +22,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField]                    private float       _turningRadius;
 
         /// <summary> 獲取路徑實例。 </summary>
-        public Path PathInstance => _path ??= transform.parent.GetComponent<Path>();
+        public CrowdPath CrowdPathInstance => crowdPath ??= transform.parent.GetComponent<CrowdPath>();
 
         /// <summary> 獲取或設置代理實體。 </summary>
         public AgentEntity AgentEntityInstance
@@ -56,7 +56,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         public int TargetIndex
         {
             get => _targetIndex;
-            set => _targetIndex = value % _path.Waypoints.Count;
+            set => _targetIndex = value % crowdPath.Waypoints.Count;
         }
 
         /// <summary> 獲取或設置全局旅程的進度。 </summary>
@@ -122,7 +122,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             _targetIndex = GlobalJourneyToTargetIndex(_globalJourney);
             Debug.Log($"TargetIndex: {_targetIndex}");
 
-            _target = _path.Waypoints[_targetIndex];
+            _target = crowdPath.Waypoints[_targetIndex];
             Debug.Log($"Target: {_target.name}");
 
             _desiredPosition = GetRandomPointInRadius(_target);
@@ -133,9 +133,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             if (!_agentEntity.NavMeshAgent.pathPending && _agentEntity.NavMeshAgent.remainingDistance < 0.5f)
             {
-                _agentEntity.NavMeshAgent.destination = _path.Waypoints[_targetIndex].position;
+                _agentEntity.NavMeshAgent.destination = crowdPath.Waypoints[_targetIndex].position;
 
-                _targetIndex = (_targetIndex + 1) % _path.Waypoints.Count;
+                _targetIndex = (_targetIndex + 1) % crowdPath.Waypoints.Count;
             }
 
             Debug.Log($"RemainingDistance: {_agentEntity.NavMeshAgent.remainingDistance}");
@@ -146,19 +146,19 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             _remainingDistance = _agentEntity.NavMeshAgent.remainingDistance;
             _localDistance     = Vector3.Distance(_previousTarget.transform.position, _desiredPosition);
             _localJourney      = Mathf.Clamp(1 - _remainingDistance / _localDistance, 0f, 1f);
-            _globalJourney     = (_targetIndex + _localJourney) / _path.Waypoints.Count;
+            _globalJourney     = (_targetIndex + _localJourney) / crowdPath.Waypoints.Count;
             Debug.Log($"GlobalJourneyLate: {_globalJourney}");
         }
 
-        public void Construct(Path path)
+        public void Construct(CrowdPath crowdPath)
         {
-            _path = path;
+            this.crowdPath = crowdPath;
         }
 
         public void Initialize()
         {
             // _targetIndex    = GlobalJourneyToTargetIndex(_globalJourney);
-            _target         = _path.Waypoints[_targetIndex];
+            _target         = crowdPath.Waypoints[_targetIndex];
             _previousTarget = _target;
             _localDistance  = 0f;
             _isTrackable    = true;
@@ -179,23 +179,23 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private int GlobalJourneyToTargetIndex(float journey)
         {
-            if (_path == null)
+            if (crowdPath == null)
             {
                 Debug.LogWarning("Path is null.");
             }
 
-            if (_path.Waypoints == null)
+            if (crowdPath.Waypoints == null)
             {
                 Debug.LogWarning("Path.Waypoints is null.");
             }
 
-            if (_path.Waypoints.Count == 0)
+            if (crowdPath.Waypoints.Count == 0)
             {
                 Debug.LogWarning("Path.Waypoints.Count is 0.");
             }
 
-            var index = (int)(journey * _path.Waypoints.Count);
-            index %= _path.Waypoints.Count;
+            var index = (int)(journey * crowdPath.Waypoints.Count);
+            index %= crowdPath.Waypoints.Count;
             return index;
         }
 
