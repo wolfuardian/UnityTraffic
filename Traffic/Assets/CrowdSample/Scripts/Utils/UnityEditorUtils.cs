@@ -8,7 +8,7 @@ namespace CrowdSample.Scripts.Utils
 {
     public class UnityEditorUtils : UnityEditor.Editor
     {
-        public static void UpdateAll()
+        public static void UpdateAllImmediately()
         {
             foreach (var updatable in FindObjectsOfType<MonoBehaviour>().OfType<IUpdateReceiver>())
             {

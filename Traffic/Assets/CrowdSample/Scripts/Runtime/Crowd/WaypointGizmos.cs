@@ -21,7 +21,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var position = Waypoint.transform.position;
             if (PrevPosition != position)
             {
-                UnityEditorUtils.UpdateAll();
+                UnityEditorUtils.UpdateAllImmediately();
                 PrevPosition = position;
             }
 

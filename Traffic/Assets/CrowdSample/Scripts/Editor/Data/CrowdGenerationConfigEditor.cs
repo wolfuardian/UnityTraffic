@@ -35,7 +35,7 @@ namespace CrowdSample.Scripts.Editor.Data
 
             if (GUI.changed)
             {
-                UnityEditorUtils.UpdateAllGizmos();
+                UnityEditorUtils.UpdateAllImmediately();
             }
 
             SceneView.RepaintAll();
