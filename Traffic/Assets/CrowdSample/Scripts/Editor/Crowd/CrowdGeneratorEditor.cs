@@ -32,7 +32,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             crowdGenerator            = (CrowdGenerator)target;
             pathGoProp                = serializedObject.FindProperty("pathGo");
-            crowdAgentGoProp               = serializedObject.FindProperty("crowdAgentGo");
+            crowdAgentGoProp          = serializedObject.FindProperty("crowdAgentGo");
             crowdAgentConfigProp      = serializedObject.FindProperty("crowdAgentConfig");
             crowdGenerationConfigProp = serializedObject.FindProperty("crowdGenerationConfig");
         }
