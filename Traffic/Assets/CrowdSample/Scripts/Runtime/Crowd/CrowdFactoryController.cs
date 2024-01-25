@@ -8,27 +8,74 @@ using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdFactoryController : MonoBehaviour, IUpdatable
+    public class CrowdFactoryController : MonoBehaviour, IUpdateReceiver
     {
-        public                   Path            path;
-        private                  CrowdFactory    crowdFactory;
-        [SerializeField] private List<Transform> trackingAgents = new List<Transform>();
+        #region Field Declarations
+
+        //
+
+        #endregion
+
+        #region Properties
+
+        //
+
+        #endregion
+
+        #region Unity Methods
+
+        //
+
+        #endregion
+
+        #region Public Methods
+
+        //
+
+        #endregion
+
+        #region Private Methods
+
+        //
+
+        #endregion
+
+        #region Unity Event Methods
+
+        //
+
+        #endregion
+
+        #region Debug and Visualization Methods
+
+        //
+
+        #endregion
+
+
+        public                   CrowdPathController crowdPathController;
+        private                  CrowdFactory        crowdFactory;
+        [SerializeField] private List<Transform>     trackingAgents = new List<Transform>();
 
         private Coroutine spawnRoutineCoroutine;
 
 
-        [SerializeField] private AgentDataConfig agentDataConfig;
+        [SerializeField] private CrowdAgentConfig crowdAgentConfig;
 
-        [SerializeField] private AgentGenerationConfig agentGenerationConfig;
+        [SerializeField] private CrowdGenerationConfig crowdGenerationConfig;
 
         // [SerializeField] private List<GameObject>      crowdAgentPrefabs = new List<GameObject>();
         [SerializeField] private int currentAgentCount;
         [SerializeField] private int totalCreatedCount;
 
+        [SerializeField] private bool isSpawnAgentOnce;
+        [SerializeField] private bool isReverseDirection;
+        [SerializeField] private bool isClosedPath;
 
-        public AgentDataConfig AgentDataConfig => agentDataConfig;
 
-        public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
+        public CrowdAgentConfig CrowdAgentConfig => crowdAgentConfig;
+
+        public CrowdGenerationConfig CrowdGenerationConfig => crowdGenerationConfig;
 
         // public List<GameObject>      CrowdAgentPrefabs     => crowdAgentPrefabs;
         public int CurrentAgentCount => currentAgentCount;
@@ -48,19 +95,19 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Start()
         {
-            if (path == null)
+            if (crowdPathController == null)
             {
                 Debug.LogError("Script: Path 為空，請確認是否有設定。", this);
                 isSpawnable = false;
             }
 
-            if (agentDataConfig == null)
+            if (crowdAgentConfig == null)
             {
                 Debug.LogError("Scriptable object: AgentDataConfig 為空，請確認是否有設定。", this);
                 isSpawnable = false;
             }
 
-            if (agentGenerationConfig == null)
+            if (crowdGenerationConfig == null)
             {
                 Debug.LogError("Scriptable object: AgentGenerationConfig 為空，請確認是否有設定。", this);
                 isSpawnable = false;
@@ -68,15 +115,15 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             if (!isSpawnable) return;
 
-            crowdFactory = new CrowdFactory(agentDataConfig, path);
+            crowdFactory = new CrowdFactory(crowdAgentConfig, crowdPathController);
 
-            if (path.IsSpawnAgentOnce)
+            if (crowdPathController.IsSpawnAgentOnce)
             {
-                var agentSpawnData = path.AgentSpawnData;
+                var agentSpawnData = crowdPathController.AgentSpawnData;
                 foreach (var spawnData in agentSpawnData)
                 {
-                    var prefabIndex = Random.Range(0, AgentDataConfig.AgentPrefabs.Length);
-                    var prefab      = AgentDataConfig.AgentPrefabs[prefabIndex];
+                    var prefabIndex = Random.Range(0, CrowdAgentConfig.AgentPrefabs.Length);
+                    var prefab      = CrowdAgentConfig.AgentPrefabs[prefabIndex];
                     var parent      = transform;
 
                     var agentInstance = crowdFactory.InstantiateAgent(prefab, parent, spawnData);
@@ -88,15 +135,15 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var entity = agentInstance.GetComponent<AgentEntity>();
                     var follow = agentInstance.GetComponent<CrowdPathFollow>();
 
-                    follow.TargetIndex = path.AgentGenerationConfig.IsReverseDirection
+                    follow.TargetIndex = isReverseDirection
                         ? Mathf.CeilToInt(spawnData.curvePos)
                         : Mathf.FloorToInt(spawnData.curvePos);
 
-                    follow.SetNavigateMode(path.AgentGenerationConfig.IsClosedPath
+                    follow.SetNavigateMode(isClosedPath
                         ? CrowdPathFollow.NavigateMode.Loop
                         : CrowdPathFollow.NavigateMode.PingPong);
 
-                    follow.Reverse = path.AgentGenerationConfig.IsReverseDirection;
+                    follow.Reverse = isReverseDirection;
                 }
             }
             else
@@ -113,13 +160,13 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             {
                 // Debug.Log("CurrentAgentCount: " + CurrentAgentCount);
                 // Debug.Log("agentGenerationConfig.MaxCount: " + agentGenerationConfig.MaxCount);
-                if (CurrentAgentCount < agentGenerationConfig.MaxCount)
+                if (CurrentAgentCount < crowdGenerationConfig.MaxCount)
                 {
-                    var prefabIndex = Random.Range(0, AgentDataConfig.AgentPrefabs.Length);
-                    var prefab      = AgentDataConfig.AgentPrefabs[prefabIndex];
+                    var prefabIndex = Random.Range(0, CrowdAgentConfig.AgentPrefabs.Length);
+                    var prefab      = CrowdAgentConfig.AgentPrefabs[prefabIndex];
                     var parent      = transform;
 
-                    var spawnData     = path.AgentSpawnData[0];
+                    var spawnData     = crowdPathController.AgentSpawnData[0];
                     var agentInstance = crowdFactory.InstantiateAgent(prefab, parent, spawnData);
 
 
@@ -132,9 +179,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     var entity = agentInstance.GetComponent<AgentEntity>();
 
                     var follow = agentInstance.GetComponent<CrowdPathFollow>();
-                    follow.Points = path.Waypoints.Select(waypoint => waypoint.position).ToList();
-                    follow.Ranges = path.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius)
-                        .ToList();
+                    follow.PointsSet           = crowdPathController.PointsSet;
+                    follow.RadiusSet           = crowdPathController.RadiusSet;
                     follow.ShouldDestroyOnGoal = true;
                     follow.SetNavigateMode(CrowdPathFollow.NavigateMode.Once);
                     follow.TargetIndex  =  0;
@@ -146,10 +192,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                     totalCreatedCount++;
                     createdIndex++;
 
-                    Debug.Log("gentGenerationConfig.SpawnInterval: " + agentGenerationConfig.SpawnInterval);
+                    Debug.Log("gentGenerationConfig.SpawnInterval: " + crowdGenerationConfig.SpawnInterval);
 
 
-                    yield return new WaitForSeconds(agentGenerationConfig.SpawnInterval);
+                    yield return new WaitForSeconds(crowdGenerationConfig.SpawnInterval);
                 }
                 else
                 {
@@ -168,10 +214,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void Awake()
         {
-            if (path == null) path = GetComponent<Path>();
+            if (crowdPathController == null) crowdPathController = GetComponent<CrowdPathController>();
         }
 
-        public void UpdateGizmo()
+        public void UpdateImmediately()
         {
             FetchGenerationConfigs();
             FetchAgentDataConfig();
@@ -185,7 +231,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void FetchAgentDataConfig()
         {
-            if (AgentDataConfig == null) return;
+            if (CrowdAgentConfig == null) return;
             // SetCurrentAgentCount(AgentDataConfig.MaxAgentCount);
         }
 #endif

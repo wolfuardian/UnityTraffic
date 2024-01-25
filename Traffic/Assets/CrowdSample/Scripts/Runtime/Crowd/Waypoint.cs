@@ -1,3 +1,4 @@
+using CrowdSample.Scripts.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void OnDestroy()
         {
             UpdatePathConfiguration();
+            UnityEditorUtils.UpdateAllImmediately();
         }
 
         private void UpdateRadius()
@@ -36,7 +38,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var parent = transform.parent;
             if (parent == null) return;
 
-            var path = parent.GetComponent<Path>();
+            var path = parent.GetComponent<CrowdPathController>();
             if (path == null) return;
 
             path.UpdatePathConfiguration();

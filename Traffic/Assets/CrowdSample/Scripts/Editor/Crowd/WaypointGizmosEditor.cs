@@ -26,7 +26,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void UpdateGizmos()
         {
-            UnityEditorUtils.UpdateAllGizmos();
+            UnityEditorUtils.UpdateAllImmediately();
             SceneView.RepaintAll();
         }
     }

@@ -37,8 +37,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Start()
         {
-            crowdPathFollow.Points = crowdPathController.Waypoints.Select(waypoint => waypoint.position).ToList();
-            crowdPathFollow.Ranges = crowdPathController.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
+            crowdPathFollow.PointsSet = crowdPathController.PointsSet;
+            crowdPathFollow.RadiusSet = crowdPathController.RadiusSet;
         }
 
         #endregion

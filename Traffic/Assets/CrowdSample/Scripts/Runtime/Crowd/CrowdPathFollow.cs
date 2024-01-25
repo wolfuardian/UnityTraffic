@@ -28,6 +28,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private bool          stopOnNextPoint;
         [SerializeField] private bool          reverse;
         [SerializeField] private bool          shouldDestroyOnGoal;
+        [SerializeField] private int           queueTotalCount;
+        [SerializeField] private int           queueIndex;
 
 
         [SerializeField] private NavMeshAgent navMeshAgent;
@@ -38,23 +40,22 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private float        globalJourney;
         [SerializeField] private float        remainingDistance;
         [SerializeField] private int          count;
-        [SerializeField] private int          totalCreatedCount;
-        [SerializeField] private int          createdIndex;
-        [SerializeField] private float        percentage;
-        [SerializeField] private int          newPriority;
-        private                  bool         isInitialized;
+
+        [SerializeField] private float percentage;
+        [SerializeField] private int   navPriority;
+        private                  bool  isInitialized;
 
         #endregion
 
         #region Properties
 
-        public List<Vector3> Points
+        public List<Vector3> PointsSet
         {
             get => points ??= new List<Vector3>();
             set => points = value;
         }
 
-        public List<float> Ranges
+        public List<float> RadiusSet
         {
             get => ranges ??= new List<float>();
             set => ranges = value;
@@ -96,10 +97,28 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => shouldDestroyOnGoal = value;
         }
 
+        public int QueueIndex
+        {
+            get => queueIndex;
+            set => queueIndex = value;
+        }
+
+        public int QueueTotalCount
+        {
+            get => queueTotalCount;
+            set => queueTotalCount = value;
+        }
+
         public int CreatedIndex
         {
-            get => createdIndex;
-            set => createdIndex = value;
+            get => queueIndex;
+            set => queueIndex = value;
+        }
+
+        public int Priority
+        {
+            get => navPriority;
+            set => navPriority = value;
         }
 
         public UnityAction DestroyEvent;
@@ -172,11 +191,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 Destroy(gameObject);
             }
 
-            createdIndex = transform.parent.GetComponent<AgentFactory>().TrackingAgents.IndexOf(transform);
-            totalCreatedCount = transform.parent.GetComponent<AgentFactory>().TrackingAgents.Count;
-            percentage = createdIndex / (float)totalCreatedCount;
-            newPriority = (int)(percentage * 100);
-            navMeshAgent.avoidancePriority = newPriority;
+            queueIndex = transform.parent.GetComponent<CrowdFactoryController>().TrackingAgents.IndexOf(transform);
+            queueTotalCount = transform.parent.GetComponent<CrowdFactoryController>().TrackingAgents.Count;
+            percentage = queueIndex / (float)queueTotalCount;
+            navPriority = (int)(percentage * 100);
+            navMeshAgent.avoidancePriority = navPriority;
         }
 
         private void OnDestroy()

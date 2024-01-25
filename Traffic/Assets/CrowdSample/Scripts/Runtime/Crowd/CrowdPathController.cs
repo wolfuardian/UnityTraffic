@@ -10,7 +10,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private List<Transform>  waypoints;
+        [SerializeField] private List<Vector3>    pointsSet;
+        [SerializeField] private List<float>      radiusSet;
         [SerializeField] private AgentSpawnData[] agentSpawnData;
         [SerializeField] private bool             isSpawnAgentOnce;
         [SerializeField] private bool             isClosedPath;
@@ -24,15 +25,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Properties
 
-        public List<Transform> Waypoints => waypoints ??= new List<Transform>();
-
-        public AgentSpawnData[] AgentSpawnData => agentSpawnData ??= Array.Empty<AgentSpawnData>();
-
-        public bool IsSpawnAgentOnce => isSpawnAgentOnce;
-
-        public bool IsClosedPath => isClosedPath;
-
-        public bool IsUseSpacing => isUseSpacing;
+        public List<Vector3>    PointsSet        => pointsSet ??= new List<Vector3>();
+        public List<float>      RadiusSet        => radiusSet ??= new List<float>();
+        public AgentSpawnData[] AgentSpawnData   => agentSpawnData ??= Array.Empty<AgentSpawnData>();
+        public bool             IsSpawnAgentOnce => isSpawnAgentOnce;
+        public bool             IsClosedPath     => isClosedPath;
+        public bool             IsUseSpacing     => isUseSpacing;
 
         public int Count
         {
@@ -54,11 +52,24 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             set => offset = Mathf.Max(value, 0f);
         }
 
+        public float   GetTotalLength()        => PathResolver.GetTotalLength(PointsSet, IsClosedPath);
+        public Vector3 GetPositionAt(float  t) => PathResolver.GetPositionAt(PointsSet, IsClosedPath, t);
+        public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(PointsSet, IsClosedPath, t);
+
         #endregion
 
-        public float   GetTotalLength()        => PathResolver.GetTotalLength(Waypoints, IsClosedPath);
-        public Vector3 GetPositionAt(float  t) => PathResolver.GetPositionAt(Waypoints, IsClosedPath, t);
-        public Vector3 GetDirectionAt(float t) => PathResolver.GetDirectionAt(Waypoints, IsClosedPath, t);
+        #region Unity Methods
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            UpdatePathConfiguration();
+        }
+#endif
+
+        #endregion
+
+        #region Public Methods
 
         public Vector3 GetRotationAt(float t)
         {
@@ -67,16 +78,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         }
 
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            UpdatePathConfiguration();
-        }
-
-        public void UpdateImmediately()
-        {
-            UpdatePathConfiguration();
-        }
-
         public void UpdatePathConfiguration()
         {
             FetchWaypoints();
@@ -85,9 +86,21 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         }
 #endif
 
+        #endregion
+
+#if UNITY_EDITOR
+        public void UpdateImmediately()
+        {
+            UpdatePathConfiguration();
+        }
+#endif
+
+        #region Private Methods
+
         private void FetchWaypoints()
         {
-            waypoints = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform).ToList();
+            pointsSet = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform.position).ToList();
+            radiusSet = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.Radius).ToList();
         }
 
         private void FetchGenerationConfigs()
@@ -109,7 +122,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void UpdatePath()
         {
-            if (Waypoints.Count < 2) return;
+            if (PointsSet.Count < 2) return;
 
             CalculatePositionsAndDirections();
         }
@@ -167,9 +180,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var curveNPos = distance / totalLength;
             var position  = GetPositionAt(curveNPos);
             var direction = GetDirectionAt(curveNPos);
-            var curvePos  = curveNPos * Waypoints.Count;
+            var curvePos  = curveNPos * PointsSet.Count;
 
             agentSpawnData[index] = new AgentSpawnData(position, direction, curvePos);
         }
+
+        #endregion
     }
 }

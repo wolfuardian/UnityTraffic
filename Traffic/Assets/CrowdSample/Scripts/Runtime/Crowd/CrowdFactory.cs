@@ -7,13 +7,13 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 {
     public class CrowdFactory
     {
-        private readonly CrowdAgentConfig config;
-        private readonly CrowdPath            crowdPath;
+        private readonly CrowdAgentConfig    config;
+        private readonly CrowdPathController crowdPathController;
 
-        public CrowdFactory(CrowdAgentConfig config, CrowdPath crowdPath)
+        public CrowdFactory(CrowdAgentConfig config, CrowdPathController crowdPathController)
         {
-            this.config = config;
-            this.crowdPath   = crowdPath;
+            this.config              = config;
+            this.crowdPathController = crowdPathController;
         }
 
         public GameObject InstantiateAgent(GameObject prefab, Transform parent, AgentSpawnData spawnData)
@@ -31,7 +31,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void ConfigureAgentEntity(GameObject agentInstance, AgentSpawnData spawnData)
         {
             var entity = agentInstance.AddComponent<AgentEntity>();
-            entity.SetShouldNotDestroy(crowdPath.IsSpawnAgentOnce);
+            entity.SetShouldNotDestroy(crowdPathController.IsSpawnAgentOnce);
             entity.SetSpeed(Random.Range(config.MinSpeed, config.MaxSpeed));
             entity.SetAgentID(config.permissionID);
             entity.SetAngularSpeed(config.AngularSpeed);
@@ -41,30 +41,21 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             entity.NavMeshAgent.autoBraking = false;
         }
 
-        private void ConfigureAgentTracker(GameObject agentInstance, AgentSpawnData spawnData)
-        {
-            var tracker = agentInstance.AddComponent<AgentTracker>();
-            tracker.AgentEntityInstance = agentInstance.GetComponent<AgentEntity>();
-            tracker.GlobalJourney       = spawnData.curvePos;
-        }
-
         private void ConfigurePathFollow(GameObject agentInstance, AgentSpawnData spawnData)
         {
             var follow = agentInstance.AddComponent<CrowdPathFollow>();
-            follow.Points = crowdPath.Waypoints.Select(waypoint => waypoint.position).ToList();
-            follow.Ranges = crowdPath.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
+            follow.PointsSet           = crowdPathController.PointsSet;
+            follow.RadiusSet           = crowdPathController.RadiusSet;
             follow.ShouldDestroyOnGoal = true;
-            follow.TargetIndex = Mathf.FloorToInt(spawnData.curvePos) % crowdPath.Waypoints.Count;
+            follow.TargetIndex         = Mathf.FloorToInt(spawnData.curvePos) % crowdPathController.PointsSet.Count;
             // follow.TargetIndex  = spawnData.targetIndex;
         }
 
         private Vector3 GetSpawnPosition()
         {
-            var point          = crowdPath.Waypoints[0];
-            var crowdPathPoint = point.GetComponent<Waypoint>();
-            var radius         = crowdPathPoint.Radius;
-            var position       = point.transform.position;
-            var spawnPosition  = SpatialUtils.GetRandomPointInRadius(position, radius);
+            var point         = crowdPathController.PointsSet[0];
+            var radius        = crowdPathController.RadiusSet[0];
+            var spawnPosition = SpatialUtils.GetRandomPointInRadius(point, radius);
             return spawnPosition;
         }
     }

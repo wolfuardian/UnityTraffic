@@ -41,12 +41,15 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             var path           = crowdPathBuilder.CrowdPathController;
             var parent         = crowdPathBuilder.transform;
-            var newWaypoint    = UnityUtils.CreatePoint("Waypoint" + path.Waypoints.Count, hitPoint, parent);
+            var newWaypoint    = UnityUtils.CreatePoint("Waypoint" + path.PointsSet.Count, hitPoint, parent);
             var waypointGizmos = newWaypoint.gameObject.AddComponent<WaypointGizmos>();
 #if UNITY_EDITOR
             InternalEditorUtility.SetIsInspectorExpanded(waypointGizmos, true);
 #endif
-            path.Waypoints.Add(newWaypoint);
+
+            var waypoint = newWaypoint.GetComponent<Waypoint>();
+            path.PointsSet.Add(newWaypoint.position);
+            path.RadiusSet.Add(waypoint.Radius);
         }
 
         private void ToggleEditMode()
@@ -150,7 +153,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset All Waypoints"))
             {
-                var waypoints = crowdPathBuilder.CrowdPathController.Waypoints.Where(point => point != null);
+                var waypoints = crowdPathBuilder.Waypoints;
 
                 UnityUtils.ClearPoints(waypoints);
             }
