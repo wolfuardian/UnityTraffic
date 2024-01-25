@@ -7,7 +7,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private CrowdPath crowdPath;
+        [SerializeField] private CrowdPathController crowdPathController;
 
         private CrowdPathFollow crowdPathFollow;
 
@@ -29,7 +29,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
                 Debug.LogWarning($"物件: {name} 找不到 PathFollow 腳本，請確認是否有設定。", this);
             }
 
-            if (crowdPath == null)
+            if (crowdPathController == null)
             {
                 Debug.LogError($"[錯誤] 物件 '{name}' 上找不到 Path 組件。請在 PathFollowController 的檢視面板中指定一個 Path 組件。", this);
             }
@@ -37,8 +37,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void Start()
         {
-            crowdPathFollow.Points = crowdPath.Waypoints.Select(waypoint => waypoint.position).ToList();
-            crowdPathFollow.Ranges = crowdPath.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
+            crowdPathFollow.Points = crowdPathController.Waypoints.Select(waypoint => waypoint.position).ToList();
+            crowdPathFollow.Ranges = crowdPathController.Waypoints.Select(waypoint => waypoint.GetComponent<Waypoint>().Radius).ToList();
         }
 
         #endregion

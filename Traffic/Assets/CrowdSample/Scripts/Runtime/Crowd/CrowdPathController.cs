@@ -7,20 +7,19 @@ using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class Path : MonoBehaviour, IUpdatable
+    public class CrowdPathController : MonoBehaviour, IUpdateReceiver
     {
-        #region Private Variables
+        #region Field Declarations
 
-        [SerializeField] private List<Transform>       waypoints;
-        [SerializeField] private AgentGenerationConfig agentGenerationConfig;
-        [SerializeField] private AgentSpawnData[]      agentSpawnData;
-        [SerializeField] private bool                  isSpawnAgentOnce;
-        [SerializeField] private bool                  isClosedPath;
-        [SerializeField] private bool                  isUseSpacing = true;
-        [SerializeField] private int                   count        = 10;
-        [SerializeField] private int                   countMax     = 60;
-        [SerializeField] private float                 spacing      = 1.0f;
-        [SerializeField] private float                 offset;
+        [SerializeField] private List<Transform>  waypoints;
+        [SerializeField] private AgentSpawnData[] agentSpawnData;
+        [SerializeField] private bool             isSpawnAgentOnce;
+        [SerializeField] private bool             isClosedPath;
+        [SerializeField] private bool             isUseSpacing = true;
+        [SerializeField] private int              count        = 10;
+        [SerializeField] private int              countMax     = 60;
+        [SerializeField] private float            spacing      = 1.0f;
+        [SerializeField] private float            offset;
 
         /// <summary>
         /// 路徑中的航點。
@@ -30,8 +29,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         /// <summary>
         /// 代理生成配置。
         /// </summary>
-        public AgentGenerationConfig AgentGenerationConfig => agentGenerationConfig;
-
         /// <summary>
         /// 代理生成數據。
         /// </summary>
@@ -99,16 +96,10 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            if (agentGenerationConfig == null)
-            {
-                Debug.LogError("Scriptable Object: AgentGenerationConfig 為空，請確認是否有設定。", this);
-                return;
-            }
-
             UpdatePathConfiguration();
         }
 
-        public void UpdateGizmo()
+        public void UpdateImmediately()
         {
             UpdatePathConfiguration();
         }
@@ -128,19 +119,19 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void FetchGenerationConfigs()
         {
-            if (AgentGenerationConfig == null) return;
-            ApplyGenerationConfigSettings();
+            // if (CrowdGenerationConfig == null) return;
+            // ApplyGenerationConfigSettings();
         }
 
         private void ApplyGenerationConfigSettings()
         {
-            isSpawnAgentOnce = AgentGenerationConfig.IsSpawnAgentOnce;
-            isClosedPath     = AgentGenerationConfig.IsClosedPath;
-            isUseSpacing     = AgentGenerationConfig.IsUseSpacing;
-            count            = AgentGenerationConfig.InstantCount;
-            countMax         = AgentGenerationConfig.MaxCount;
-            offset           = AgentGenerationConfig.Offset;
-            spacing          = AgentGenerationConfig.Spacing;
+            // isSpawnAgentOnce = CrowdGenerationConfig.IsSpawnAgentOnce;
+            // isClosedPath     = CrowdGenerationConfig.IsClosedPath;
+            // isUseSpacing     = CrowdGenerationConfig.IsUseSpacing;
+            // count            = CrowdGenerationConfig.InstantCount;
+            // countMax         = CrowdGenerationConfig.MaxCount;
+            // offset           = CrowdGenerationConfig.Offset;
+            // spacing          = CrowdGenerationConfig.Spacing;
         }
 
         private void UpdatePath()

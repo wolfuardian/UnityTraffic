@@ -5,7 +5,7 @@ using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    [RequireComponent(typeof(CrowdPath))]
+    [RequireComponent(typeof(CrowdPathController))]
     [ExecuteInEditMode]
     public class CrowdPathBuilder : MonoBehaviour, IUpdateReceiver
     {
@@ -13,9 +13,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public EditMode editMode = EditMode.None;
 
-        [SerializeField] private CrowdPath       crowdPath;
-        [SerializeField] private List<Transform> waypoints;
-        [SerializeField] private Vector2         arrowScale = new Vector2(2f, 2f);
+        [SerializeField] private CrowdPathController crowdPathController;
+        [SerializeField] private List<Transform>     waypoints;
+        [SerializeField] private Vector2             arrowScale = new Vector2(2f, 2f);
 
         public enum EditMode
         {
@@ -27,9 +27,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Properties
 
-        public CrowdPath CrowdPath   => crowdPath ??= GetComponent<CrowdPath>();
-        public Vector2   ArrowScale  => arrowScale;
-        public bool      IsPathValid => crowdPath.Waypoints.Count >= 2;
+        public CrowdPathController CrowdPathController => crowdPathController ??= GetComponent<CrowdPathController>();
+        public Vector2             ArrowScale          => arrowScale;
+        public bool                IsPathValid         => crowdPathController.Waypoints.Count >= 2;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void Awake()
         {
-            if (crowdPath == null) crowdPath = GetComponent<CrowdPath>();
+            if (crowdPathController == null) crowdPathController = GetComponent<CrowdPathController>();
         }
 
         private void OnDrawGizmos()
@@ -75,7 +75,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void DrawAgentSpawnPoints()
         {
-            foreach (var spawnData in crowdPath.AgentSpawnData)
+            foreach (var spawnData in crowdPathController.AgentSpawnData)
             {
                 GizmosUtils.ThicknessArrow(spawnData.position, spawnData.direction, Color.yellow, arrowScale);
             }
@@ -84,7 +84,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void DrawPathWaypoints()
         {
             var waypointCount        = waypoints.Count;
-            var actualWaypointsCount = crowdPath.IsClosedPath ? waypointCount : waypointCount - 1;
+            var actualWaypointsCount = crowdPathController.IsClosedPath ? waypointCount : waypointCount - 1;
 
             for (var i = 0; i < actualWaypointsCount; i++)
             {
