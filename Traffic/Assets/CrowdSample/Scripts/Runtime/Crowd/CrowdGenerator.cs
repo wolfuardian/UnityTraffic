@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using CrowdSample.Scripts.Runtime.Data;
+using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdGenerator : MonoBehaviour
+    public class CrowdGenerator : MonoBehaviour, IUpdateReceiver
     {
         #region Field Declarations
 
@@ -37,6 +38,17 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
+        #region Unity Methods
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            FetchCrowdGenerationConfigs();
+        }
+#endif
+
+        #endregion
+
         #region Public Methods
 
         public void CreatePathGo()
@@ -59,6 +71,37 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             newCrowdAgentGo.AddComponent<CrowdFactoryController>();
 
             crowdAgentGo = newCrowdAgentGo;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void FetchCrowdGenerationConfigs()
+        {
+            if (CrowdGenerationConfig == null) return;
+            ApplyGenerationConfigSettings();
+        }
+
+        private void ApplyGenerationConfigSettings()
+        {
+            var pathController = pathGo.GetComponent<CrowdPathController>();
+            pathController.IsSpawnAgentOnce = CrowdGenerationConfig.IsSpawnAgentOnce;
+            pathController.IsClosedPath     = CrowdGenerationConfig.IsClosedPath;
+            pathController.IsUseSpacing     = CrowdGenerationConfig.IsUseSpacing;
+            pathController.Count            = CrowdGenerationConfig.InstantCount;
+            pathController.CountMax         = CrowdGenerationConfig.MaxCount;
+            pathController.Offset           = CrowdGenerationConfig.Offset;
+            pathController.Spacing          = CrowdGenerationConfig.Spacing;
+        }
+
+        #endregion
+
+        #region Implementation Methods
+
+        public void UpdateImmediately()
+        {
+            FetchCrowdGenerationConfigs();
         }
 
         #endregion
