@@ -9,7 +9,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         #region Field Declarations
 
         [SerializeField] private GameObject            pathGo;
-        [SerializeField] private GameObject            crowdGo;
+        [SerializeField] private GameObject            crowdAgentGo;
         [SerializeField] private CrowdAgentConfig      crowdAgentConfig;
         [SerializeField] private CrowdGenerationConfig crowdGenerationConfig;
 
@@ -17,14 +17,24 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Properties
 
-        public GameObject            PathGo                => pathGo;
-        public GameObject            CrowdGo               => crowdGo;
+        public GameObject PathGo
+        {
+            get => pathGo;
+            set => pathGo = value;
+        }
+
+        public GameObject CrowdAgentGo
+        {
+            get => crowdAgentGo;
+            set => crowdAgentGo = value;
+        }
+
         public CrowdAgentConfig      CrowdAgentConfig      => crowdAgentConfig;
         public CrowdGenerationConfig CrowdGenerationConfig => crowdGenerationConfig;
 
-        public bool IsPathGoCreated  => pathGo != null;
-        public bool IsCrowdGoCreated => crowdGo != null;
-        public bool Initialized      => IsPathGoCreated && IsCrowdGoCreated;
+        public bool IsPathGoCreated       => pathGo != null;
+        public bool IsCrowdAgentGoCreated => crowdAgentGo != null;
+        public bool Initialized           => IsPathGoCreated && IsCrowdAgentGoCreated;
 
         #endregion
 
@@ -36,25 +46,25 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Public Methods
 
-        public void CreatePathSingleton()
+        public void CreatePathGo()
         {
             if (IsPathGoCreated) return;
 
-            var newPath = new GameObject("Path_Root");
-            newPath.transform.SetParent(transform);
-            newPath.AddComponent<PathBuilder>();
+            var newPathGo = new GameObject("_Path");
+            newPathGo.transform.SetParent(transform);
+            newPathGo.AddComponent<CrowdPathBuilder>();
 
-            pathGo = newPath;
+            pathGo = newPathGo;
         }
 
-        public void CreateCrowdSingleton()
+        public void CreateCrowdAgentGo()
         {
-            if (IsCrowdGoCreated) return;
+            if (IsCrowdAgentGoCreated) return;
 
-            var newCrowd = new GameObject("Crowd_Root");
-            newCrowd.transform.SetParent(transform);
+            var newCrowdAgentGo = new GameObject("_CrowdAgent");
+            newCrowdAgentGo.transform.SetParent(transform);
 
-            crowdGo = newCrowd;
+            crowdAgentGo = newCrowdAgentGo;
         }
 
         #endregion
@@ -75,7 +85,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public void UpdateGizmo()
         {
-            throw new System.NotImplementedException();
         }
 
         #endregion

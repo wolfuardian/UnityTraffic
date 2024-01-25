@@ -12,6 +12,8 @@ namespace CrowdSample.Scripts.Editor.Crowd
         #region Field Declarations
 
         private CrowdGenerator     crowdGenerator;
+        private SerializedProperty pathGoProp;
+        private SerializedProperty crowdAgentGoProp;
         private SerializedProperty crowdAgentConfigProp;
         private SerializedProperty crowdGenerationConfigProp;
 
@@ -29,6 +31,8 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void OnEnable()
         {
             crowdGenerator            = (CrowdGenerator)target;
+            pathGoProp                = serializedObject.FindProperty("pathGo");
+            crowdAgentGoProp               = serializedObject.FindProperty("crowdAgentGo");
             crowdAgentConfigProp      = serializedObject.FindProperty("crowdAgentConfig");
             crowdGenerationConfigProp = serializedObject.FindProperty("crowdGenerationConfig");
         }
@@ -68,30 +72,32 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawInitializationSection()
         {
             EditorGUI.BeginDisabledGroup(crowdGenerator.IsPathGoCreated);
-            if (GUILayout.Button("Create Path_Root"))
+            if (GUILayout.Button("Create _Path"))
             {
-                crowdGenerator.CreatePathSingleton();
+                crowdGenerator.CreatePathGo();
             }
 
-            EditorGUILayout.ObjectField("", crowdGenerator.PathGo, typeof(GameObject), true);
+            EditorGUILayout.PropertyField(pathGoProp);
             EditorGUI.EndDisabledGroup();
 
-            EditorGUI.BeginDisabledGroup(crowdGenerator.IsCrowdGoCreated);
+            EditorGUI.BeginDisabledGroup(crowdGenerator.IsCrowdAgentGoCreated);
 
-            if (GUILayout.Button("Create Crowd_Root"))
+            if (GUILayout.Button("Create _CrowdAgent"))
             {
-                crowdGenerator.CreateCrowdSingleton();
+                crowdGenerator.CreateCrowdAgentGo();
             }
 
-            EditorGUILayout.ObjectField("", crowdGenerator.CrowdGo, typeof(GameObject), true);
+            EditorGUILayout.PropertyField(crowdAgentGoProp);
             EditorGUI.EndDisabledGroup();
 
             if (crowdGenerator.Initialized) return;
 
             var errorCount = 0;
             if (!crowdGenerator.IsPathGoCreated) errorCount++;
-            if (!crowdGenerator.IsCrowdGoCreated) errorCount++;
+            if (!crowdGenerator.IsCrowdAgentGoCreated) errorCount++;
             EditorGUILayout.HelpBox($"請先完成初始化。還有 {errorCount} 個物件還沒初始化", MessageType.Warning);
+
+            serializedObject.ApplyModifiedProperties();
         }
 
         private void DrawInitCrowdConfigSection()
