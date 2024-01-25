@@ -88,9 +88,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
-
             serializedObject.Update();
 
             DrawEditModeSwitch();
