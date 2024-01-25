@@ -2,7 +2,6 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-using CrowdSample.Scripts.Runtime.Data;
 using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
@@ -21,60 +20,34 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private float            spacing      = 1.0f;
         [SerializeField] private float            offset;
 
-        /// <summary>
-        /// 路徑中的航點。
-        /// </summary>
+        #endregion
+
+        #region Properties
+
         public List<Transform> Waypoints => waypoints ??= new List<Transform>();
 
-        /// <summary>
-        /// 代理生成配置。
-        /// </summary>
-        /// <summary>
-        /// 代理生成數據。
-        /// </summary>
         public AgentSpawnData[] AgentSpawnData => agentSpawnData ??= Array.Empty<AgentSpawnData>();
 
-        /// <summary>
-        /// 是否只生成一次代理。
-        /// </summary>
         public bool IsSpawnAgentOnce => isSpawnAgentOnce;
 
-        /// <summary>
-        /// 路徑是否閉合。
-        /// </summary>
         public bool IsClosedPath => isClosedPath;
 
-        /// <summary>
-        /// 是否使用間隔。
-        /// </summary>
         public bool IsUseSpacing => isUseSpacing;
 
-        /// <summary>
-        /// 代理的數量，限制在 0 到 CountMax 之間。
-        /// </summary>
         public int Count
         {
             get => Mathf.Clamp(count, 0, countMax);
             set => count = Mathf.Clamp(value, 0, countMax);
         }
 
-        /// <summary>
-        /// 代理數量的最大值。
-        /// </summary>
         public int CountMax => countMax;
 
-        /// <summary>
-        /// 代理間的間隔，最小為 0.1。
-        /// </summary>
         public float Spacing
         {
             get => Mathf.Max(spacing, 0.1f);
             set => spacing = Mathf.Max(value, 0.1f);
         }
 
-        /// <summary>
-        /// 偏移量，最小為 0。
-        /// </summary>
         public float Offset
         {
             get => Mathf.Max(offset, 0f);
