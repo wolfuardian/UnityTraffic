@@ -9,15 +9,15 @@ using CrowdSample.Scripts.Runtime.Crowd;
 namespace CrowdSample.Scripts.Editor.Crowd
 {
     [CustomEditor(typeof(CrowdPathBuilder))]
-    public class PathBuilderEditor : UnityEditor.Editor
+    public class CrowdPathBuilderEditor : UnityEditor.Editor
     {
-        private CrowdPathBuilder        crowdPathBuilder;
+        private CrowdPathBuilder   crowdPathBuilder;
         private SerializedProperty waypointsProp;
 
         private void OnEnable()
         {
-            crowdPathBuilder   = (CrowdPathBuilder)target;
-            
+            crowdPathBuilder = (CrowdPathBuilder)target;
+
             waypointsProp = new SerializedObject(crowdPathBuilder.CrowdPath).FindProperty("waypoints");
         }
 
@@ -56,7 +56,8 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void HandleSceneClickToAddWaypoint()
         {
-            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add || !UnityUtils.IsLeftMouseButtonDown()) return;
+            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add ||
+                !UnityUtils.IsLeftMouseButtonDown()) return;
             OnAddWaypoint();
             Event.current.Use();
         }
@@ -213,7 +214,8 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void ToggleEditMode()
         {
             crowdPathBuilder.editMode = (CrowdPathBuilder.EditMode)(((int)crowdPathBuilder.editMode + 1) %
-                                                          Enum.GetNames(typeof(CrowdPathBuilder.EditMode)).Length);
+                                                                    Enum.GetNames(typeof(CrowdPathBuilder.EditMode))
+                                                                        .Length);
 
             switch (crowdPathBuilder.editMode)
             {
