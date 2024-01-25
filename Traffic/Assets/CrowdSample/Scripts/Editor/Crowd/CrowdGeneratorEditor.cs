@@ -77,7 +77,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
                 crowdGenerator.CreatePathGo();
             }
 
-            EditorGUILayout.PropertyField(pathGoProp);
+            EditorGUILayout.PropertyField(pathGoProp, new GUIContent("路徑物件"));
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.BeginDisabledGroup(crowdGenerator.IsCrowdAgentGoCreated);
@@ -87,7 +87,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
                 crowdGenerator.CreateCrowdAgentGo();
             }
 
-            EditorGUILayout.PropertyField(crowdAgentGoProp);
+            EditorGUILayout.PropertyField(crowdAgentGoProp, new GUIContent("人流代理物件"));
             EditorGUI.EndDisabledGroup();
 
             if (crowdGenerator.Initialized) return;
@@ -102,7 +102,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DrawInitCrowdConfigSection()
         {
-            EditorGUILayout.PropertyField(crowdGenerationConfigProp, new GUIContent("人流生成設定"));
+            EditorGUILayout.PropertyField(crowdGenerationConfigProp, new GUIContent("生成設定"));
         }
 
         private void DrawCrowdSection(CrowdGenerationConfig config)
@@ -111,7 +111,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DrawInitAgentConfigSection()
         {
-            EditorGUILayout.PropertyField(crowdAgentConfigProp, new GUIContent("個體設定"));
+            EditorGUILayout.PropertyField(crowdAgentConfigProp, new GUIContent("代理設定"));
         }
 
         private void DrawAgentSection(CrowdAgentConfig config)

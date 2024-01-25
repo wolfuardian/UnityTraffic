@@ -115,7 +115,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawEditModeSwitch()
         {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("Mode", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("編輯模式", EditorStyles.boldLabel);
             DrawCurrentEditMode();
 
             if (GUILayout.Button("Toggle Mode", GUILayout.Height(48)))
@@ -146,7 +146,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawActionsSection()
         {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("動作", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset All Waypoints"))
             {
@@ -163,7 +163,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             var headerStyle = UnityEditorUtils.CreateHeaderStyle(FontStyle.Bold, 12);
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("Point Config", headerStyle);
+            EditorGUILayout.LabelField("路徑點設定", headerStyle);
             if (GUILayout.Button(isConfigPanelExpanded
                     ? "Close Waypoint Config Panel"
                     : "Open Waypoint Config Panel"))
