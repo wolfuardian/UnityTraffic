@@ -67,30 +67,30 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DrawInitializationSection()
         {
-            EditorGUI.BeginDisabledGroup(crowdGenerator.IsPathCreated);
+            EditorGUI.BeginDisabledGroup(crowdGenerator.IsPathGoCreated);
             if (GUILayout.Button("Create Path_Root"))
             {
                 crowdGenerator.CreatePathSingleton();
             }
 
-            EditorGUILayout.ObjectField("", crowdGenerator.PathSingleton, typeof(GameObject), true);
+            EditorGUILayout.ObjectField("", crowdGenerator.PathGo, typeof(GameObject), true);
             EditorGUI.EndDisabledGroup();
 
-            EditorGUI.BeginDisabledGroup(crowdGenerator.IsCrowdCreated);
+            EditorGUI.BeginDisabledGroup(crowdGenerator.IsCrowdGoCreated);
 
             if (GUILayout.Button("Create Crowd_Root"))
             {
                 crowdGenerator.CreateCrowdSingleton();
             }
 
-            EditorGUILayout.ObjectField("", crowdGenerator.CrowdSingleton, typeof(GameObject), true);
+            EditorGUILayout.ObjectField("", crowdGenerator.CrowdGo, typeof(GameObject), true);
             EditorGUI.EndDisabledGroup();
 
             if (crowdGenerator.Initialized) return;
 
             var errorCount = 0;
-            if (!crowdGenerator.IsPathCreated) errorCount++;
-            if (!crowdGenerator.IsCrowdCreated) errorCount++;
+            if (!crowdGenerator.IsPathGoCreated) errorCount++;
+            if (!crowdGenerator.IsCrowdGoCreated) errorCount++;
             EditorGUILayout.HelpBox($"請先完成初始化。還有 {errorCount} 個物件還沒初始化", MessageType.Warning);
         }
 

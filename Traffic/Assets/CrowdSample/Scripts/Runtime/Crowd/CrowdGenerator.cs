@@ -8,8 +8,8 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private GameObject            pathSingleton;
-        [SerializeField] private GameObject            crowdSingleton;
+        [SerializeField] private GameObject            pathGo;
+        [SerializeField] private GameObject            crowdGo;
         [SerializeField] private CrowdAgentConfig      crowdAgentConfig;
         [SerializeField] private CrowdGenerationConfig crowdGenerationConfig;
 
@@ -17,14 +17,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Properties
 
-        public GameObject            PathSingleton         => pathSingleton;
-        public GameObject            CrowdSingleton        => crowdSingleton;
+        public GameObject            PathGo                => pathGo;
+        public GameObject            CrowdGo               => crowdGo;
         public CrowdAgentConfig      CrowdAgentConfig      => crowdAgentConfig;
         public CrowdGenerationConfig CrowdGenerationConfig => crowdGenerationConfig;
 
-        public bool IsPathCreated  => pathSingleton != null;
-        public bool IsCrowdCreated => crowdSingleton != null;
-        public bool Initialized    => IsPathCreated && IsCrowdCreated;
+        public bool IsPathGoCreated  => pathGo != null;
+        public bool IsCrowdGoCreated => crowdGo != null;
+        public bool Initialized      => IsPathGoCreated && IsCrowdGoCreated;
 
         #endregion
 
@@ -38,23 +38,23 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public void CreatePathSingleton()
         {
-            if (IsPathCreated) return;
+            if (IsPathGoCreated) return;
 
             var newPath = new GameObject("Path_Root");
             newPath.transform.SetParent(transform);
             newPath.AddComponent<PathBuilder>();
 
-            pathSingleton = newPath;
+            pathGo = newPath;
         }
 
         public void CreateCrowdSingleton()
         {
-            if (IsCrowdCreated) return;
+            if (IsCrowdGoCreated) return;
 
             var newCrowd = new GameObject("Crowd_Root");
             newCrowd.transform.SetParent(transform);
 
-            crowdSingleton = newCrowd;
+            crowdGo = newCrowd;
         }
 
         #endregion
