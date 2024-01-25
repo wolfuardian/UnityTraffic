@@ -60,9 +60,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private Coroutine spawnRoutineCoroutine;
 
 
-        [SerializeField] private CrowdAgentConfig crowdAgentConfig;
-
-        [SerializeField] private CrowdGenerationConfig crowdGenerationConfig;
 
         // [SerializeField] private List<GameObject>      crowdAgentPrefabs = new List<GameObject>();
         [SerializeField] private int currentAgentCount;
@@ -72,18 +69,13 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         [SerializeField] private bool isReverseDirection;
         [SerializeField] private bool isClosedPath;
 
-
-        public CrowdAgentConfig CrowdAgentConfig => crowdAgentConfig;
-
-        public CrowdGenerationConfig CrowdGenerationConfig => crowdGenerationConfig;
-
         // public List<GameObject>      CrowdAgentPrefabs     => crowdAgentPrefabs;
         public int CurrentAgentCount => currentAgentCount;
         public int TotalCreatedCount => totalCreatedCount;
 
         public void SetCurrentAgentCount(int value) => currentAgentCount = value;
 
-        [SerializeField] private bool isSpawnable = true;
+        [SerializeField] private bool isSpawnable;
 
         public List<Transform> TrackingAgents => trackingAgents;
 
@@ -98,18 +90,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             if (crowdPathController == null)
             {
                 Debug.LogError("Script: Path 為空，請確認是否有設定。", this);
-                isSpawnable = false;
-            }
-
-            if (crowdAgentConfig == null)
-            {
-                Debug.LogError("Scriptable object: AgentDataConfig 為空，請確認是否有設定。", this);
-                isSpawnable = false;
-            }
-
-            if (crowdGenerationConfig == null)
-            {
-                Debug.LogError("Scriptable object: AgentGenerationConfig 為空，請確認是否有設定。", this);
                 isSpawnable = false;
             }
 

@@ -10,15 +10,15 @@ namespace CrowdSample.Scripts.Runtime.Data
 
         public GenerationMode generationMode = GenerationMode.InfinityFlow;
 
-        [SerializeField] private bool  isSpawnAgentOnce = true;
-        [SerializeField] private bool  isReverseDirection;
-        [SerializeField] private bool  isClosedPath  = true;
-        [SerializeField] private bool  isUseSpacing  = true;
-        [SerializeField] private int   instantCount  = 15;
         [SerializeField] private float spawnInterval = 2f;
+        [SerializeField] private int   instantCount  = 15;
         [SerializeField] private int   maxCount      = 100;
         [SerializeField] private float spacing       = 5f;
         [SerializeField] private float offset;
+        [SerializeField] private bool  isSpawnAgentOnce = true;
+        [SerializeField] private bool  isReverseDirection;
+        [SerializeField] private bool  isClosedPath = true;
+        [SerializeField] private bool  isUseSpacing = true;
 
         public enum GenerationMode
         {

@@ -5,16 +5,36 @@ using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
+    public class CrowdFactoryConfig
+    {
+        public float SpawnInterval;
+        public int   InstantCount;
+        public int   MaxCount;
+        public float Spacing;
+        public float Offset;
+        public bool  IsSpawnAgentOnce;
+        public bool  IsReverseDirection;
+        public bool  IsClosedPath;
+        public bool  IsUseSpacing;
+    }
+
     public class CrowdFactory
     {
-        private readonly CrowdAgentConfig    config;
-        private readonly CrowdPathController crowdPathController;
+        CrowdFactoryConfig config = new CrowdFactoryConfig();
 
         public CrowdFactory(CrowdAgentConfig config, CrowdPathController crowdPathController)
         {
-            this.config              = config;
-            this.crowdPathController = crowdPathController;
+            this.config.SpawnInterval      = config.SpawnInterval;
+            this.config.InstantCount       = config.InstantCount;
+            this.config.MaxCount           = config.MaxCount;
+            this.config.Spacing            = config.Spacing;
+            this.config.Offset             = config.Offset;
+            this.config.IsSpawnAgentOnce   = config.IsSpawnAgentOnce;
+            this.config.IsReverseDirection = config.IsReverseDirection;
+            this.config.IsClosedPath       = config.IsClosedPath;
+            this.config.IsUseSpacing       = config.IsUseSpacing;
         }
+
 
         public GameObject InstantiateAgent(GameObject prefab, Transform parent, AgentSpawnData spawnData)
         {
