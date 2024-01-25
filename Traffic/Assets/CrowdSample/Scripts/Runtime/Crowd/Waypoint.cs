@@ -1,63 +1,87 @@
-using CrowdSample.Scripts.Utils;
 using UnityEditor;
 using UnityEngine;
+using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
     [ExecuteInEditMode]
     public class Waypoint : MonoBehaviour
     {
-        [SerializeField] private float radius = 2f;
+        #region Field Declarations
+
+        [SerializeField] private float   radius = 2f;
+        [SerializeField] private Vector3 prevPosition;
+
+        #endregion
+
+        #region Properties
 
         public float Radius => Mathf.Clamp(radius, 0.1f, float.MaxValue);
+        public Vector3 PrevPosition
+        {
+            get => prevPosition;
+            set => prevPosition = value;
+        }
+        
+        #endregion
+
+        #region Unity Methods
 
 #if UNITY_EDITOR
-        private void OnValidate()
+        private void OnDrawGizmos()
         {
-            UpdateRadius();
+            DrawWaypointGizmo();
         }
 
         private void OnEnable()
         {
-            UpdatePathConfiguration();
+            UpdateCrowdPathController();
         }
-
-        private void OnDestroy()
-        {
-            UpdatePathConfiguration();
-            UnityEditorUtils.UpdateAllImmediately();
-        }
-
-        private void UpdateRadius()
-        {
-            radius = Radius;
-        }
-
-        private void UpdatePathConfiguration()
-        {
-            var parent = transform.parent;
-            if (parent == null) return;
-
-            var path = parent.GetComponent<CrowdPathController>();
-            if (path == null) return;
-
-            path.UpdatePathConfiguration();
-            SceneView.RepaintAll();
-        }
-#endif
 
         private void Start()
-        {
-            ToggleMeshRenderer(false);
-        }
-
-        private void ToggleMeshRenderer(bool isEnabled)
         {
             var meshRenderer = gameObject.GetComponent<MeshRenderer>();
             if (meshRenderer != null)
             {
-                meshRenderer.enabled = isEnabled;
+                meshRenderer.enabled = false;
             }
         }
+
+        private void OnDestroy()
+        {
+            UpdateCrowdPathController();
+            UnityEditorUtils.UpdateAllReceiverImmediately();
+        }
+#endif
+
+        #endregion
+
+        #region Private Methods
+
+        private void UpdateCrowdPathController()
+        {
+            var parent = transform.parent;
+
+            if (parent == null) return;
+
+            var targetComponent = parent.GetComponent<CrowdPathController>();
+
+            if (targetComponent == null) return;
+
+            targetComponent.FetchAllNeeded();
+
+            SceneView.RepaintAll();
+        }
+
+        #endregion
+
+        #region Debug and Visualization Methods
+
+        private void DrawWaypointGizmo()
+        {
+            GizmosUtils.Polygon(transform.position, Color.green, Radius, 32);
+        }
+
+        #endregion
     }
 }

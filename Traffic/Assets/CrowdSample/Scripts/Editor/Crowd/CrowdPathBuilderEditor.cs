@@ -20,59 +20,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         #endregion
 
-        #region Private Methods
-
-        private void HandleSceneClickAddWaypoint()
-        {
-            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add ||
-                !UnityUtils.IsLeftMouseButtonDown())
-            {
-                return;
-            }
-
-            OnSceneClickAddWaypoint();
-            Event.current.Use();
-        }
-
-        private void OnSceneClickAddWaypoint()
-        {
-            if (!UnityUtils.TryGetRaycastHit(out var hitPoint)) return;
-            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add) return;
-
-            var path           = crowdPathBuilder.CrowdPathController;
-            var parent         = crowdPathBuilder.transform;
-            var newWaypoint    = UnityUtils.CreatePoint("Waypoint" + path.PointsSet.Count, hitPoint, parent);
-            var waypointGizmos = newWaypoint.gameObject.AddComponent<WaypointGizmos>();
-#if UNITY_EDITOR
-            InternalEditorUtility.SetIsInspectorExpanded(waypointGizmos, true);
-#endif
-
-            var waypoint = newWaypoint.GetComponent<Waypoint>();
-            path.PointsSet.Add(newWaypoint.position);
-            path.RadiusSet.Add(waypoint.Radius);
-        }
-
-        private void ToggleEditMode()
-        {
-            var editModes = Enum.GetValues(typeof(CrowdPathBuilder.EditMode));
-            var editMode  = crowdPathBuilder.editMode;
-            editMode = (CrowdPathBuilder.EditMode)(((int)editMode + 1) % editModes.Length);
-            switch (editMode)
-            {
-                case CrowdPathBuilder.EditMode.None:
-                    UnityEditorUtils.SetInspectorLock(false);
-                    break;
-                case CrowdPathBuilder.EditMode.Add:
-                    UnityEditorUtils.SetInspectorLock(true);
-                    break;
-            }
-
-            Selection.activeObject    = crowdPathBuilder.gameObject;
-            crowdPathBuilder.editMode = editMode;
-        }
-
-        #endregion
-
         #region Unity Methods
 
         private void OnEnable()
@@ -109,6 +56,54 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void OnSceneGUI()
         {
             HandleSceneClickAddWaypoint();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void HandleSceneClickAddWaypoint()
+        {
+            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add ||
+                !UnityUtils.IsLeftMouseButtonDown())
+            {
+                return;
+            }
+
+            OnSceneClickAddWaypoint();
+            Event.current.Use();
+        }
+
+        private void OnSceneClickAddWaypoint()
+        {
+            if (!UnityUtils.TryGetRaycastHit(out var hitPoint)) return;
+            if (crowdPathBuilder.editMode != CrowdPathBuilder.EditMode.Add) return;
+
+            var path        = crowdPathBuilder.CrowdPathController;
+            var parent      = crowdPathBuilder.transform;
+            var newWaypoint = UnityUtils.CreatePoint("Waypoint" + path.PointsSet.Count, hitPoint, parent);
+            var waypoint    = newWaypoint.GetComponent<Waypoint>();
+            path.PointsSet.Add(newWaypoint.position);
+            path.RadiusSet.Add(waypoint.Radius);
+        }
+
+        private void ToggleEditMode()
+        {
+            var editModes = Enum.GetValues(typeof(CrowdPathBuilder.EditMode));
+            var editMode  = crowdPathBuilder.editMode;
+            editMode = (CrowdPathBuilder.EditMode)(((int)editMode + 1) % editModes.Length);
+            switch (editMode)
+            {
+                case CrowdPathBuilder.EditMode.None:
+                    UnityEditorUtils.SetInspectorLock(false);
+                    break;
+                case CrowdPathBuilder.EditMode.Add:
+                    UnityEditorUtils.SetInspectorLock(true);
+                    break;
+            }
+
+            Selection.activeObject    = crowdPathBuilder.gameObject;
+            crowdPathBuilder.editMode = editMode;
         }
 
         #endregion

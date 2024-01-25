@@ -63,7 +63,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            UpdatePathConfiguration();
+            FetchAllNeeded();
         }
 #endif
 
@@ -78,7 +78,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         }
 
 #if UNITY_EDITOR
-        public void UpdatePathConfiguration()
+        public void FetchAllNeeded()
         {
             FetchWaypoints();
             FetchGenerationConfigs();
@@ -87,13 +87,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #endif
 
         #endregion
-
-#if UNITY_EDITOR
-        public void UpdateImmediately()
-        {
-            UpdatePathConfiguration();
-        }
-#endif
 
         #region Private Methods
 
@@ -183,6 +176,15 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             var curvePos  = curveNPos * PointsSet.Count;
 
             agentSpawnData[index] = new AgentSpawnData(position, direction, curvePos);
+        }
+
+        #endregion
+
+        #region Implementation Methods
+
+        public void UpdateImmediately()
+        {
+            FetchAllNeeded();
         }
 
         #endregion
