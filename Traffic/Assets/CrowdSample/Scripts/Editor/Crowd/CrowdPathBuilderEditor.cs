@@ -82,7 +82,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             var path        = crowdPathBuilder.CrowdPathController;
             var parent      = crowdPathBuilder.transform;
             var newWaypoint = UnityUtils.CreatePoint("Waypoint" + path.PointsSet.Count, hitPoint, parent);
-            var waypoint    = newWaypoint.GetComponent<Waypoint>();
+            var waypoint    = newWaypoint.gameObject.AddComponent<Waypoint>();
             path.PointsSet.Add(newWaypoint.position);
             path.RadiusSet.Add(waypoint.Radius);
         }
@@ -91,8 +91,12 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             var editModes = Enum.GetValues(typeof(CrowdPathBuilder.EditMode));
             var editMode  = crowdPathBuilder.editMode;
+
             editMode = (CrowdPathBuilder.EditMode)(((int)editMode + 1) % editModes.Length);
-            switch (editMode)
+
+            crowdPathBuilder.editMode = editMode;
+
+            switch (crowdPathBuilder.editMode)
             {
                 case CrowdPathBuilder.EditMode.None:
                     UnityEditorUtils.SetInspectorLock(false);
@@ -102,8 +106,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
                     break;
             }
 
-            Selection.activeObject    = crowdPathBuilder.gameObject;
-            crowdPathBuilder.editMode = editMode;
+            Selection.activeObject = crowdPathBuilder.gameObject;
         }
 
         #endregion

@@ -17,24 +17,23 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         #region Properties
 
         public float Radius => Mathf.Clamp(radius, 0.1f, float.MaxValue);
+
         public Vector3 PrevPosition
         {
             get => prevPosition;
             set => prevPosition = value;
         }
-        
+
         #endregion
 
         #region Unity Methods
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            DrawWaypointGizmo();
-        }
 
         private void OnEnable()
         {
+            UnityEditorUtils.UpdateAllReceiverImmediately();
+
             UpdateCrowdPathController();
         }
 
@@ -45,6 +44,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             {
                 meshRenderer.enabled = false;
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            DrawWaypointGizmo();
         }
 
         private void OnDestroy()
