@@ -1,7 +1,8 @@
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using CrowdSample.Scripts.Runtime.Crowd;
+using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
@@ -45,14 +46,16 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("人流生成", EditorStyles.boldLabel);
-            DrawCrowConfigSection();
+            DrawInitCrowdConfigSection();
+            DrawCrowdSection(crowdGenerator.CrowdGenerationConfig);
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.Space(1);
 
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("個體", EditorStyles.boldLabel);
-            DrawAgentConfigSection();
+            DrawInitAgentConfigSection();
+            DrawAgentSection(crowdGenerator.CrowdAgentConfig);
             EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
@@ -91,14 +94,22 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.HelpBox($"請先完成初始化。還有 {errorCount} 個物件還沒初始化", MessageType.Warning);
         }
 
-        private void DrawCrowConfigSection()
+        private void DrawInitCrowdConfigSection()
         {
             EditorGUILayout.PropertyField(crowdGenerationConfigProp, new GUIContent("人流生成設定"));
         }
 
-        private void DrawAgentConfigSection()
+        private void DrawCrowdSection(CrowdGenerationConfig config)
+        {
+        }
+
+        private void DrawInitAgentConfigSection()
         {
             EditorGUILayout.PropertyField(crowdAgentConfigProp, new GUIContent("個體設定"));
+        }
+
+        private void DrawAgentSection(CrowdAgentConfig config)
+        {
         }
 
         private static void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
