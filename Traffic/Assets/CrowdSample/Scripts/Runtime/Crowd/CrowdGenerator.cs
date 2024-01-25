@@ -33,7 +33,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public bool IsPathGoCreated       => pathGo != null;
         public bool IsCrowdAgentGoCreated => crowdAgentGo != null;
-        public bool IsInitialized           => IsPathGoCreated && IsCrowdAgentGoCreated;
+        public bool IsInitialized         => IsPathGoCreated && IsCrowdAgentGoCreated;
 
         #endregion
 
@@ -56,6 +56,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             var newCrowdAgentGo = new GameObject("_CrowdAgent");
             newCrowdAgentGo.transform.SetParent(transform);
+            newCrowdAgentGo.AddComponent<CrowdFactoryController>();
 
             crowdAgentGo = newCrowdAgentGo;
         }
