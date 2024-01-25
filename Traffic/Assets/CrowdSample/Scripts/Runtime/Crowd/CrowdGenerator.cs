@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdGenerator : MonoBehaviour, IUpdatable
+    public class CrowdGenerator : MonoBehaviour, IUpdateReceiver
     {
         #region Field Declarations
 
@@ -83,7 +83,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Debug and Visualization Methods
 
-        public void UpdateGizmo()
+        public void UpdateImmediately()
         {
         }
 
