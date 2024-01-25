@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using CrowdSample.Scripts.Runtime.Crowd;
+using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace CrowdSample.Scripts.Utils
@@ -29,6 +32,47 @@ namespace CrowdSample.Scripts.Utils
             {
                 Selection.activeObject = gameObject;
             }
+        }
+
+        public static void SetupDefaultPoint(Component point)
+        {
+            var meshFilter = point.gameObject.AddComponent<MeshFilter>();
+            meshFilter.mesh = Resources.GetBuiltinResource<Mesh>("New-Sphere.fbx");
+
+            var meshRenderer = point.gameObject.AddComponent<MeshRenderer>();
+            meshRenderer.material = new Material(Shader.Find("Standard"));
+        }
+
+        public static void DeleteItem(Component component)
+        {
+            if (component == null) return;
+
+            Undo.RecordObject(component.gameObject, "Delete Item");
+            Undo.DestroyObjectImmediate(component.gameObject);
+        }
+
+        public static void ClearPoints(IEnumerable<Transform> waypoints)
+        {
+            Undo.SetCurrentGroupName("Clear Path Points");
+            foreach (var waypoint in waypoints)
+            {
+                Undo.DestroyObjectImmediate(waypoint.gameObject);
+            }
+        }
+
+        public static Transform CreatePoint(string pointName, Vector3 position, Transform parent = null)
+        {
+            var newPoint = new GameObject(pointName).transform;
+
+            newPoint.position = position;
+
+            if (parent) newPoint.SetParent(parent);
+
+            SetupDefaultPoint(newPoint);
+
+            Undo.RegisterCreatedObjectUndo(newPoint.gameObject, "Create Waypoint");
+
+            return newPoint;
         }
     }
 }
