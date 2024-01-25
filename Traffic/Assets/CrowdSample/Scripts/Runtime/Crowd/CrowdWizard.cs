@@ -8,13 +8,13 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private List<GameObject> groupInstances = new List<GameObject>();
+        [SerializeField] private List<GameObject> generatorInstances = new List<GameObject>();
 
         #endregion
 
         #region Properties
 
-        public List<GameObject> GroupInstances => groupInstances;
+        public List<GameObject> GeneratorInstances => generatorInstances;
 
         #endregion
 
@@ -22,17 +22,17 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public void AddGroupInstance()
         {
-            var newGroupInst = new GameObject("CrowdGroup_" + groupInstances.Count);
-            newGroupInst.transform.SetParent(transform);
-            groupInstances.Add(newGroupInst);
-            ConfigureGroupInstance(newGroupInst);
+            var newGeneratorInst = new GameObject("CrowdGenerator_" + generatorInstances.Count);
+            newGeneratorInst.transform.SetParent(transform);
+            generatorInstances.Add(newGeneratorInst);
+            ConfigureGeneratorInstance(newGeneratorInst);
         }
 
         #endregion
 
         #region Private Methods
 
-        private static void ConfigureGroupInstance(GameObject inst)
+        private static void ConfigureGeneratorInstance(GameObject inst)
         {
             var crowdGenerator = inst.AddComponent<CrowdGenerator>();
             InternalEditorUtility.SetIsInspectorExpanded(crowdGenerator, true);
