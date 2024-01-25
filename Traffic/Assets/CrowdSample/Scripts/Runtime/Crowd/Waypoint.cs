@@ -9,20 +9,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private float   radius = 2f;
-        [SerializeField] private Vector3 prevPosition;
+        [SerializeField] private float radius = 2f;
 
         #endregion
 
         #region Properties
 
-        public float Radius => Mathf.Clamp(radius, 0.1f, float.MaxValue);
-
-        public Vector3 PrevPosition
-        {
-            get => prevPosition;
-            set => prevPosition = value;
-        }
+        public float   Radius       => Mathf.Clamp(radius, 0.1f, float.MaxValue);
+        public Vector3 PrevPosition { get; set; }
 
         #endregion
 
