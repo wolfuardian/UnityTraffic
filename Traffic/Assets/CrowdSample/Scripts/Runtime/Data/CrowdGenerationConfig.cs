@@ -6,6 +6,8 @@ namespace CrowdSample.Scripts.Runtime.Data
     [CreateAssetMenu(fileName = "CrowdGenerationConfig", menuName = "CrowdWizard/Crowd Generation Config")]
     public class CrowdGenerationConfig : ScriptableObject
     {
+        #region Field Declarations
+
         public GenerationMode generationMode = GenerationMode.InfinityFlow;
 
         [SerializeField] private bool  isSpawnAgentOnce = true;
@@ -25,6 +27,10 @@ namespace CrowdSample.Scripts.Runtime.Data
             SingleCircle,
             Custom
         }
+
+        #endregion
+
+        #region Properties
 
         public bool IsSpawnAgentOnce
         {
@@ -85,11 +91,10 @@ namespace CrowdSample.Scripts.Runtime.Data
                 GenerationMode.SingleCircle);
         }
 
-        private void SetFieldValue<T>(ref T field, T value, params GenerationMode[] modes)
-        {
-            if (modes.Contains(generationMode))
-                field = value;
-        }
+        #endregion
+
+
+        #region Public Methods
 
         public void ApplyPresetProperties()
         {
@@ -114,5 +119,16 @@ namespace CrowdSample.Scripts.Runtime.Data
                     break;
             }
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void SetFieldValue<T>(ref T field, T value, params GenerationMode[] modes)
+        {
+            if (modes.Contains(generationMode)) field = value;
+        }
+
+        #endregion
     }
 }
