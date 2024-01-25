@@ -21,8 +21,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Properties
 
-        public CrowdPath CrowdPath  => crowdPath ??= GetComponent<CrowdPath>();
-        public Vector2   ArrowScale => arrowScale;
+        public CrowdPath CrowdPath   => crowdPath ??= GetComponent<CrowdPath>();
+        public Vector2   ArrowScale  => arrowScale;
+        public bool      IsPathValid => crowdPath.Waypoints.Count >= 2;
 
         #endregion
 
@@ -42,7 +43,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void OnDrawGizmos()
         {
-            if (!ValidatePath()) return;
+            if (!IsPathValid) return;
 
             DrawAgentSpawnPoints();
             DrawPathWaypoints();
@@ -51,12 +52,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #endregion
 
-        #region Private Methods
-
-        private bool ValidatePath()
-        {
-            return crowdPath.Waypoints.Count >= 2;
-        }
+        #region Public Methods
 
         public void FetchWaypoints()
         {
