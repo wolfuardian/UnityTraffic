@@ -74,5 +74,17 @@ namespace CrowdSample.Scripts.Utils
 
             return newPoint;
         }
+
+        public static void RemoveInstances(ICollection<GameObject> instances, List<GameObject> toRemove)
+        {
+            foreach (var remove in toRemove)
+            {
+                instances.Remove(remove);
+
+                if (remove == null) continue;
+
+                Object.DestroyImmediate(remove);
+            }
+        }
     }
 }

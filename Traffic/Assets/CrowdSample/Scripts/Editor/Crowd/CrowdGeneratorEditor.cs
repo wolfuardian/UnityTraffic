@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using CrowdSample.Scripts.Runtime.Crowd;
 using CrowdSample.Scripts.Runtime.Data;
+using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
@@ -155,7 +156,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
                 EditorGUILayout.EndHorizontal();
             }
 
-            RemoveInstances(instances, toRemove);
+            UnityUtils.RemoveInstances(instances, toRemove);
 
             if (GUILayout.Button("Add Group Instance"))
             {
@@ -163,18 +164,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
             }
 
             EditorGUILayout.EndVertical();
-        }
-
-        private static void RemoveInstances(ICollection<GameObject> instances, List<GameObject> toRemove)
-        {
-            foreach (var remove in toRemove)
-            {
-                instances.Remove(remove);
-
-                if (remove == null) continue;
-
-                DestroyImmediate(remove);
-            }
         }
 
         #endregion
