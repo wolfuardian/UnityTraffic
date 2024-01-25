@@ -12,6 +12,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
     public class CrowdPathBuilderEditor : UnityEditor.Editor
     {
         private CrowdPathBuilder   crowdPathBuilder;
+        private SerializedProperty crowdPathProp;
         private SerializedProperty waypointsProp;
 
         private void OnEnable()
@@ -19,6 +20,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             try
             {
                 crowdPathBuilder = (CrowdPathBuilder)target;
+                crowdPathProp    = serializedObject.FindProperty("crowdPath");
                 waypointsProp    = serializedObject.FindProperty("waypoints");
             }
             catch (Exception)
@@ -29,20 +31,29 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
             serializedObject.Update();
 
-            if (!Validate()) return;
+            if (!IsPathBuilderValid()) return;
 
             DrawEditModeSwitch();
+
+            var isLockInspectorInEditing = crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add;
+            EditorGUI.BeginDisabledGroup(isLockInspectorInEditing);
+
             DrawActionsSection();
             DrawPointConfigSection();
+
+            EditorGUI.EndDisabledGroup();
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        private bool Validate()
+        private void OnSceneGUI()
+        {
+            HandleSceneClickToAddWaypoint();
+        }
+
+        private bool IsPathBuilderValid()
         {
             var valid = true;
 
@@ -53,11 +64,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
             }
 
             return valid;
-        }
-
-        private void OnSceneGUI()
-        {
-            HandleSceneClickToAddWaypoint();
         }
 
         private void HandleSceneClickToAddWaypoint()
@@ -126,17 +132,13 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
-
-            EditorGUI.BeginDisabledGroup(crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add);
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Reset All Waypoints", GUILayout.Height(48)))
+            if (GUILayout.Button("Reset All Waypoints"))
             {
                 ClearPoints();
             }
 
             EditorGUILayout.EndHorizontal();
-            EditorGUI.EndDisabledGroup();
-
             EditorGUILayout.EndVertical();
         }
 
@@ -144,7 +146,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             var headerStyle = UnityEditorUtils.CreateHeaderStyle(FontStyle.Bold, 12);
             EditorGUILayout.BeginVertical("box");
-            EditorGUI.BeginDisabledGroup(crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add);
             EditorGUILayout.LabelField("Point Config", headerStyle);
             if (GUILayout.Button(crowdPathBuilder.isOpenPointConfigPanel
                     ? "Close Waypoint Config Panel"
@@ -152,8 +153,6 @@ namespace CrowdSample.Scripts.Editor.Crowd
             {
                 TogglePointConfigPanel();
             }
-
-            EditorGUI.EndDisabledGroup();
 
             if (crowdPathBuilder.isOpenPointConfigPanel)
             {
@@ -167,25 +166,32 @@ namespace CrowdSample.Scripts.Editor.Crowd
         {
             EditorGUI.indentLevel++;
 
-
-            for (var i = 0; i < waypointsProp.arraySize; i++)
+            try
             {
-                var waypoint = waypointsProp.GetArrayElementAtIndex(i);
-                if (waypoint.objectReferenceValue == null) continue; // 跳過已經被刪除的 waypoint, 防止介面卡住
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.PropertyField(waypoint, GUIContent.none);
-
-                if (waypoint.objectReferenceValue is Transform waypointTr)
+                for (var i = 0; i < waypointsProp.arraySize; i++)
                 {
-                    var component = waypointTr.GetComponent<Waypoint>();
-                    if (component != null)
-                    {
-                        DrawWaypointsConfig(component);
-                    }
-                }
+                    var waypoint = waypointsProp.GetArrayElementAtIndex(i);
+                    if (waypoint.objectReferenceValue == null) continue; // 跳過已經被刪除的 waypoint, 防止介面卡住
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.PropertyField(waypoint, GUIContent.none);
 
-                EditorGUILayout.EndHorizontal();
+                    if (waypoint.objectReferenceValue is Transform waypointTr)
+                    {
+                        var component = waypointTr.GetComponent<Waypoint>();
+                        if (component != null)
+                        {
+                            DrawWaypointsConfig(component);
+                        }
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                }
             }
+            catch (Exception)
+            {
+                // ignored 找不到原因，只好先這樣處理
+            }
+
 
             EditorGUI.indentLevel--;
         }
@@ -249,7 +255,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             if (crowdPathBuilder.editMode == CrowdPathBuilder.EditMode.Add)
             {
-                EditorGUILayout.HelpBox("Click on the scene to add path points", MessageType.Info);
+                EditorGUILayout.HelpBox("點擊場景中的位置來新增航點。", MessageType.Info);
             }
         }
 

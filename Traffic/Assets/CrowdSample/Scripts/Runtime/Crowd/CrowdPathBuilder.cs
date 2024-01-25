@@ -1,4 +1,7 @@
+﻿using System;
+using System.Linq;
 using UnityEngine;
+using System.Collections.Generic;
 using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
@@ -9,14 +12,15 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private CrowdPath crowdPath;
+        [SerializeField] private CrowdPath       crowdPath;
+        [SerializeField] private List<Transform> waypoints;
         [SerializeField] private Vector2         arrowScale = new Vector2(2f, 2f);
 
         #endregion
 
         #region Properties
 
-        public CrowdPath CrowdPath => crowdPath ??= GetComponent<CrowdPath>();
+        public CrowdPath CrowdPath  => crowdPath ??= GetComponent<CrowdPath>();
         public Vector2   ArrowScale => arrowScale;
 
         #endregion
@@ -39,10 +43,42 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             if (crowdPath == null) crowdPath = GetComponent<CrowdPath>();
         }
 
+        private void OnDrawGizmos()
+        {
+            if (!ValidatePath()) return;
+
+            DrawAgentSpawnPoints();
+            DrawPathWaypoints();
+        }
 #endif
 
         #endregion
 
+        #region Public Methods
+
+        //
+
+        #endregion
+
+        #region Private Methods
+
+        private bool ValidatePath()
+        {
+            return crowdPath.Waypoints.Count >= 2;
+        }
+
+        public void FetchWaypoints()
+        {
+            waypoints = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform).ToList();
+        }
+
+        #endregion
+
+        #region Unity Event Methods
+
+        //
+
+        #endregion
 
         #region Implementation Methods
 
