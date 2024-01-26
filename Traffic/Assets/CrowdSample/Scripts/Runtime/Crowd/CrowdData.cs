@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
@@ -63,6 +62,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     public struct PathFollowData
     {
         public SpawnPointData[]             m_spawnPointsData;
+        public float[]                      m_radiusSet;
         public bool                         m_shouldDestroyOnGoal;
         public bool                         m_reverse;
         public bool                         m_closedLoop;
@@ -71,6 +71,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public PathFollowData(
             SpawnPointData[]             spawnPointsData,
+            float[]                      radiusSet,
             bool                         shouldDestroyOnGoal,
             bool                         reverse,
             bool                         closedLoop,
@@ -79,6 +80,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         )
         {
             m_spawnPointsData     = spawnPointsData;
+            m_radiusSet           = radiusSet;
             m_navigateMode        = navigateMode;
             m_shouldDestroyOnGoal = shouldDestroyOnGoal;
             m_reverse             = reverse;
@@ -111,14 +113,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         public Vector3 m_position;
         public Vector3 m_direction;
-        public float   m_radius;
         public float   m_pathLocation;
 
-        public SpawnPointData(Vector3 position, Vector3 direction, float radius, float pathLocation)
+        public SpawnPointData(Vector3 position, Vector3 direction, float pathLocation)
         {
             m_position     = position;
             m_direction    = direction;
-            m_radius       = radius;
             m_pathLocation = pathLocation;
         }
     }
