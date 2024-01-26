@@ -11,11 +11,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        public EditMode editMode = EditMode.None;
+        public EditMode m_editMode = EditMode.None;
 
-        [SerializeField] private CrowdPathController crowdPathController;
-        [SerializeField] private List<Transform>     waypoints;
-        [SerializeField] private Vector2             arrowScale = new Vector2(2f, 2f);
+        [SerializeField] private CrowdPathController m_crowdPathController;
+        [SerializeField] private List<Transform>     m_waypoints  = new List<Transform>();
+        [SerializeField] private Vector2             m_arrowScale = new Vector2(2f, 2f);
 
         public enum EditMode
         {
@@ -27,10 +27,25 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Properties
 
-        public CrowdPathController CrowdPathController => crowdPathController ??= GetComponent<CrowdPathController>();
-        public IEnumerable<Transform> Waypoints => waypoints ??= new List<Transform>();
-        public Vector2 ArrowScale => arrowScale;
-        public bool IsPathValid => crowdPathController.PointsSet.Count >= 2;
+        public CrowdPathController crowdPathController
+        {
+            get => m_crowdPathController;
+            set => m_crowdPathController = value;
+        }
+
+        public List<Transform> waypoints
+        {
+            get => m_waypoints;
+            set => m_waypoints = value;
+        }
+
+        public Vector2 arrowScale
+        {
+            get => m_arrowScale;
+            set => m_arrowScale = value;
+        }
+
+        public bool pathValid => waypoints.Count >= 2;
 
         #endregion
 
@@ -40,12 +55,12 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void Awake()
         {
-            if (crowdPathController == null) crowdPathController = GetComponent<CrowdPathController>();
+            if (m_crowdPathController == null) m_crowdPathController = GetComponent<CrowdPathController>();
         }
 
         private void OnDrawGizmos()
         {
-            if (!IsPathValid) return;
+            if (!pathValid) return;
 
             DrawAgentSpawnPoints();
             DrawPathWaypoints();
@@ -58,7 +73,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public void FetchWaypoints()
         {
-            waypoints = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform).ToList();
+            m_waypoints = transform.GetComponentsInChildren<Waypoint>().Select(wp => wp.transform).ToList();
         }
 
         #endregion
@@ -76,24 +91,24 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void DrawAgentSpawnPoints()
         {
-            foreach (var spawnData in crowdPathController.AgentSpawnData)
+            foreach (var spawnData in m_crowdPathController.spawnPointsData)
             {
-                GizmosUtils.ThicknessArrow(spawnData.position, spawnData.direction, Color.yellow, arrowScale);
+                GizmosUtils.ThicknessArrow(spawnData.m_position, spawnData.m_direction, Color.yellow, m_arrowScale);
             }
         }
 
         private void DrawPathWaypoints()
         {
-            var waypointCount        = waypoints.Count;
-            var actualWaypointsCount = crowdPathController.IsClosedPath ? waypointCount : waypointCount - 1;
+            var waypointCount        = m_waypoints.Count;
+            var actualWaypointsCount = m_crowdPathController.closedLoop ? waypointCount : waypointCount - 1;
 
             for (var i = 0; i < actualWaypointsCount; i++)
             {
                 var nextIndex = (i + 1) % waypointCount;
-                if (waypoints[i] == null || waypoints[nextIndex] == null) continue;
+                if (m_waypoints[i] == null || m_waypoints[nextIndex] == null) continue;
 
-                Gizmos.DrawLine(waypoints[i].position, waypoints[nextIndex].position);
-                GizmosUtils.Arrow(waypoints[i].position, waypoints[nextIndex].position - waypoints[i].position,
+                Gizmos.DrawLine(m_waypoints[i].position, m_waypoints[nextIndex].position);
+                GizmosUtils.Arrow(m_waypoints[i].position, m_waypoints[nextIndex].position - m_waypoints[i].position,
                     Color.cyan);
             }
         }
