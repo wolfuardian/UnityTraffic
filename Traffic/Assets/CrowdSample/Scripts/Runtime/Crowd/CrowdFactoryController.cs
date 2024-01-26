@@ -1,181 +1,231 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
-using CrowdSample.Scripts.Utils;
 using System.Collections.Generic;
-using System.Linq;
 using Random = UnityEngine.Random;
-using CrowdSample.Scripts.Runtime.Data;
 
 namespace CrowdSample.Scripts.Runtime.Crowd
 {
-    public class CrowdFactoryController : MonoBehaviour, IUpdateReceiver
+    public class CrowdFactoryController : MonoBehaviour
     {
         #region Field Declarations
 
-        //
+        private CrowdFactory crowdFactory;
+        private Coroutine    spawnRoutineCoroutine;
+
+        [SerializeField] private GameObject[]     m_agentPrefabs;
+        [SerializeField] private SpawnPointData[] m_spawnPointsData;
+        [SerializeField] private List<Transform>  m_trackingAgents = new List<Transform>();
+        [SerializeField] private int              m_createdCount;
+        [SerializeField] private int              m_createdCountTotal;
+        [SerializeField] private bool             m_spawnable;
+        [SerializeField] private bool             m_spawnAgentOnce;
+        [SerializeField] private float            m_spawnInterval;
+        [SerializeField] private int              m_maxSpawnCount;
 
         #endregion
 
         #region Properties
 
-        //
+        public GameObject[] agentPrefabs
+        {
+            get => m_agentPrefabs ??= Array.Empty<GameObject>();
+            set => m_agentPrefabs = value;
+        }
+
+
+        public List<Transform> trackingAgents
+        {
+            get => m_trackingAgents;
+            set => m_trackingAgents = value;
+        }
+
+        public bool spawnable
+        {
+            get => m_spawnable;
+            set => m_spawnable = value;
+        }
+
+        public bool spawnAgentOnce
+        {
+            get => m_spawnAgentOnce;
+            set => m_spawnAgentOnce = value;
+        }
+
+        public float spawnInterval
+        {
+            get => m_spawnInterval;
+            set => m_spawnInterval = value;
+        }
+
+        public int maxSpawnCount
+        {
+            get => m_maxSpawnCount;
+            set => m_maxSpawnCount = value;
+        }
+
+        public float                        stoppingDistance    { get; set; }
+        public float                        speed               { get; set; }
+        public float                        angularSpeed        { get; set; }
+        public float                        acceleration        { get; set; }
+        public bool                         autoBraking         { get; set; }
+        public string                       agentID             { get; set; }
+        public string                       type                { get; set; }
+        public string                       category            { get; set; }
+        public string                       alias               { get; set; }
+        public string                       model               { get; set; }
+        public string                       time                { get; set; }
+        public string                       noted               { get; set; }
+        public SpawnPointData[]             spawnPointsData     { get; set; }
+        public bool                         shouldDestroyOnGoal { get; set; }
+        public bool                         reverse             { get; set; }
+        public bool                         closedLoop          { get; set; }
+        public int                          targetIndex         { get; set; }
+        public CrowdPathFollow.NavigateMode navigateMode        { get; set; }
+        public int                          createdCount        => m_createdCount;
+        public int                          createdCountTotal   => m_createdCountTotal;
 
         #endregion
 
         #region Unity Methods
 
-        //
+        private void Start()
+        {
+            m_spawnable = false;
 
-        #endregion
+            if (!m_spawnable) return;
 
-        #region Public Methods
-
-        //
+            ConstructFactory();
+            StartSpawn();
+        }
 
         #endregion
 
         #region Private Methods
 
-        //
-
-        #endregion
-
-        #region Unity Event Methods
-
-        //
-
-        #endregion
-
-        #region Debug and Visualization Methods
-
-        //
-
-        #endregion
-
-
-        public                   CrowdPathController crowdPathController;
-        private                  CrowdFactory        crowdFactory;
-        [SerializeField] private List<Transform>     trackingAgents = new List<Transform>();
-
-        private Coroutine spawnRoutineCoroutine;
-
-
-
-        // [SerializeField] private List<GameObject>      crowdAgentPrefabs = new List<GameObject>();
-        [SerializeField] private int currentAgentCount;
-        [SerializeField] private int totalCreatedCount;
-
-        [SerializeField] private bool isSpawnAgentOnce;
-        [SerializeField] private bool isReverseDirection;
-        [SerializeField] private bool isClosedPath;
-
-        // public List<GameObject>      CrowdAgentPrefabs     => crowdAgentPrefabs;
-        public int CurrentAgentCount => currentAgentCount;
-        public int TotalCreatedCount => totalCreatedCount;
-
-        public void SetCurrentAgentCount(int value) => currentAgentCount = value;
-
-        [SerializeField] private bool isSpawnable;
-
-        public List<Transform> TrackingAgents => trackingAgents;
-
-        #region Parameter Variables
-
-        //
-
-        #endregion
-
-        private void Start()
+        private void ConstructFactory()
         {
-            if (crowdPathController == null)
+            var navMeshAgentData = new NavMeshAgentData()
             {
-                Debug.LogError("Script: Path 為空，請確認是否有設定。", this);
-                isSpawnable = false;
-            }
+                m_stoppingDistance = stoppingDistance,
+                m_speed            = speed,
+                m_angularSpeed     = angularSpeed,
+                m_acceleration     = acceleration,
+                m_autoBraking      = autoBraking
+            };
 
-            if (!isSpawnable) return;
-
-            crowdFactory = new CrowdFactory(crowdAgentConfig, crowdPathController);
-
-            if (crowdPathController.IsSpawnAgentOnce)
+            var agentData = new AgentData()
             {
-                var agentSpawnData = crowdPathController.AgentSpawnData;
-                foreach (var spawnData in agentSpawnData)
-                {
-                    var prefabIndex = Random.Range(0, CrowdAgentConfig.AgentPrefabs.Length);
-                    var prefab      = CrowdAgentConfig.AgentPrefabs[prefabIndex];
-                    var parent      = transform;
+                m_agentID  = agentID,
+                m_type     = type,
+                m_category = category,
+                m_alias    = alias,
+                m_model    = model,
+                m_time     = time,
+                m_noted    = noted
+            };
+            var pathFollowData = new PathFollowData()
+            {
+                m_spawnPointsData     = spawnPointsData,
+                m_shouldDestroyOnGoal = shouldDestroyOnGoal,
+                m_reverse             = reverse,
+                m_closedLoop          = closedLoop,
+                m_targetIndex         = targetIndex,
+                m_navigateMode        = navigateMode
+            };
+            var crowdFactoryConfig = new CrowdFactoryConfig()
+            {
+                m_navMeshAgentData = navMeshAgentData,
+                m_agentData        = agentData,
+                m_pathFollowData   = pathFollowData
+            };
 
-                    var agentInstance = crowdFactory.InstantiateAgent(prefab, parent, spawnData);
+            crowdFactory = new CrowdFactory(crowdFactoryConfig);
+        }
 
-
-                    agentInstance.transform.position =  spawnData.position;
-                    agentInstance.name               += CurrentAgentCount;
-
-                    var entity = agentInstance.GetComponent<AgentEntity>();
-                    var follow = agentInstance.GetComponent<CrowdPathFollow>();
-
-                    follow.TargetIndex = isReverseDirection
-                        ? Mathf.CeilToInt(spawnData.curvePos)
-                        : Mathf.FloorToInt(spawnData.curvePos);
-
-                    follow.SetNavigateMode(isClosedPath
-                        ? CrowdPathFollow.NavigateMode.Loop
-                        : CrowdPathFollow.NavigateMode.PingPong);
-
-                    follow.Reverse = isReverseDirection;
-                }
+        private void StartSpawn()
+        {
+            if (m_spawnAgentOnce)
+            {
+                SpawnOnce();
             }
             else
             {
-                spawnRoutineCoroutine = StartCoroutine(SpawnRoutine());
+                SpawnContinually();
             }
         }
+
+        private void SpawnOnce()
+        {
+            foreach (var spawnData in m_spawnPointsData)
+            {
+                var prefabIndex = Random.Range(0, m_agentPrefabs.Length);
+                var prefab      = m_agentPrefabs[prefabIndex];
+                var parent      = transform;
+
+                var agentInstance = crowdFactory.InstantiateAgent(prefab, parent);
+                agentInstance.name                  = prefab.name + createdCount;
+                agentInstance.transform.position    = spawnData.m_position;
+                agentInstance.transform.eulerAngles = Quaternion.LookRotation(spawnData.m_direction).eulerAngles;
+
+                m_trackingAgents.Clear();
+                m_trackingAgents.Add(agentInstance.transform);
+
+                var follow = agentInstance.GetComponent<CrowdPathFollow>();
+
+                follow.targetIndex = reverse
+                    ? Mathf.CeilToInt(spawnData.m_pathLocation)
+                    : Mathf.FloorToInt(spawnData.m_pathLocation);
+
+                follow.SetNavigateMode(closedLoop
+                    ? CrowdPathFollow.NavigateMode.Loop
+                    : CrowdPathFollow.NavigateMode.PingPong);
+
+                follow.reverse = reverse;
+            }
+        }
+
+        private void SpawnContinually()
+        {
+            spawnRoutineCoroutine = StartCoroutine(SpawnRoutine());
+        }
+
 
         private IEnumerator SpawnRoutine()
         {
             var createdIndex = 0;
+            m_trackingAgents.Clear();
 
             while (gameObject.activeSelf)
             {
-                // Debug.Log("CurrentAgentCount: " + CurrentAgentCount);
-                // Debug.Log("agentGenerationConfig.MaxCount: " + agentGenerationConfig.MaxCount);
-                if (CurrentAgentCount < crowdGenerationConfig.MaxCount)
+                if (createdCount < maxSpawnCount)
                 {
-                    var prefabIndex = Random.Range(0, CrowdAgentConfig.AgentPrefabs.Length);
-                    var prefab      = CrowdAgentConfig.AgentPrefabs[prefabIndex];
+                    var prefabIndex = Random.Range(0, m_agentPrefabs.Length);
+                    var prefab      = m_agentPrefabs[prefabIndex];
                     var parent      = transform;
 
-                    var spawnData     = crowdPathController.AgentSpawnData[0];
-                    var agentInstance = crowdFactory.InstantiateAgent(prefab, parent, spawnData);
+                    var spawnData = m_spawnPointsData[0];
 
+                    var agentInstance = crowdFactory.InstantiateAgent(prefab, parent);
+                    agentInstance.name                  = prefab.name + createdCount;
+                    agentInstance.transform.position    = spawnData.m_position;
+                    agentInstance.transform.eulerAngles = Quaternion.LookRotation(spawnData.m_direction).eulerAngles;
 
-                    agentInstance.transform.position    =  spawnData.position;
-                    agentInstance.transform.eulerAngles =  Quaternion.LookRotation(spawnData.direction).eulerAngles;
-                    agentInstance.name                  += CurrentAgentCount;
-
-                    trackingAgents.Add(agentInstance.transform);
-
-                    var entity = agentInstance.GetComponent<AgentEntity>();
+                    m_trackingAgents.Add(agentInstance.transform);
 
                     var follow = agentInstance.GetComponent<CrowdPathFollow>();
-                    follow.PointsSet           = crowdPathController.PointsSet;
-                    follow.RadiusSet           = crowdPathController.RadiusSet;
-                    follow.ShouldDestroyOnGoal = true;
+                    follow.shouldDestroyOnGoal = true;
                     follow.SetNavigateMode(CrowdPathFollow.NavigateMode.Once);
-                    follow.TargetIndex  =  0;
-                    follow.DestroyEvent += () => { currentAgentCount--; };
-                    follow.DestroyEvent += () => { trackingAgents.Remove(agentInstance.transform); };
-                    follow.CreatedIndex =  createdIndex;
+                    follow.targetIndex  =  0;
+                    follow.DestroyEvent += () => { m_createdCount--; };
+                    follow.DestroyEvent += () => { m_trackingAgents.Remove(agentInstance.transform); };
+                    follow.createdIndex =  createdIndex;
 
-                    currentAgentCount++;
-                    totalCreatedCount++;
+                    m_createdCount++;
+                    m_createdCountTotal++;
                     createdIndex++;
 
-                    Debug.Log("gentGenerationConfig.SpawnInterval: " + crowdGenerationConfig.SpawnInterval);
-
-
-                    yield return new WaitForSeconds(crowdGenerationConfig.SpawnInterval);
+                    yield return new WaitForSeconds(m_spawnInterval);
                 }
                 else
                 {
@@ -186,34 +236,6 @@ namespace CrowdSample.Scripts.Runtime.Crowd
             }
         }
 
-        // private void OnCrowdAgentExited(AgentEntity agent)
-        // {
-        // SetCurrentAgentCount(CurrentAgentCount - 1);
-        // }
-
-#if UNITY_EDITOR
-        private void Awake()
-        {
-            if (crowdPathController == null) crowdPathController = GetComponent<CrowdPathController>();
-        }
-
-        public void UpdateImmediately()
-        {
-            FetchGenerationConfigs();
-            FetchAgentDataConfig();
-        }
-
-        private void FetchGenerationConfigs()
-        {
-            // if (AgentGenerationConfig == null) return;
-            // SetSpawnAgentOnce(AgentGenerationConfig.IsSpawnAgentOnce);
-        }
-
-        private void FetchAgentDataConfig()
-        {
-            if (CrowdAgentConfig == null) return;
-            // SetCurrentAgentCount(AgentDataConfig.MaxAgentCount);
-        }
-#endif
+        #endregion
     }
 }
