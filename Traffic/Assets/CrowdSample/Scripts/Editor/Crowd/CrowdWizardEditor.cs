@@ -25,7 +25,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         public override void OnInspectorGUI()
         {
             EditorGUILayout.BeginVertical("box");
-            DrawSection(crowdWizard.GeneratorInstances, crowdWizard.AddGroupInstance);
+            DrawSection(crowdWizard.generatorInstances, crowdWizard.AddGroupInstance);
             EditorGUILayout.EndVertical();
         }
 

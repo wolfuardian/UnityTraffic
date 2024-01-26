@@ -8,13 +8,13 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private List<GameObject> generatorInstances = new List<GameObject>();
+        [SerializeField] private List<GameObject> m_generatorInstances = new List<GameObject>();
 
         #endregion
 
         #region Properties
 
-        public List<GameObject> GeneratorInstances => generatorInstances;
+        public List<GameObject> generatorInstances => m_generatorInstances;
 
         #endregion
 
@@ -22,9 +22,9 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         public void AddGroupInstance()
         {
-            var newGeneratorInst = new GameObject("CrowdGenerator_" + generatorInstances.Count);
+            var newGeneratorInst = new GameObject("CrowdGenerator_" + m_generatorInstances.Count);
             newGeneratorInst.transform.SetParent(transform);
-            generatorInstances.Add(newGeneratorInst);
+            m_generatorInstances.Add(newGeneratorInst);
             ConfigureGeneratorInstance(newGeneratorInst);
         }
 
