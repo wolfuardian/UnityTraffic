@@ -8,33 +8,38 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private GameObject            pathGo;
-        [SerializeField] private GameObject            crowdAgentGo;
-        [SerializeField] private CrowdAgentConfig      crowdAgentConfig;
-        [SerializeField] private CrowdGenerationConfig crowdGenerationConfig;
+        [SerializeField] private CrowdPath             m_path;
+        [SerializeField] private CrowdSpawner          m_spawner;
+        [SerializeField] private CrowdGenerationConfig m_crowdGenerationConfig;
 
         #endregion
 
         #region Properties
 
-        public GameObject PathGo
+        public CrowdGenerationConfig crowdGenerationConfig => m_crowdGenerationConfig;
+
+        public bool createdPath    => m_path != null;
+        public bool createdSpawner => m_spawner != null;
+        public bool initialized    => createdPath && createdSpawner;
+
+        #endregion
+
+        #region Implementation Methods
+
+        public void UpdateImmediately()
         {
-            get => pathGo;
-            set => pathGo = value;
+            if (createdPath)
+            {
+                m_path.crowdGenerationConfig = m_crowdGenerationConfig;
+                m_path.ApplyPresetProperties();
+            }
+
+            if (createdSpawner)
+            {
+                m_spawner.crowdGenerationConfig = m_crowdGenerationConfig;
+                m_spawner.ApplyPresetProperties();
+            }
         }
-
-        public GameObject CrowdAgentGo
-        {
-            get => crowdAgentGo;
-            set => crowdAgentGo = value;
-        }
-
-        public CrowdAgentConfig      CrowdAgentConfig      => crowdAgentConfig;
-        public CrowdGenerationConfig CrowdGenerationConfig => crowdGenerationConfig;
-
-        public bool IsPathGoCreated       => pathGo != null;
-        public bool IsCrowdAgentGoCreated => crowdAgentGo != null;
-        public bool IsInitialized         => IsPathGoCreated && IsCrowdAgentGoCreated;
 
         #endregion
 
@@ -43,7 +48,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            FetchCrowdGenerationConfigs();
+            if (crowdGenerationConfig == null) return;
             UnityEditorUtils.UpdateAllReceiverImmediately();
         }
 #endif
@@ -52,57 +57,29 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         #region Public Methods
 
-        public void CreatePathGo()
+        public void CreatePathInstance()
         {
-            if (IsPathGoCreated) return;
+            if (createdPath) return;
 
-            var newPathGo = new GameObject("_Path");
-            newPathGo.transform.SetParent(transform);
-            newPathGo.AddComponent<CrowdPathBuilder>();
+            var instance  = new GameObject("_Path");
+            var component = instance.AddComponent<CrowdPath>();
 
-            pathGo = newPathGo;
+            instance.transform.SetParent(transform);
+            instance.AddComponent<CrowdPathBuilder>();
+
+            m_path = component;
         }
 
-        public void CreateCrowdAgentGo()
+        public void CreateSpawnerInstance()
         {
-            if (IsCrowdAgentGoCreated) return;
+            if (createdSpawner) return;
 
-            var newCrowdAgentGo = new GameObject("_CrowdAgent");
-            newCrowdAgentGo.transform.SetParent(transform);
-            newCrowdAgentGo.AddComponent<CrowdFactoryController>();
+            var instance  = new GameObject("_Spawner");
+            var component = instance.AddComponent<CrowdSpawner>();
 
-            crowdAgentGo = newCrowdAgentGo;
-        }
+            instance.transform.SetParent(transform);
 
-        #endregion
-
-        #region Private Methods
-
-        private void FetchCrowdGenerationConfigs()
-        {
-            if (CrowdGenerationConfig == null) return;
-            ApplyGenerationConfigSettings();
-        }
-
-        private void ApplyGenerationConfigSettings()
-        {
-            var pathController = pathGo.GetComponent<CrowdPathController>();
-            pathController.IsSpawnAgentOnce = CrowdGenerationConfig.IsSpawnAgentOnce;
-            pathController.IsClosedPath     = CrowdGenerationConfig.IsClosedPath;
-            pathController.IsUseSpacing     = CrowdGenerationConfig.IsUseSpacing;
-            pathController.Count            = CrowdGenerationConfig.InstantCount;
-            pathController.CountMax         = CrowdGenerationConfig.MaxCount;
-            pathController.Offset           = CrowdGenerationConfig.Offset;
-            pathController.Spacing          = CrowdGenerationConfig.Spacing;
-        }
-
-        #endregion
-
-        #region Implementation Methods
-
-        public void UpdateImmediately()
-        {
-            FetchCrowdGenerationConfigs();
+            m_spawner = component;
         }
 
         #endregion
