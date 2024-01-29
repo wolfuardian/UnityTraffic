@@ -12,7 +12,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private CrowdGenerator     crowdGenerator;
         private SerializedProperty pathProp;
         private SerializedProperty spawnerProp;
-        private SerializedProperty crowdGenerationConfigProp;
+        private SerializedProperty crowdConfigProp;
 
         #endregion
 
@@ -20,16 +20,14 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void OnEnable()
         {
-            crowdGenerator            = (CrowdGenerator)target;
-            pathProp                  = serializedObject.FindProperty("m_path");
-            spawnerProp               = serializedObject.FindProperty("m_spawner");
-            crowdGenerationConfigProp = serializedObject.FindProperty("m_crowdGenerationConfig");
+            crowdGenerator  = (CrowdGenerator)target;
+            pathProp        = serializedObject.FindProperty("m_path");
+            spawnerProp     = serializedObject.FindProperty("m_spawner");
+            crowdConfigProp = serializedObject.FindProperty("m_crowdConfig");
         }
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("初始化", EditorStyles.boldLabel);
             DrawInitializationSection();
@@ -84,7 +82,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DrawInitializeCrowdConfigSection()
         {
-            EditorGUILayout.PropertyField(crowdGenerationConfigProp, new GUIContent("生成設定"));
+            EditorGUILayout.PropertyField(crowdConfigProp, new GUIContent("生成設定"));
         }
 
         #endregion
