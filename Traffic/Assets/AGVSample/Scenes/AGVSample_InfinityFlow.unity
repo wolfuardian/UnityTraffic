@@ -775,7 +775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd0dab1c5e548f2a35e4eff4f121541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  path: {fileID: 1188610074}
+  path: {fileID: 33758225}
   trackingAgents: []
   agentDataConfig: {fileID: 11400000, guid: fde65e0036b498b44bf9da225db67a0b, type: 2}
   agentGenerationConfig: {fileID: 11400000, guid: 1c265f37b39ad1f44bc23f5937ed6a3a, type: 2}
@@ -1149,7 +1149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 580453225}
-  isOpenPointConfigPanel: 1
+  isOpenPointConfigPanel: 0
   editMode: 0
 --- !u!114 &580453224
 MonoBehaviour:
@@ -1186,11 +1186,11 @@ MonoBehaviour:
   - position: {x: -5.353142, y: 3, z: 9.546969}
     direction: {x: 0.112967215, y: 0, z: 0.9935987}
     curvePos: 0
-  isSpawnAgentOnce: 1
+  isSpawnAgentOnce: 0
   isClosedPath: 0
   isUseSpacing: 1
   count: 1
-  countMax: 1
+  countMax: 60
   spacing: 5
   offset: 0
 --- !u!21 &584315570
@@ -2528,65 +2528,11 @@ MonoBehaviour:
   - position: {x: 14.612818, y: 3, z: -8.302037}
     direction: {x: -0.14006922, y: 0, z: 0.99014175}
     curvePos: 0
-  - position: {x: 13.9400835, y: 3, z: -3.546515}
-    direction: {x: -0.14006922, y: 0, z: 0.99014175}
-    curvePos: 0.2631579
-  - position: {x: 13.267349, y: 3, z: 1.2090073}
-    direction: {x: -0.14006922, y: 0, z: 0.99014175}
-    curvePos: 0.5263158
-  - position: {x: 12.594615, y: 3, z: 5.964528}
-    direction: {x: -0.14006922, y: 0, z: 0.99014175}
-    curvePos: 0.78947365
-  - position: {x: 13.199984, y: 3, z: 10.67042}
-    direction: {x: 0.21643238, y: 0, z: 0.9762976}
-    curvePos: 1.0526316
-  - position: {x: 14.239481, y: 3, z: 15.359449}
-    direction: {x: 0.21643238, y: 0, z: 0.9762976}
-    curvePos: 1.3157895
-  - position: {x: 15.278976, y: 3, z: 20.04848}
-    direction: {x: 0.21643238, y: 0, z: 0.9762976}
-    curvePos: 1.5789473
-  - position: {x: 16.318474, y: 3, z: 24.73751}
-    direction: {x: 0.21643238, y: 0, z: 0.9762976}
-    curvePos: 1.8421053
-  - position: {x: 18.835495, y: 3, z: 26.501385}
-    direction: {x: 0.9142336, y: 0, z: -0.40518743}
-    curvePos: 2.1052632
-  - position: {x: 22.989447, y: 3, z: 24.354322}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 2.368421
-  - position: {x: 24.192596, y: 3, z: 19.70459}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 2.631579
-  - position: {x: 25.395744, y: 3, z: 15.054862}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 2.8947368
-  - position: {x: 26.598892, y: 3, z: 10.405134}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 3.1578946
-  - position: {x: 27.802044, y: 3, z: 5.755398}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 3.4210527
-  - position: {x: 29.005192, y: 3, z: 1.105669}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 3.6842105
-  - position: {x: 30.208342, y: 3, z: -3.5440617}
-    direction: {x: 0.25050628, y: 0, z: -0.968115}
-    curvePos: 3.9473686
-  - position: {x: 28.90776, y: 3, z: -6.495745}
-    direction: {x: -0.992111, y: 0, z: -0.125362}
-    curvePos: 4.2105265
-  - position: {x: 24.142786, y: 3, z: -7.0978417}
-    direction: {x: -0.992111, y: 0, z: -0.125362}
-    curvePos: 4.4736843
-  - position: {x: 19.377804, y: 3, z: -7.6999393}
-    direction: {x: -0.992111, y: 0, z: -0.125362}
-    curvePos: 4.736842
-  isSpawnAgentOnce: 1
-  isClosedPath: 1
-  isUseSpacing: 0
-  count: 19
-  countMax: 100
+  isSpawnAgentOnce: 0
+  isClosedPath: 0
+  isUseSpacing: 1
+  count: 1
+  countMax: 60
   spacing: 5
   offset: 0
 --- !u!1 &1189738915
@@ -2828,7 +2774,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd0dab1c5e548f2a35e4eff4f121541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  path: {fileID: 580453225}
+  path: {fileID: 33758225}
   trackingAgents: []
   agentDataConfig: {fileID: 11400000, guid: fde65e0036b498b44bf9da225db67a0b, type: 2}
   agentGenerationConfig: {fileID: 11400000, guid: 67ffddb909cc79e4cb8ebaa0f81dabc5, type: 2}
@@ -3557,7 +3503,7 @@ MonoBehaviour:
   path: {fileID: 33758225}
   trackingAgents: []
   agentDataConfig: {fileID: 11400000, guid: fde65e0036b498b44bf9da225db67a0b, type: 2}
-  agentGenerationConfig: {fileID: 11400000, guid: 1c265f37b39ad1f44bc23f5937ed6a3a, type: 2}
+  agentGenerationConfig: {fileID: 11400000, guid: 560a3fd8a6683704299bbeb05d3616d3, type: 2}
   currentAgentCount: 0
   totalCreatedCount: 0
   isSpawnable: 1
