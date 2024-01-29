@@ -22,11 +22,11 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void OnSceneGUI()
         {
-            if (waypoint.transform.position == waypoint.PrevPosition) return;
+            if (waypoint.transform.position == waypoint.prevPosition) return;
 
-            waypoint.PrevPosition = waypoint.transform.position;
+            waypoint.prevPosition = waypoint.transform.position;
 
-            UnityEditorUtils.UpdateAllReceiverImmediately();
+            UnityUtils.UpdateAllReceiverImmediately();
 
             SceneView.RepaintAll();
         }

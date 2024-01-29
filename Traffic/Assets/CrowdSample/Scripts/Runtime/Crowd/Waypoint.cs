@@ -9,14 +9,14 @@ namespace CrowdSample.Scripts.Runtime.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private float radius = 2f;
+        [SerializeField] private float m_radius = 2f;
 
         #endregion
 
         #region Properties
 
-        public float   Radius       => Mathf.Clamp(radius, 0.1f, float.MaxValue);
-        public Vector3 PrevPosition { get; set; }
+        public float   radius       => Mathf.Clamp(m_radius, 0.1f, float.MaxValue);
+        public Vector3 prevPosition { get; set; }
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void OnEnable()
         {
-            UnityEditorUtils.UpdateAllReceiverImmediately();
+            UnityUtils.UpdateAllReceiverImmediately();
 
             UpdateCrowdPathController();
         }
@@ -48,7 +48,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
         private void OnDestroy()
         {
             UpdateCrowdPathController();
-            UnityEditorUtils.UpdateAllReceiverImmediately();
+            UnityUtils.UpdateAllReceiverImmediately();
         }
 #endif
 
@@ -62,11 +62,11 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
             if (parent == null) return;
 
-            var targetComponent = parent.GetComponent<CrowdPathController>();
+            var targetComponent = parent.GetComponent<CrowdPath>();
 
             if (targetComponent == null) return;
 
-            targetComponent.FetchAllNeeded();
+            targetComponent.UpdateImmediately();
 
             SceneView.RepaintAll();
         }
@@ -77,7 +77,7 @@ namespace CrowdSample.Scripts.Runtime.Crowd
 
         private void DrawWaypointGizmo()
         {
-            GizmosUtils.Polygon(transform.position, Color.green, Radius, 32);
+            GizmosUtils.Polygon(transform.position, Color.green, radius, 32);
         }
 
         #endregion
