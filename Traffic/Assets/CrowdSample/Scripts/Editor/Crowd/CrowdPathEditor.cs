@@ -1,19 +1,17 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
-using System.Linq;
-using UnityEditorInternal;
 using CrowdSample.Scripts.Utils;
 using CrowdSample.Scripts.Runtime.Crowd;
 
 namespace CrowdSample.Scripts.Editor.Crowd
 {
-    [CustomEditor(typeof(CrowdPathBuilder))]
-    public class CrowdPathBuilderEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CrowdPath))]
+    public class CrowdPathEditor : UnityEditor.Editor
     {
         #region Field Declarations
 
-        private CrowdPathBuilder   crowdPathBuilder;
+        private CrowdPath          crowdPath;
         private SerializedProperty waypointsProp;
 
         private bool isConfigPanelExpanded;
@@ -24,16 +22,8 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void OnEnable()
         {
-            try
-            {
-                crowdPathBuilder = (CrowdPathBuilder)target;
-                serializedObject.FindProperty("m_crowdPath");
-                waypointsProp = serializedObject.FindProperty("m_waypoints");
-            }
-            catch (Exception)
-            {
-                // ignored 找不到原因，只好先這樣處理
-            }
+            crowdPath     = (CrowdPath)target;
+            waypointsProp = serializedObject.FindProperty("m_waypoints");
         }
 
         public override void OnInspectorGUI()
@@ -42,7 +32,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
             DrawEditModeSwitch();
 
-            var isLockInspectorInEditing = crowdPathBuilder.m_editMode == CrowdPathBuilder.EditMode.Add;
+            var isLockInspectorInEditing = crowdPath.editMode == CrowdPath.EditMode.Add;
             EditorGUI.BeginDisabledGroup(isLockInspectorInEditing);
 
             DrawActionsSection();
@@ -64,7 +54,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void HandleSceneClickAddWaypoint()
         {
-            if (crowdPathBuilder.m_editMode != CrowdPathBuilder.EditMode.Add ||
+            if (crowdPath.editMode != CrowdPath.EditMode.Add ||
                 !UnityUtils.IsLeftMouseButtonDown())
             {
                 return;
@@ -77,35 +67,34 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void OnSceneClickAddWaypoint()
         {
             if (!UnityUtils.TryGetRaycastHit(out var hitPoint)) return;
-            if (crowdPathBuilder.m_editMode != CrowdPathBuilder.EditMode.Add) return;
+            if (crowdPath.editMode != CrowdPath.EditMode.Add) return;
 
-            var path         = crowdPathBuilder.crowdPathController;
-            var parent       = crowdPathBuilder.transform;
-            var waypointInst = UnityUtils.CreatePoint("Waypoint" + path.waypoints.Count, hitPoint, parent);
+            var parent       = crowdPath.transform;
+            var waypointInst = UnityUtils.CreatePoint("Waypoint" + crowdPath.waypoints.Count, hitPoint, parent);
             var waypoint     = waypointInst.gameObject.AddComponent<Waypoint>();
-            path.waypoints.Add(waypoint);
+            crowdPath.waypoints.Add(waypoint);
         }
 
         private void ToggleEditMode()
         {
-            var editModes = Enum.GetValues(typeof(CrowdPathBuilder.EditMode));
-            var editMode  = crowdPathBuilder.m_editMode;
+            var editModes = Enum.GetValues(typeof(CrowdPath.EditMode));
+            var editMode  = crowdPath.editMode;
 
-            editMode = (CrowdPathBuilder.EditMode)(((int)editMode + 1) % editModes.Length);
+            editMode = (CrowdPath.EditMode)(((int)editMode + 1) % editModes.Length);
 
-            crowdPathBuilder.m_editMode = editMode;
+            crowdPath.editMode = editMode;
 
-            switch (crowdPathBuilder.m_editMode)
+            switch (crowdPath.editMode)
             {
-                case CrowdPathBuilder.EditMode.None:
-                    UnityEditorUtils.SetInspectorLock(false);
+                case CrowdPath.EditMode.None:
+                    UnityUtils.SetInspectorLock(false);
                     break;
-                case CrowdPathBuilder.EditMode.Add:
-                    UnityEditorUtils.SetInspectorLock(true);
+                case CrowdPath.EditMode.Add:
+                    UnityUtils.SetInspectorLock(true);
                     break;
             }
 
-            Selection.activeObject = crowdPathBuilder.gameObject;
+            Selection.activeObject = crowdPath.gameObject;
         }
 
         #endregion
@@ -129,15 +118,15 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawCurrentEditMode()
         {
             var customStyle = new GUIStyle(EditorStyles.helpBox) { fontSize = 14 };
-            var modeLabel = crowdPathBuilder.m_editMode switch
+            var modeLabel = crowdPath.editMode switch
             {
-                CrowdPathBuilder.EditMode.None => "Current Mode: None",
-                CrowdPathBuilder.EditMode.Add => "Current Mode: Add Mode",
+                CrowdPath.EditMode.None => "Current Mode: None",
+                CrowdPath.EditMode.Add => "Current Mode: Add Mode",
                 _ => "Unknown Mode"
             };
             GUILayout.Label(modeLabel, customStyle, GUILayout.Height(24f));
 
-            if (crowdPathBuilder.m_editMode == CrowdPathBuilder.EditMode.Add)
+            if (crowdPath.editMode == CrowdPath.EditMode.Add)
             {
                 EditorGUILayout.HelpBox("點擊場景中的位置來新增航點。", MessageType.Info);
             }
@@ -150,9 +139,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset All Waypoints"))
             {
-                var waypoints = crowdPathBuilder.waypoints;
-
-                UnityUtils.ClearPoints(waypoints);
+                UnityUtils.ClearPoints(crowdPath.GetWaypointsTransform());
             }
 
             EditorGUILayout.EndHorizontal();
@@ -161,7 +148,7 @@ namespace CrowdSample.Scripts.Editor.Crowd
 
         private void DrawPointConfigSection()
         {
-            var headerStyle = UnityEditorUtils.CreateHeaderStyle(FontStyle.Bold, 12);
+            var headerStyle = UnityUtils.CreateHeaderStyle(FontStyle.Bold, 12);
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("路徑點設定", headerStyle);
             if (GUILayout.Button(isConfigPanelExpanded
@@ -182,33 +169,19 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawWaypointsConfigPanel()
         {
             EditorGUI.indentLevel++;
-
-            try
+            for (var i = 0; i < waypointsProp.arraySize; i++)
             {
-                for (var i = 0; i < waypointsProp.arraySize; i++)
+                var waypoint = waypointsProp.GetArrayElementAtIndex(i);
+                if (waypoint.objectReferenceValue == null) continue; // 跳過已經被刪除的 waypoint, 防止介面卡住
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PropertyField(waypoint, GUIContent.none);
+                if (waypoint.objectReferenceValue is Waypoint component)
                 {
-                    var waypoint = waypointsProp.GetArrayElementAtIndex(i);
-                    if (waypoint.objectReferenceValue == null) continue; // 跳過已經被刪除的 waypoint, 防止介面卡住
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.PropertyField(waypoint, GUIContent.none);
-
-                    if (waypoint.objectReferenceValue is Transform tr)
-                    {
-                        var component = tr.GetComponent<Waypoint>();
-                        if (component != null)
-                        {
-                            DrawWaypointsConfig(component);
-                        }
-                    }
-
-                    EditorGUILayout.EndHorizontal();
+                    DrawWaypointsConfig(component);
                 }
-            }
-            catch (Exception)
-            {
-                // ignored 找不到原因，只好先這樣處理
-            }
 
+                EditorGUILayout.EndHorizontal();
+            }
 
             EditorGUI.indentLevel--;
         }
@@ -216,10 +189,11 @@ namespace CrowdSample.Scripts.Editor.Crowd
         private void DrawWaypointsConfig(Component waypoint)
         {
             var waypointSo    = new SerializedObject(waypoint);
-            var pathBuilderSo = new SerializedObject(crowdPathBuilder);
+            var pathBuilderSo = new SerializedObject(crowdPath);
+
             waypointSo.Update();
 
-            var radiusProp = waypointSo.FindProperty("radius");
+            var radiusProp = waypointSo.FindProperty("m_radius");
             EditorGUILayout.LabelField("Radius", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f));
             EditorGUILayout.PropertyField(radiusProp, GUIContent.none,
                 GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f));
