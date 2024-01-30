@@ -195,12 +195,12 @@ namespace CrowdSample.Scripts.Crowd
             }
 
             navigator.waypoints      =  path.waypoints;
-            navigator.spawnID        =  AssignNewId();
             navigator.targetPointNum =  spawnPoint.targetPointNum % path.waypoints.Count;
             navigator.shouldDestroy  =  config.shouldDestroy;
             navigator.DestroyEvent   += () => { queueTotalCount--; };
             navigator.DestroyEvent   += () => { trackingAgents.Remove(agentInstance.transform); };
-            navigator.DestroyEvent   += () => { ReleaseId(navigator.queueIndex); };
+            navigator.DestroyEvent   += () => { ReleaseId(navigator.spawnID); };
+            navigator.spawnID        =  AssignNewId();
             navigator.QueueStateEvent += nav =>
             {
                 nav.queueIndex      = trackingAgents.IndexOf(nav.transform);
@@ -235,11 +235,6 @@ namespace CrowdSample.Scripts.Crowd
 
         private void ReleaseId(int id)
         {
-            if (!activeIds.Contains(id))
-            {
-                return;
-            }
-
             activeIds.Remove(id);
             availableIds.Add(id);
         }

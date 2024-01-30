@@ -95,9 +95,23 @@ namespace CrowdSample.Scripts.Crowd
                 }
 
                 EditorGUILayout.ObjectField("", instance, typeof(GameObject), true);
-                if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
+                if (GUILayout.Button("刪️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.05f)))
                 {
-                    toRemove.Add(instance);
+                    var isConfirmed = EditorUtility.DisplayDialog(
+                        "確認刪除",
+                        "你確定要刪除這個物件嗎？這個操作無法復原。",
+                        "刪除",
+                        "取消"
+                    );
+                    if (isConfirmed)
+                    {
+                        toRemove.Add(instance);
+                    }
+                }
+
+                if (GUILayout.Button("跳轉↗️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
+                {
+                    Selection.activeObject = instance;
                 }
 
                 EditorGUILayout.EndHorizontal();

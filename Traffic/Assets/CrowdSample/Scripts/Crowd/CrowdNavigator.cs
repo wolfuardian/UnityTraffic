@@ -290,7 +290,7 @@ namespace CrowdSample.Scripts.Crowd
                 fontSize  = 9
             };
 
-            Handles.Label(position, "ID: " + queueIndex, style);
+            Handles.Label(position, "ID: " + spawnID, style);
         }
 
         #endregion

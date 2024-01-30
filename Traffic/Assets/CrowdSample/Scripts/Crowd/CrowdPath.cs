@@ -57,6 +57,11 @@ namespace CrowdSample.Scripts.Crowd
         {
             waypoints = GetWaypoints();
 
+            if (crowdConfig == null)
+            {
+                return;
+            }
+
             if (crowdConfig.reverse)
             {
                 waypoints.Reverse();
@@ -64,13 +69,7 @@ namespace CrowdSample.Scripts.Crowd
 
             for (var i = 0; i < waypoints.Count; i++)
             {
-                waypoints[i].index = i;
-            }
-
-
-            if (crowdConfig == null)
-            {
-                return;
+                waypoints[i].waypointID = i;
             }
 
             if (waypoints.Count < 2)
@@ -243,7 +242,6 @@ namespace CrowdSample.Scripts.Crowd
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
             serializedObject.Update();
 
             DrawToggleMode("編輯模式");

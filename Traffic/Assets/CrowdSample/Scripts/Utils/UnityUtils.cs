@@ -58,6 +58,7 @@ namespace CrowdSample.Scripts.Utils
             Undo.SetCurrentGroupName("Clear Path Points");
             foreach (var waypoint in waypoints)
             {
+                if (waypoint == null) continue;
                 Undo.DestroyObjectImmediate(waypoint.gameObject);
             }
         }
