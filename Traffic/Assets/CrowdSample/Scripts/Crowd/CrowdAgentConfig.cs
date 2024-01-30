@@ -19,8 +19,8 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private float m_stoppingDistance = 1f;
         [SerializeField] private bool  m_autoBraking      = true;
 
-        [SerializeField] private string m_agentID = "No Data";
-        [SerializeField] private string m_type    = "No Data";
+        [SerializeField] private string m_userID = "";
+        [SerializeField] private string m_type   = "No Data";
         [SerializeField] private string m_category;
         [SerializeField] private string m_alias;
         [SerializeField] private string m_model;
@@ -73,10 +73,10 @@ namespace CrowdSample.Scripts.Crowd
             set => m_autoBraking = value;
         }
 
-        public string agentID
+        public string userID
         {
-            get => m_agentID;
-            set => m_agentID = value;
+            get => m_userID;
+            set => m_userID = value;
         }
 
         public string type
@@ -132,6 +132,8 @@ namespace CrowdSample.Scripts.Crowd
         private SerializedProperty stoppingDistanceProp;
         private SerializedProperty autoBrakingProp;
 
+        private SerializedProperty userIDProp;
+
         #endregion
 
         #region Unity Methods
@@ -146,6 +148,8 @@ namespace CrowdSample.Scripts.Crowd
             accelerationProp     = serializedObject.FindProperty("m_acceleration");
             stoppingDistanceProp = serializedObject.FindProperty("m_stoppingDistance");
             autoBrakingProp      = serializedObject.FindProperty("m_autoBraking");
+
+            userIDProp = serializedObject.FindProperty("m_userID");
         }
 
         public override void OnInspectorGUI()
@@ -154,6 +158,7 @@ namespace CrowdSample.Scripts.Crowd
 
             DrawAgentConfig("NavAgentMesh 物件設定");
 
+            DrawUserConfig("使用者資料設定");
 
             if (GUI.changed)
             {
@@ -199,6 +204,16 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.PropertyField(accelerationProp,     new GUIContent("加速度"));
             EditorGUILayout.PropertyField(stoppingDistanceProp, new GUIContent("停止距離"));
             EditorGUILayout.PropertyField(autoBrakingProp,      new GUIContent("自動煞車"));
+            EditorGUILayout.EndVertical();
+            EditorGUI.indentLevel--;
+        }
+
+        private void DrawUserConfig(string label)
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(userIDProp, new GUIContent("使用者 ID"));
             EditorGUILayout.EndVertical();
             EditorGUI.indentLevel--;
         }
