@@ -1,13 +1,50 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEditorInternal;
 using CrowdSample.Scripts.Utils;
-using CrowdSample.Scripts.Runtime.Crowd;
+using System.Collections.Generic;
 
-namespace CrowdSample.Scripts.Editor.Crowd
+namespace CrowdSample.Scripts.Crowd
 {
+    public class CrowdWizard : MonoBehaviour
+    {
+        #region Field Declarations
+
+        [SerializeField] private List<GameObject> m_generatorInstances = new List<GameObject>();
+
+        #endregion
+
+        #region Properties
+
+        public List<GameObject> generatorInstances => m_generatorInstances;
+
+        #endregion
+
+        #region Public Methods
+
+        public void AddGroupInstance()
+        {
+            var newGeneratorInst = new GameObject("Crowd_" + generatorInstances.Count);
+            newGeneratorInst.transform.SetParent(transform);
+            m_generatorInstances.Add(newGeneratorInst);
+            ConfigureGeneratorInstance(newGeneratorInst);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static void ConfigureGeneratorInstance(GameObject inst)
+        {
+            var crowdGenerator = inst.AddComponent<CrowdInitialization>();
+            InternalEditorUtility.SetIsInspectorExpanded(crowdGenerator, true);
+        }
+
+        #endregion
+    }
+
     [CustomEditor(typeof(CrowdWizard))]
-    public class CrowdWizardEditor : UnityEditor.Editor
+    public class CrowdWizardEditor : Editor
     {
         #region Field Declarations
 
