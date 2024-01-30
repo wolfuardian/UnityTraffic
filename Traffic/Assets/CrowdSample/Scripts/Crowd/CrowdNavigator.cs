@@ -22,7 +22,8 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private NavigationMode m_navigationMode;
         [SerializeField] private NavMeshAgent   m_navMeshAgent;
         [SerializeField] private List<Waypoint> m_waypoints;
-        [SerializeField] private int            m_targetID;
+        [SerializeField] private int            m_spawnID;
+        [SerializeField] private int            m_targetPointNum;
         [SerializeField] private bool           m_movingForward = true;
         [SerializeField] private bool           m_shouldDestroy = true;
 
@@ -57,10 +58,16 @@ namespace CrowdSample.Scripts.Crowd
             set => m_waypoints = value;
         }
 
-        public int targetID
+        public int spawnID
         {
-            get => m_targetID;
-            set => m_targetID = value;
+            get => m_spawnID;
+            set => m_spawnID = value;
+        }
+
+        public int targetPointNum
+        {
+            get => m_targetPointNum;
+            set => m_targetPointNum = value;
         }
 
         public bool movingForward
@@ -106,8 +113,8 @@ namespace CrowdSample.Scripts.Crowd
         {
             if (waypoints.Count > 0)
             {
-                var radius      = waypoints[targetID].radius;
-                var destination = waypoints[targetID].transform.position;
+                var radius      = waypoints[targetPointNum].radius;
+                var destination = waypoints[targetPointNum].transform.position;
                 reachedThreshold         = radius;
                 navMeshAgent.destination = ScatterDestination(destination, radius);
             }
@@ -192,53 +199,53 @@ namespace CrowdSample.Scripts.Crowd
                 case NavigationMode.Loop:
                     if (movingForward)
                     {
-                        targetID = (targetID + 1) % waypoints.Count;
+                        targetPointNum = (targetPointNum + 1) % waypoints.Count;
                     }
                     else
                     {
-                        targetID = (targetID - 1) % waypoints.Count;
-                        if (targetID < 0)
+                        targetPointNum = (targetPointNum - 1) % waypoints.Count;
+                        if (targetPointNum < 0)
                         {
-                            targetID = waypoints.Count - 1;
+                            targetPointNum = waypoints.Count - 1;
                         }
                     }
 
                     break;
 
                 case NavigationMode.PingPong:
-                    if (targetID <= 0)
+                    if (targetPointNum <= 0)
                     {
                         movingForward = true;
                     }
-                    else if (targetID >= waypoints.Count - 1)
+                    else if (targetPointNum >= waypoints.Count - 1)
                     {
                         movingForward = false;
                     }
 
-                    targetID += movingForward ? 1 : -1;
+                    targetPointNum += movingForward ? 1 : -1;
                     break;
 
                 case NavigationMode.Once:
                     if (movingForward)
                     {
-                        if (targetID < waypoints.Count - 1)
+                        if (targetPointNum < waypoints.Count - 1)
                         {
-                            targetID++;
+                            targetPointNum++;
                         }
                     }
                     else
                     {
-                        if (targetID > 0)
+                        if (targetPointNum > 0)
                         {
-                            targetID--;
+                            targetPointNum--;
                         }
                     }
 
                     break;
             }
 
-            var radius      = waypoints[targetID].radius;
-            var destination = waypoints[targetID].transform.position;
+            var radius      = waypoints[targetPointNum].radius;
+            var destination = waypoints[targetPointNum].transform.position;
             reachedThreshold         = radius;
             navMeshAgent.destination = ScatterDestination(destination, radius);
         }
@@ -250,13 +257,13 @@ namespace CrowdSample.Scripts.Crowd
 
         private bool IsGoalReached()
         {
-            var remainingDistance = transform.position - waypoints[targetID].transform.position;
-            return remainingDistance.magnitude < reachedThreshold && targetID == waypoints.Count - 1;
+            var remainingDistance = transform.position - waypoints[targetPointNum].transform.position;
+            return remainingDistance.magnitude < reachedThreshold && targetPointNum == waypoints.Count - 1;
         }
 
         private void ContinueToNextWaypoint()
         {
-            var targetPosition = waypoints[targetID].transform.position;
+            var targetPosition = waypoints[targetPointNum].transform.position;
             navMeshAgent.destination = targetPosition;
         }
 
@@ -279,10 +286,11 @@ namespace CrowdSample.Scripts.Crowd
             var style = new GUIStyle
             {
                 normal    = { textColor = Color.white },
-                alignment = TextAnchor.UpperLeft
+                alignment = TextAnchor.UpperLeft,
+                fontSize  = 9
             };
 
-            Handles.Label(position, "TargetID: " + targetID, style);
+            Handles.Label(position, "ID: " + queueIndex, style);
         }
 
         #endregion
