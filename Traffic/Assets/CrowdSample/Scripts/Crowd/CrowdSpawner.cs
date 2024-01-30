@@ -284,7 +284,7 @@ namespace CrowdSample.Scripts.Crowd
         private void DrawBackButton()
         {
             EditorGUILayout.BeginVertical("box");
-            if (GUILayout.Button("返回️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
+            if (GUILayout.Button("返回", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
             {
                 Selection.activeObject = crowdSpawner.transform.parent;
             }

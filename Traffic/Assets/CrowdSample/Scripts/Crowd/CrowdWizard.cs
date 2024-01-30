@@ -36,7 +36,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private static void ConfigureGeneratorInstance(GameObject inst)
         {
-            var crowdGenerator = inst.AddComponent<CrowdInitialization>();
+            var crowdGenerator = inst.AddComponent<CrowdManager>();
             InternalEditorUtility.SetIsInspectorExpanded(crowdGenerator, true);
         }
 

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Crowd
 {
-    public class CrowdInitialization : MonoBehaviour, IUpdateReceiver
+    public class CrowdManager : MonoBehaviour, IUpdateReceiver
     {
         #region Field Declarations
 
@@ -100,15 +100,15 @@ namespace CrowdSample.Scripts.Crowd
         #endregion
     }
 
-    [CustomEditor(typeof(CrowdInitialization))]
-    public class CrowdInitializationEditor : Editor
+    [CustomEditor(typeof(CrowdManager))]
+    public class CrowdManagerEditor : Editor
     {
         #region Field Declarations
 
-        private CrowdInitialization crowdInitialization;
-        private SerializedProperty  pathProp;
-        private SerializedProperty  spawnerInstancesProp;
-        private SerializedProperty  crowdSpawnConfigProp;
+        private CrowdManager       crowdManager;
+        private SerializedProperty pathProp;
+        private SerializedProperty spawnerInstancesProp;
+        private SerializedProperty crowdSpawnConfigProp;
 
         #endregion
 
@@ -116,7 +116,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void OnEnable()
         {
-            crowdInitialization  = (CrowdInitialization)target;
+            crowdManager         = (CrowdManager)target;
             pathProp             = serializedObject.FindProperty("m_path");
             spawnerInstancesProp = serializedObject.FindProperty("m_spawnerInstances");
             crowdSpawnConfigProp = serializedObject.FindProperty("m_crowdPathSpawnConfig");
@@ -125,14 +125,14 @@ namespace CrowdSample.Scripts.Crowd
         public override void OnInspectorGUI()
         {
             var errorCount = 0;
-            if (crowdInitialization.path == null) errorCount++;
+            if (crowdManager.path == null) errorCount++;
             if (crowdSpawnConfigProp.objectReferenceValue == null) errorCount++;
 
-            DrawPathInitialization("路徑");
+            DrawPathConfig("路徑");
 
             EditorGUILayout.Space(1);
 
-            DrawAgentConfiguration("代理物件設定");
+            DrawAgentConfig("代理物件設定");
 
             if (errorCount > 0)
             {
@@ -151,14 +151,14 @@ namespace CrowdSample.Scripts.Crowd
 
         #region GUI Methods
 
-        private void DrawPathInitialization(string label)
+        private void DrawPathConfig(string label)
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-            EditorGUI.BeginDisabledGroup(crowdInitialization.initialized);
+            EditorGUI.BeginDisabledGroup(crowdManager.initialized);
             if (GUILayout.Button("初始化路徑", GUILayout.Height(48)))
             {
-                crowdInitialization.Initialize();
+                crowdManager.Initialize();
             }
 
             EditorGUILayout.PropertyField(pathProp, new GUIContent("路徑物件"));
@@ -166,17 +166,17 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.PropertyField(crowdSpawnConfigProp, new GUIContent("路徑生成設定"));
             if (GUILayout.Button("前往路徑編輯器↗️", GUILayout.Height(24)))
             {
-                Selection.activeObject = crowdInitialization.path;
+                Selection.activeObject = crowdManager.path;
             }
 
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawAgentConfiguration(string label)
+        private void DrawAgentConfig(string label)
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-            var self = crowdInitialization;
+            var self = crowdManager;
             DrawAgentsTable(self.spawnerInstances, self.agentConfigs, self.AddInstance);
             EditorGUILayout.EndVertical();
         }
@@ -251,7 +251,7 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.BeginVertical("box");
             if (GUILayout.Button("返回️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
             {
-                Selection.activeObject = crowdInitialization.transform.parent;
+                Selection.activeObject = crowdManager.transform.parent;
             }
 
             EditorGUILayout.EndVertical();
