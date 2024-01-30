@@ -9,9 +9,7 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private float   m_radius = 2f;
-        [SerializeField] private int     m_index;
-        [SerializeField] private Vector3 m_prevPosition;
+        [SerializeField] private float m_radius = 2f;
 
         #endregion
 
@@ -19,17 +17,9 @@ namespace CrowdSample.Scripts.Crowd
 
         public float radius => m_radius;
 
-        public int index
-        {
-            get => m_index;
-            set => m_index = value;
-        }
+        public int waypointID { get; set; }
 
-        public Vector3 prevPosition
-        {
-            get => m_prevPosition;
-            set => m_prevPosition = value;
-        }
+        public Vector3 prevPosition { get; set; }
 
         #endregion
 
@@ -101,7 +91,7 @@ namespace CrowdSample.Scripts.Crowd
                 fontSize  = 9
             };
 
-            Handles.Label(position, "PointNum: " + index, style);
+            Handles.Label(position, "PointNum: " + waypointID, style);
         }
 
         #endregion
