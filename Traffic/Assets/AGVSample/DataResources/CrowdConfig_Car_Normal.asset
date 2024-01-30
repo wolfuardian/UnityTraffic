@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ede7ccd0c0444485899ba14e18dd9ff8, type: 3}
+  m_Name: CrowdConfig_Car_Normal
+  m_EditorClassIdentifier: 
+  m_generationMode: 0
+  m_spawnInterval: 0.36
+  m_instantCount: 1
+  m_maxSpawnCount: 100
+  m_spacing: 2.41
+  m_offset: 0
+  m_spawnOnce: 0
+  m_useSpacing: 0
+  m_reverse: 0
+  m_pathClosed: 0
+  m_shouldDestroy: 1
+  m_prefabs:
+  - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
+  - {fileID: 919132149155446097, guid: 3c4f9ec2ecfc88640b03f05e73140254, type: 3}
+  m_minSpeed: 20
+  m_maxSpeed: 20
+  m_angularSpeed: 5000
+  m_acceleration: 50
+  m_stoppingDistance: 0.1
+  m_autoBraking: 1
+  m_agentID: No Data
+  m_type: No Data
+  m_category: 
+  m_alias: 
+  m_model: 
+  m_time: 
+  m_noted: 
