@@ -11,7 +11,6 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private NavMeshAgent m_navMeshAgent;
         [SerializeField] private float        m_originalSpeed;
 
-        // AgentData
         [SerializeField] private int    m_agentID;
         [SerializeField] private string m_type     = "No Data";
         [SerializeField] private string m_category = "No Data";
@@ -35,10 +34,7 @@ namespace CrowdSample.Scripts.Crowd
             set => m_originalSpeed = value;
         }
 
-        private bool isReachGoal => m_navMeshAgent.remainingDistance < 0.2f;
 
-
-        // AgentData
         public int agentID
         {
             get => m_agentID;
@@ -88,9 +84,9 @@ namespace CrowdSample.Scripts.Crowd
             navMeshAgent = GetComponent<NavMeshAgent>() ?? gameObject.AddComponent<NavMeshAgent>();
         }
 
-        private void Update()
+        private void Start()
         {
-            originalSpeed = navMeshAgent.speed;
+            TemporaryDeceleration(0, 0.5f);
         }
 
         #endregion
@@ -98,10 +94,11 @@ namespace CrowdSample.Scripts.Crowd
 
         public void TemporaryDeceleration(float interval, float duration, float minSpeed = 0.2f)
         {
-            StartCoroutine(TemporaryWaitingRoutine(interval, duration, minSpeed));
+            originalSpeed = navMeshAgent.speed;
+            StartCoroutine(TemporaryWaitingRoutine(interval, duration));
         }
 
-        private IEnumerator TemporaryWaitingRoutine(float interval, float duration, float minSpeed)
+        private IEnumerator TemporaryWaitingRoutine(float interval, float duration)
         {
             yield return new WaitForSeconds(interval);
             SetSpeed(0);

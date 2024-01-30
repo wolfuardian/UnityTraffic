@@ -12,7 +12,7 @@ namespace CrowdSample.Scripts.Crowd
 
         [SerializeField] private CrowdPath              m_path;
         [SerializeField] private CrowdSpawner           m_spawner;
-        [SerializeField] private CrowdPathSpawnConfig   m_crowdPathSpawnConfig;
+        [SerializeField] private CrowdPathConfig   m_crowdPathConfig;
         [SerializeField] private List<GameObject>       m_spawnerInstances = new List<GameObject>();
         [SerializeField] private List<CrowdAgentConfig> m_agentConfigs     = new List<CrowdAgentConfig>();
 
@@ -21,7 +21,7 @@ namespace CrowdSample.Scripts.Crowd
         #region Properties
 
         public CrowdPath              path                 => m_path;
-        public CrowdPathSpawnConfig   crowdPathSpawnConfig => m_crowdPathSpawnConfig;
+        public CrowdPathConfig   crowdPathConfig => m_crowdPathConfig;
         public List<GameObject>       spawnerInstances     => m_spawnerInstances;
         public List<CrowdAgentConfig> agentConfigs         => m_agentConfigs;
         public bool                   createdSpawner       => m_spawner != null;
@@ -38,7 +38,7 @@ namespace CrowdSample.Scripts.Crowd
             if (m_path != null)
 
             {
-                m_path.crowdPathSpawnConfig = m_crowdPathSpawnConfig;
+                m_path.crowdPathConfig = m_crowdPathConfig;
             }
 
             if (createdSpawner)
@@ -53,7 +53,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void OnValidate()
         {
-            if (crowdPathSpawnConfig == null) return;
+            if (crowdPathConfig == null) return;
             UnityUtils.UpdateAllReceiverImmediately();
         }
 
@@ -78,7 +78,7 @@ namespace CrowdSample.Scripts.Crowd
             var instance  = new GameObject("Path");
             var component = instance.AddComponent<CrowdPath>();
 
-            component.crowdPathSpawnConfig = m_crowdPathSpawnConfig;
+            component.crowdPathConfig = m_crowdPathConfig;
 
             instance.transform.SetParent(transform);
 
@@ -119,7 +119,7 @@ namespace CrowdSample.Scripts.Crowd
             crowdManager         = (CrowdManager)target;
             pathProp             = serializedObject.FindProperty("m_path");
             spawnerInstancesProp = serializedObject.FindProperty("m_spawnerInstances");
-            crowdSpawnConfigProp = serializedObject.FindProperty("m_crowdPathSpawnConfig");
+            crowdSpawnConfigProp = serializedObject.FindProperty("m_crowdPathConfig");
         }
 
         public override void OnInspectorGUI()

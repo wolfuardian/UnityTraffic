@@ -116,7 +116,8 @@ namespace CrowdSample.Scripts.Crowd
                 var radius      = waypoints[targetPointNum].radius;
                 var destination = waypoints[targetPointNum].transform.position;
                 reachedThreshold         = radius;
-                navMeshAgent.destination = ScatterDestination(destination, radius);
+                navMeshAgent.destination = ScatterDestination(destination,        radius);
+                transform.position       = ScatterDestination(transform.position, radius);
             }
         }
 
@@ -132,6 +133,7 @@ namespace CrowdSample.Scripts.Crowd
 
             if (IsDestinationReached())
             {
+                navMeshAgent.destination = transform.position + transform.forward * 0.1f;
                 HandleDestinationReached();
             }
             else
@@ -157,7 +159,7 @@ namespace CrowdSample.Scripts.Crowd
         private bool ShouldReturnEarly()
         {
             return waypoints.Count == 0 || navMeshAgent.pathPending ||
-                   navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance;
+                   navMeshAgent.remainingDistance > reachedThreshold;
         }
 
         private void TriggerQueueStateEvent()
@@ -278,7 +280,7 @@ namespace CrowdSample.Scripts.Crowd
                 return;
             }
 
-            var position = transform.position;
+            var position = transform.position + Vector3.up * 2f;
 
             var direction = navMeshAgent.destination - position;
             GizmosUtils.Arrow(position, direction, Color.red);

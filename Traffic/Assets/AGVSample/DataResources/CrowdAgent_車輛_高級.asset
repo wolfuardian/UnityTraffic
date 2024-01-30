@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2baaee8cb7364a7899437dac55aac4a4, type: 3}
   m_Name: "CrowdAgent_\u8ECA\u8F1B_\u9AD8\u7D1A"
   m_EditorClassIdentifier: 
-  m_prefabs: []
-  m_minSpeed: 4
-  m_maxSpeed: 5
-  m_angularSpeed: 100
+  m_prefabs:
+  - {fileID: 7766751489447370779, guid: 1c1be1bba36f7fa4e8bf93cd7a74fe94, type: 3}
+  m_minSpeed: 5
+  m_maxSpeed: 6
+  m_angularSpeed: 500
   m_acceleration: 5
   m_stoppingDistance: 1
   m_autoBraking: 1

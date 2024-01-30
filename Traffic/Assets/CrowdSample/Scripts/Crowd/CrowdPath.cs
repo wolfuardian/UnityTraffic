@@ -12,7 +12,7 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private CrowdPathSpawnConfig m_crowdPathSpawnConfig;
+        [SerializeField] private CrowdPathConfig m_crowdPathConfig;
         [SerializeField] private List<Waypoint>       m_waypoints   = new List<Waypoint>();
         [SerializeField] private List<SpawnPoint>     m_spawnPoints = new List<SpawnPoint>();
         [SerializeField] private float                m_arrowScale  = 1f;
@@ -27,10 +27,10 @@ namespace CrowdSample.Scripts.Crowd
 
         #region Properties
 
-        public CrowdPathSpawnConfig crowdPathSpawnConfig
+        public CrowdPathConfig crowdPathConfig
         {
-            get => m_crowdPathSpawnConfig;
-            set => m_crowdPathSpawnConfig = value;
+            get => m_crowdPathConfig;
+            set => m_crowdPathConfig = value;
         }
 
         public List<Waypoint> waypoints
@@ -57,12 +57,12 @@ namespace CrowdSample.Scripts.Crowd
         {
             waypoints = GetWaypoints();
 
-            if (crowdPathSpawnConfig == null)
+            if (crowdPathConfig == null)
             {
                 return;
             }
 
-            if (crowdPathSpawnConfig.reverse)
+            if (crowdPathConfig.reverse)
             {
                 waypoints.Reverse();
             }
@@ -122,7 +122,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private List<SpawnPoint> GetSpawnPoints()
         {
-            var config      = crowdPathSpawnConfig;
+            var config      = crowdPathConfig;
             var points      = waypoints.Select(wp => wp.transform.position).ToList();
             var totalLength = PathResolver.GetTotalLength(points, config.pathClosed);
             var maxCount    = Mathf.FloorToInt(totalLength / config.spacing);
@@ -153,7 +153,7 @@ namespace CrowdSample.Scripts.Crowd
         private SpawnPoint NewSpawnPoint(float distance, float totalLength)
         {
             var globalInterp  = distance / totalLength;
-            var config        = crowdPathSpawnConfig;
+            var config        = crowdPathConfig;
             var points        = waypoints.Select(wp => wp.transform.position).ToList();
             var position      = PathResolver.GetPositionAt(config, points, globalInterp);
             var direction     = PathResolver.GetDirectionAt(config, points, globalInterp);
@@ -190,7 +190,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void DrawPathArrows()
         {
-            var config = crowdPathSpawnConfig;
+            var config = crowdPathConfig;
             var count  = waypoints.Count;
             var points = waypoints.Select(wp => wp.transform.position).ToList();
             int actualCount;
@@ -307,7 +307,7 @@ namespace CrowdSample.Scripts.Crowd
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_crowdPathSpawnConfig"),
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_crowdPathConfig"),
                 new GUIContent("設定資源檔"));
             EditorGUILayout.EndVertical();
         }

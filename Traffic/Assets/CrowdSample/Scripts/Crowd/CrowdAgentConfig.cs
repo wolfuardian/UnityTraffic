@@ -12,10 +12,10 @@ namespace CrowdSample.Scripts.Crowd
 
         [SerializeField] private GameObject[] m_prefabs;
 
-        [SerializeField] private float m_minSpeed         = 4f;
-        [SerializeField] private float m_maxSpeed         = 5f;
-        [SerializeField] private float m_angularSpeed     = 100f;
-        [SerializeField] private float m_acceleration     = 5f;
+        [SerializeField] private float m_minSpeed         = 5f;
+        [SerializeField] private float m_maxSpeed         = 6f;
+        [SerializeField] private float m_angularSpeed     = 5000f;
+        [SerializeField] private float m_acceleration     = 50f;
         [SerializeField] private float m_stoppingDistance = 1f;
         [SerializeField] private bool  m_autoBraking      = true;
 

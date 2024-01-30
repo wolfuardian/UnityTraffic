@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_prefabs:
   - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
-  m_minSpeed: 4
-  m_maxSpeed: 5
-  m_angularSpeed: 100
-  m_acceleration: 5
+  m_minSpeed: 5
+  m_maxSpeed: 6
+  m_angularSpeed: 120
+  m_acceleration: 10
   m_stoppingDistance: 1
   m_autoBraking: 1
   m_agentID: No Data

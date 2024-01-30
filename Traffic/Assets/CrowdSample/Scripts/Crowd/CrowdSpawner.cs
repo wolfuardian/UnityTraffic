@@ -83,7 +83,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void StartSpawn()
         {
-            if (path.crowdPathSpawnConfig.spawnOnce)
+            if (path.crowdPathConfig.spawnOnce)
             {
                 SpawnOnce();
             }
@@ -95,10 +95,10 @@ namespace CrowdSample.Scripts.Crowd
 
         private void SpawnOnce()
         {
-            var spawnConfig = path.crowdPathSpawnConfig;
+            var spawnConfig = path.crowdPathConfig;
             var spawnPoints = path.spawnPoints;
 
-            if (spawnConfig.prefabs.Length == 0)
+            if (agentConfig.prefabs.Length == 0)
             {
                 Debug.LogError($"[錯誤] 路徑 '{path.name}' 上沒有設定任何代理物件。", path);
                 return;
@@ -108,8 +108,8 @@ namespace CrowdSample.Scripts.Crowd
 
             foreach (var spawnPoint in spawnPoints)
             {
-                var prefabIndex = Random.Range(0, spawnConfig.prefabs.Length);
-                var prefab      = spawnConfig.prefabs[prefabIndex];
+                var prefabIndex = Random.Range(0, agentConfig.prefabs.Length);
+                var prefab      = agentConfig.prefabs[prefabIndex];
                 if (prefab == null)
                 {
                     Debug.LogError($"[錯誤] 路徑 '{path.name}' 上的代理物件為空。", path);
@@ -132,10 +132,10 @@ namespace CrowdSample.Scripts.Crowd
 
         private IEnumerator SpawnRoutine()
         {
-            var config      = path.crowdPathSpawnConfig;
+            var pathConfig  = path.crowdPathConfig;
             var spawnPoints = path.spawnPoints;
 
-            if (config.prefabs.Length == 0)
+            if (agentConfig.prefabs.Length == 0)
             {
                 Debug.LogError($"[錯誤] 路徑 '{path.name}' 上沒有設定任何代理物件。", path);
                 yield break;
@@ -145,10 +145,10 @@ namespace CrowdSample.Scripts.Crowd
 
             while (gameObject.activeSelf)
             {
-                if (queueTotalCount < config.maxSpawnCount)
+                if (queueTotalCount < pathConfig.maxSpawnCount)
                 {
-                    var prefabIndex = Random.Range(0, config.prefabs.Length);
-                    var prefab      = config.prefabs[prefabIndex];
+                    var prefabIndex = Random.Range(0, agentConfig.prefabs.Length);
+                    var prefab      = agentConfig.prefabs[prefabIndex];
                     if (prefab == null)
                     {
                         Debug.LogError($"[錯誤] 路徑 '{path.name}' 上的代理物件為空。", path);
@@ -163,7 +163,7 @@ namespace CrowdSample.Scripts.Crowd
                     instance.transform.position    = spawnPoint.position;
                     instance.transform.eulerAngles = Quaternion.LookRotation(spawnPoint.direction).eulerAngles;
 
-                    yield return new WaitForSeconds(config.spawnInterval);
+                    yield return new WaitForSeconds(pathConfig.spawnInterval);
                 }
                 else
                 {
@@ -177,6 +177,10 @@ namespace CrowdSample.Scripts.Crowd
         public GameObject InstantiateAgent(GameObject instance, Transform parent, SpawnPoint spawnPoint)
         {
             var agentInstance = Instantiate(instance, Vector3.zero, Quaternion.identity, parent);
+            if (agentInstance.GetComponent<NavMeshAgent>() == null)
+            {
+                agentInstance.AddComponent<NavMeshAgent>();
+            }
 
             Configure(agentInstance, spawnPoint);
 
@@ -185,26 +189,23 @@ namespace CrowdSample.Scripts.Crowd
 
         private void Configure(GameObject agentInstance, SpawnPoint spawnPoint)
         {
-            var config = path.crowdPathSpawnConfig;
-
-            var navMeshAgent = agentInstance.AddComponent<NavMeshAgent>();
-            // 預留可能會用到的參數輸入區塊
+            var pathConfig = path.crowdPathConfig;
 
             var navigator = agentInstance.AddComponent<CrowdNavigator>();
-            if (config.generationMode == CrowdPathSpawnConfig.GenerationMode.InfinityFlow)
+            if (pathConfig.generationMode == CrowdPathConfig.GenerationMode.InfinityFlow)
             {
                 navigator.navigationMode = CrowdNavigator.NavigationMode.Once;
             }
             else
             {
-                navigator.navigationMode = config.pathClosed
+                navigator.navigationMode = pathConfig.pathClosed
                     ? CrowdNavigator.NavigationMode.Loop
                     : CrowdNavigator.NavigationMode.PingPong;
             }
 
             navigator.waypoints      =  path.waypoints;
             navigator.targetPointNum =  spawnPoint.targetPointNum % path.waypoints.Count;
-            navigator.shouldDestroy  =  config.shouldDestroy;
+            navigator.shouldDestroy  =  pathConfig.shouldDestroy;
             navigator.DestroyEvent   += () => { queueTotalCount--; };
             navigator.DestroyEvent   += () => { trackingAgents.Remove(agentInstance.transform); };
             navigator.DestroyEvent   += () => { ReleaseId(navigator.spawnID); };
@@ -216,11 +217,11 @@ namespace CrowdSample.Scripts.Crowd
             };
 
             var agent = agentInstance.AddComponent<CrowdAgent>();
-            agent.navMeshAgent.speed            = Random.Range(config.minSpeed, config.maxSpeed);
-            agent.navMeshAgent.angularSpeed     = config.angularSpeed;
-            agent.navMeshAgent.acceleration     = config.acceleration;
-            agent.navMeshAgent.stoppingDistance = config.stoppingDistance;
-            agent.navMeshAgent.autoBraking      = config.autoBraking;
+            agent.navMeshAgent.speed            = Random.Range(agentConfig.minSpeed, agentConfig.maxSpeed);
+            agent.navMeshAgent.angularSpeed     = agentConfig.angularSpeed;
+            agent.navMeshAgent.acceleration     = agentConfig.acceleration;
+            agent.navMeshAgent.stoppingDistance = agentConfig.stoppingDistance;
+            agent.navMeshAgent.autoBraking      = agentConfig.autoBraking;
 
             trackingAgents.Add(agentInstance.transform);
             queueTotalCount++;

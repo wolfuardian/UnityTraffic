@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: f40aa219d5536bf4894752e5eeb1358b, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: a5ac5b769c0c6144c95d24c0e9aaddb9, type: 2}
 --- !u!1 &37689439
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 2
+  m_radius: 3.38
 --- !u!1 &231197780
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,7 +484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 2
+  m_radius: 3.52
 --- !u!1 &329539908
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,55 +575,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 329539908}
   m_CullTransparentMesh: 1
---- !u!1 &342467918
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 342467920}
-  - component: {fileID: 342467919}
-  m_Layer: 0
-  m_Name: Spawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &342467919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 342467918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bd0dab1c5e548f2a35e4eff4f121541, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_path: {fileID: 853517283}
-  m_spawnable: 1
-  m_trackingAgents: []
-  m_createdTotalCount: 0
-  m_queueTotalCount: 0
-  m_maxIdSoFar: 0
---- !u!4 &342467920
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 342467918}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1063877121}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &398289890
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,7 +808,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 2
+  m_radius: 2.27
 --- !u!1 &544322733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1226,7 +1177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb890d6c846844708acb3733e48ddc6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_crowdSpawnConfig: {fileID: 0}
+  m_crowdPathConfig: {fileID: 11400000, guid: 1de31fff54c91fb4eacc9c06da640f0f, type: 2}
   m_waypoints:
   - {fileID: 1724733256}
   - {fileID: 319360007}
@@ -1352,6 +1303,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1905760782}
   m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &906526096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 906526098}
+  - component: {fileID: 906526097}
+  m_Layer: 0
+  m_Name: Spawner_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &906526097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 906526096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bd0dab1c5e548f2a35e4eff4f121541, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_path: {fileID: 853517283}
+  m_agentConfig: {fileID: 11400000, guid: 73a4ddb99a9f7364ab767a589c81c4ff, type: 2}
+  m_spawnable: 1
+  m_trackingAgents: []
+  m_createdTotalCount: 0
+  m_queueTotalCount: 0
+  m_maxIdSoFar: 0
+--- !u!4 &906526098
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 906526096}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1063877121}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &956477853
 GameObject:
@@ -1574,7 +1575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94951353bb67411a8e0f34b044dddfc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_generatorInstances:
+  m_managerInstances:
   - {fileID: 1063877119}
 --- !u!4 &1022273438
 Transform:
@@ -1621,10 +1622,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_path: {fileID: 853517283}
-  m_spawner: {fileID: 342467919}
-  m_crowdSpawnConfig: {fileID: 0}
-  m_crowdAgentConfigs:
-  - {fileID: 11400000, guid: 73a4ddb99a9f7364ab767a589c81c4ff, type: 2}
+  m_spawner: {fileID: 0}
+  m_crowdPathConfig: {fileID: 11400000, guid: 1de31fff54c91fb4eacc9c06da640f0f, type: 2}
+  m_spawnerInstances:
+  - {fileID: 906526096}
+  m_agentConfigs: []
 --- !u!4 &1063877121
 Transform:
   m_ObjectHideFlags: 0
@@ -1637,7 +1639,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 853517284}
-  - {fileID: 342467920}
+  - {fileID: 906526098}
   m_Father: {fileID: 1022273438}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2637,7 +2639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 2
+  m_radius: 4.36
 --- !u!1 &1905760781
 GameObject:
   m_ObjectHideFlags: 0
@@ -2741,7 +2743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 2
+  m_radius: 3.11
 --- !u!23 &1977336558
 MeshRenderer:
   m_ObjectHideFlags: 0
