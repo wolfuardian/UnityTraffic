@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Crowd
 {
-    public class PathNavigator : MonoBehaviour
+    public class CrowdNavigator : MonoBehaviour
     {
         #region Field Declarations
 
@@ -32,8 +32,8 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private int m_queueTotalCount;
 
 
-        public UnityAction                DestroyEvent;
-        public UnityAction<PathNavigator> QueueStateEvent;
+        public UnityAction                 DestroyEvent;
+        public UnityAction<CrowdNavigator> QueueStateEvent;
 
         #endregion
 
