@@ -10,23 +10,23 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private List<GameObject> m_generatorInstances = new List<GameObject>();
+        [SerializeField] private List<GameObject> m_managerInstances = new List<GameObject>();
 
         #endregion
 
         #region Properties
 
-        public List<GameObject> generatorInstances => m_generatorInstances;
+        public List<GameObject> managerInstances => m_managerInstances;
 
         #endregion
 
         #region Public Methods
 
-        public void AddGroupInstance()
+        public void AddInstance()
         {
-            var newGeneratorInst = new GameObject("Crowd_" + generatorInstances.Count);
+            var newGeneratorInst = new GameObject("Crowd_" + managerInstances.Count);
             newGeneratorInst.transform.SetParent(transform);
-            m_generatorInstances.Add(newGeneratorInst);
+            managerInstances.Add(newGeneratorInst);
             ConfigureGeneratorInstance(newGeneratorInst);
         }
 
@@ -48,7 +48,8 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        private CrowdWizard crowdWizard;
+        private CrowdWizard        crowdWizard;
+        private SerializedProperty managerInstancesProp;
 
         #endregion
 
@@ -56,70 +57,88 @@ namespace CrowdSample.Scripts.Crowd
 
         private void OnEnable()
         {
-            crowdWizard = (CrowdWizard)target;
+            crowdWizard          = (CrowdWizard)target;
+            managerInstancesProp = serializedObject.FindProperty("m_managerInstances");
         }
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.BeginVertical("box");
-            DrawSection(crowdWizard.generatorInstances, crowdWizard.AddGroupInstance);
-            EditorGUILayout.EndVertical();
+            DrawCrowdWizard("人流設定精靈");
         }
 
         #endregion
 
         #region GUI Methods
 
-        private static void DrawSection(List<GameObject> instances, System.Action addInstanceAction)
+        private void DrawCrowdWizard(string label)
         {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("群組 (Instances)", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+            DrawManagersTable(crowdWizard.managerInstances, crowdWizard.AddInstance);
+            EditorGUILayout.EndVertical();
+        }
 
-            var alignedFieldWidth = EditorGUIUtility.currentViewWidth * 0.25f;
+        private void DrawManagersTable(List<GameObject> instances, System.Action addInstanceAction)
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.Space(2);
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("|編輯名稱", EditorStyles.boldLabel, GUILayout.Width(alignedFieldWidth));
-            EditorGUILayout.LabelField("|人流群組", EditorStyles.boldLabel);
+            var alignedFieldWidth = EditorGUIUtility.currentViewWidth * 0.25f;
+            EditorGUILayout.LabelField("編輯名稱", EditorStyles.boldLabel, GUILayout.Width(alignedFieldWidth));
+            EditorGUILayout.LabelField("人流群組", EditorStyles.boldLabel);
             EditorGUILayout.EndHorizontal();
 
             instances.RemoveAll(item => item == null);
 
             var toRemove = new List<GameObject>();
-            foreach (var instance in instances)
-            {
-                EditorGUILayout.BeginHorizontal();
-                var textProp = EditorGUILayout.TextField(instance.name, GUILayout.Width(alignedFieldWidth));
-                if (textProp != instance.name)
-                {
-                    instance.name = textProp;
-                }
 
-                EditorGUILayout.ObjectField("", instance, typeof(GameObject), true);
-                if (GUILayout.Button("刪️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.05f)))
+            for (var i = 0; i < managerInstancesProp.arraySize; i++)
+            {
+                var managerInst = managerInstancesProp.GetArrayElementAtIndex(i);
+                if (managerInst.objectReferenceValue == null) continue; // 跳過已經被刪除的 waypoint, 防止介面卡住
+                EditorGUILayout.BeginHorizontal();
+                if (managerInst.objectReferenceValue is GameObject component)
                 {
-                    var isConfirmed = EditorUtility.DisplayDialog(
-                        "確認刪除",
-                        "你確定要刪除這個物件嗎？這個操作無法復原。",
-                        "刪除",
-                        "取消"
-                    );
-                    if (isConfirmed)
+                    var textProp = EditorGUILayout.TextField(component.name, GUILayout.Width(alignedFieldWidth));
+                    if (textProp != component.name)
                     {
-                        toRemove.Add(instance);
+                        component.name = textProp;
+                    }
+
+                    var updatedComponent = EditorGUILayout.ObjectField("", component, typeof(GameObject), true);
+                    managerInst.objectReferenceValue = updatedComponent;
+                    serializedObject.ApplyModifiedProperties();
+
+                    if (GUILayout.Button("前往↗️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
+                    {
+                        Selection.activeObject = component;
+                    }
+
+                    if (GUILayout.Button("刪️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.05f)))
+                    {
+                        var isConfirmed = EditorUtility.DisplayDialog(
+                            "確認刪除",
+                            "你確定要刪除這個物件嗎？這個操作無法復原。",
+                            "刪除",
+                            "取消"
+                        );
+                        if (isConfirmed)
+                        {
+                            toRemove.Add(component);
+                        }
                     }
                 }
 
-                if (GUILayout.Button("跳轉↗️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
-                {
-                    Selection.activeObject = instance;
-                }
+                var wizardSo = new SerializedObject(crowdWizard);
+                wizardSo.ApplyModifiedProperties();
 
                 EditorGUILayout.EndHorizontal();
             }
 
             UnityUtils.RemoveInstances(instances, toRemove);
 
-            if (GUILayout.Button("Add Group Instance"))
+            if (GUILayout.Button("新增"))
             {
                 addInstanceAction?.Invoke();
             }

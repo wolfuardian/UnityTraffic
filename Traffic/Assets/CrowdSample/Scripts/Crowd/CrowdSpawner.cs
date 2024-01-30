@@ -2,6 +2,7 @@
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Crowd
@@ -10,8 +11,9 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private CrowdPath m_path;
-        [SerializeField] private bool      m_spawnable = true;
+        [SerializeField] private CrowdPath        m_path;
+        [SerializeField] private CrowdAgentConfig m_agentConfig;
+        [SerializeField] private bool             m_spawnable = true;
 
         [SerializeField] private List<Transform> m_trackingAgents = new List<Transform>();
         [SerializeField] private int             m_createdTotalCount;
@@ -29,6 +31,12 @@ namespace CrowdSample.Scripts.Crowd
         {
             get => m_path;
             set => m_path = value;
+        }
+
+        public CrowdAgentConfig agentConfig
+        {
+            get => m_agentConfig;
+            set => m_agentConfig = value;
         }
 
         public bool spawnable
@@ -75,7 +83,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void StartSpawn()
         {
-            if (path.crowdConfig.spawnOnce)
+            if (path.crowdPathSpawnConfig.spawnOnce)
             {
                 SpawnOnce();
             }
@@ -87,10 +95,10 @@ namespace CrowdSample.Scripts.Crowd
 
         private void SpawnOnce()
         {
-            var config      = path.crowdConfig;
+            var spawnConfig = path.crowdPathSpawnConfig;
             var spawnPoints = path.spawnPoints;
 
-            if (config.prefabs.Length == 0)
+            if (spawnConfig.prefabs.Length == 0)
             {
                 Debug.LogError($"[錯誤] 路徑 '{path.name}' 上沒有設定任何代理物件。", path);
                 return;
@@ -100,8 +108,8 @@ namespace CrowdSample.Scripts.Crowd
 
             foreach (var spawnPoint in spawnPoints)
             {
-                var prefabIndex = Random.Range(0, config.prefabs.Length);
-                var prefab      = config.prefabs[prefabIndex];
+                var prefabIndex = Random.Range(0, spawnConfig.prefabs.Length);
+                var prefab      = spawnConfig.prefabs[prefabIndex];
                 if (prefab == null)
                 {
                     Debug.LogError($"[錯誤] 路徑 '{path.name}' 上的代理物件為空。", path);
@@ -124,7 +132,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private IEnumerator SpawnRoutine()
         {
-            var config      = path.crowdConfig;
+            var config      = path.crowdPathSpawnConfig;
             var spawnPoints = path.spawnPoints;
 
             if (config.prefabs.Length == 0)
@@ -177,13 +185,13 @@ namespace CrowdSample.Scripts.Crowd
 
         private void Configure(GameObject agentInstance, SpawnPoint spawnPoint)
         {
-            var config = path.crowdConfig;
+            var config = path.crowdPathSpawnConfig;
 
             var navMeshAgent = agentInstance.AddComponent<NavMeshAgent>();
             // 預留可能會用到的參數輸入區塊
 
             var navigator = agentInstance.AddComponent<CrowdNavigator>();
-            if (config.generationMode == CrowdConfig.GenerationMode.InfinityFlow)
+            if (config.generationMode == CrowdPathSpawnConfig.GenerationMode.InfinityFlow)
             {
                 navigator.navigationMode = CrowdNavigator.NavigationMode.Once;
             }
@@ -237,6 +245,51 @@ namespace CrowdSample.Scripts.Crowd
         {
             activeIds.Remove(id);
             availableIds.Add(id);
+        }
+
+        #endregion
+    }
+
+    [CustomEditor(typeof(CrowdSpawner))]
+    public class CrowdSpawnerEditor : Editor
+    {
+        #region Field Declarations
+
+        private CrowdSpawner crowdSpawner;
+
+        #endregion
+
+        #region Unity Methods
+
+        private void OnEnable()
+        {
+            crowdSpawner = (CrowdSpawner)target;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            EditorGUILayout.Space(4);
+
+            DrawBackButton();
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        #endregion
+
+        #region GUI Methods
+
+        private void DrawBackButton()
+        {
+            EditorGUILayout.BeginVertical("box");
+            if (GUILayout.Button("返回️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
+            {
+                Selection.activeObject = crowdSpawner.transform.parent;
+            }
+
+            EditorGUILayout.EndVertical();
         }
 
         #endregion

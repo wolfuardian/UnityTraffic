@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ede7ccd0c0444485899ba14e18dd9ff8, type: 3}
-  m_Name: CrowdConfig_Car_Normal
+  m_Name: CrowdPathSpawnConfig
   m_EditorClassIdentifier: 
   m_generationMode: 0
   m_spawnInterval: 0.36
@@ -24,10 +24,10 @@ MonoBehaviour:
   m_pathClosed: 0
   m_shouldDestroy: 1
   m_prefabs:
-  - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
+  - {fileID: 919132149155446097, guid: 3ed05ffdbccc9d84d86da23e2de7160e, type: 3}
   - {fileID: 919132149155446097, guid: 3c4f9ec2ecfc88640b03f05e73140254, type: 3}
-  m_minSpeed: 20
-  m_maxSpeed: 20
+  m_minSpeed: 10
+  m_maxSpeed: 10
   m_angularSpeed: 5000
   m_acceleration: 50
   m_stoppingDistance: 0.1

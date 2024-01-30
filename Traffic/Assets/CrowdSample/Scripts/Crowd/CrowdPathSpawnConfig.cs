@@ -5,30 +5,26 @@ using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Crowd
 {
-    [CreateAssetMenu(fileName = "CrowdConfig", menuName = "CrowdWizard/Crowd Config")]
-    public class CrowdConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "CrowdPathSpawnConfig", menuName = "CrowdWizard/Crowd Path Spawn Config")]
+    public class CrowdPathSpawnConfig : ScriptableObject
     {
         #region Field Declarations
 
-        // Generation
         [SerializeField] private GenerationMode m_generationMode = GenerationMode.InfinityFlow;
         [SerializeField] private float          m_spawnInterval  = 2f;
         [SerializeField] private int            m_instantCount   = 15;
         [SerializeField] private int            m_maxSpawnCount  = 100;
         [SerializeField] private float          m_spacing        = 5f;
-        [SerializeField] private float          m_offset         = 0f;
-        [SerializeField] private bool           m_spawnOnce      = true;
-        [SerializeField] private bool           m_useSpacing     = true;
+        [SerializeField] private float          m_offset;
+        [SerializeField] private bool           m_spawnOnce  = true;
+        [SerializeField] private bool           m_useSpacing = true;
 
-        // PathFollow
         [SerializeField] private bool m_reverse;
         [SerializeField] private bool m_pathClosed;
         [SerializeField] private bool m_shouldDestroy;
 
-        // Resources
         [SerializeField] private GameObject[] m_prefabs;
 
-        // NavMeshAgentData
         [SerializeField] private float m_minSpeed         = 4f;
         [SerializeField] private float m_maxSpeed         = 5f;
         [SerializeField] private float m_angularSpeed     = 100f;
@@ -36,7 +32,6 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private float m_stoppingDistance = 1f;
         [SerializeField] private bool  m_autoBraking      = true;
 
-        // AgentUserData
         [SerializeField] private string m_agentID = "No Data";
         [SerializeField] private string m_type    = "No Data";
         [SerializeField] private string m_category;
@@ -56,8 +51,6 @@ namespace CrowdSample.Scripts.Crowd
         #endregion
 
         #region Properties
-
-        // Generation
 
         public GenerationMode generationMode
         {
@@ -124,21 +117,18 @@ namespace CrowdSample.Scripts.Crowd
             set => SetFieldValue(ref m_useSpacing, value, GenerationMode.Custom, GenerationMode.MultipleCircle);
         }
 
-        // PathFollow
         public bool shouldDestroy
         {
             get => m_shouldDestroy;
             set => m_shouldDestroy = value;
         }
 
-        // Resources
         public GameObject[] prefabs
         {
             get => m_prefabs;
             set => m_prefabs = value;
         }
 
-        // NavMeshAgentData
         public float minSpeed
         {
             get => m_minSpeed;
@@ -174,7 +164,6 @@ namespace CrowdSample.Scripts.Crowd
             get => m_autoBraking;
             set => m_autoBraking = value;
         }
-        // AgentUserData
 
         public string agentID
         {
@@ -261,19 +250,19 @@ namespace CrowdSample.Scripts.Crowd
         #endregion
     }
 
-    [CustomEditor(typeof(CrowdConfig))]
-    public class CrowdConfigEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CrowdPathSpawnConfig))]
+    public class CrowdSpawnConfigEditor : Editor
     {
         #region Field Declarations
 
-        private CrowdConfig        crowdConfig;
-        private SerializedProperty prefabsProp;
-        private SerializedProperty minSpeedProp;
-        private SerializedProperty maxSpeedProp;
-        private SerializedProperty angularSpeedProp;
-        private SerializedProperty accelerationProp;
-        private SerializedProperty stoppingDistanceProp;
-        private SerializedProperty autoBrakingProp;
+        private CrowdPathSpawnConfig crowdPathSpawnConfig;
+        private SerializedProperty   prefabsProp;
+        private SerializedProperty   minSpeedProp;
+        private SerializedProperty   maxSpeedProp;
+        private SerializedProperty   angularSpeedProp;
+        private SerializedProperty   accelerationProp;
+        private SerializedProperty   stoppingDistanceProp;
+        private SerializedProperty   autoBrakingProp;
 
         #endregion
 
@@ -281,7 +270,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void OnEnable()
         {
-            crowdConfig          = (CrowdConfig)target;
+            crowdPathSpawnConfig = (CrowdPathSpawnConfig)target;
             prefabsProp          = serializedObject.FindProperty("m_prefabs");
             minSpeedProp         = serializedObject.FindProperty("m_minSpeed");
             maxSpeedProp         = serializedObject.FindProperty("m_maxSpeed");
@@ -293,11 +282,11 @@ namespace CrowdSample.Scripts.Crowd
 
         public override void OnInspectorGUI()
         {
-            DrawPathGenerationConfig(crowdConfig, "路徑與生成設定");
+            DrawPathGenerationConfig(crowdPathSpawnConfig, "路徑與生成設定");
 
-            DrawPrefabConfig(crowdConfig, "代理模型設定");
+            DrawPrefabConfig("代理模型設定");
 
-            DrawAgentConfig(crowdConfig, "NavAgentMesh 物件設定");
+            DrawAgentConfig("NavAgentMesh 物件設定");
 
 
             if (GUI.changed)
@@ -314,7 +303,7 @@ namespace CrowdSample.Scripts.Crowd
 
         #region Private Methods
 
-        private void DrawPrefabConfig(CrowdConfig config, string label)
+        private void DrawPrefabConfig(string label)
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
@@ -324,7 +313,7 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUI.indentLevel--;
         }
 
-        private void DrawAgentConfig(CrowdConfig config, string label)
+        private void DrawAgentConfig(string label)
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
@@ -348,133 +337,132 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUI.indentLevel--;
         }
 
-        private static void DrawPathGenerationConfig(CrowdConfig config, string label)
+        private static void DrawPathGenerationConfig(CrowdPathSpawnConfig pathSpawnConfig, string label)
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            config.generationMode =
-                (CrowdConfig.GenerationMode)EditorGUILayout.EnumPopup("生成模式", config.generationMode);
+            pathSpawnConfig.generationMode =
+                (CrowdPathSpawnConfig.GenerationMode)EditorGUILayout.EnumPopup("生成模式", pathSpawnConfig.generationMode);
 
-            // 依據不同模式切替不同的選項
-            switch (config.generationMode)
+            switch (pathSpawnConfig.generationMode)
             {
-                case CrowdConfig.GenerationMode.InfinityFlow:
-                    DisplayInfinityFlowOptions(config, "InfinityFlow：按指定的生成間隔持續生成代理。");
+                case CrowdPathSpawnConfig.GenerationMode.InfinityFlow:
+                    DisplayInfinityFlowOptions(pathSpawnConfig, "InfinityFlow：按指定的生成間隔持續生成代理。");
                     break;
-                case CrowdConfig.GenerationMode.MultipleCircle:
-                    DisplayMultipleCircleOptions(config, "MultipleCircle：一次性生成指定數量的代理。");
+                case CrowdPathSpawnConfig.GenerationMode.MultipleCircle:
+                    DisplayMultipleCircleOptions(pathSpawnConfig, "MultipleCircle：一次性生成指定數量的代理。");
                     break;
-                case CrowdConfig.GenerationMode.SingleCircle:
-                    DisplaySingleCircleOptions(config, "SingleCircle：生成單個代理，並可設置路徑為開放或封閉。");
+                case CrowdPathSpawnConfig.GenerationMode.SingleCircle:
+                    DisplaySingleCircleOptions(pathSpawnConfig, "SingleCircle：生成單個代理，並可設置路徑為開放或封閉。");
                     break;
-                case CrowdConfig.GenerationMode.Custom:
-                    DrawCustomOptions(config, "Custom：允許自定義所有參數。");
+                case CrowdPathSpawnConfig.GenerationMode.Custom:
+                    DrawCustomOptions(pathSpawnConfig, "Custom：允許自定義所有參數。");
                     break;
             }
 
-            config.ApplyPresetProperties();
+            pathSpawnConfig.ApplyPresetProperties();
             EditorGUILayout.EndVertical();
             EditorGUI.indentLevel--;
         }
 
-        private static void DisplayInfinityFlowOptions(CrowdConfig config, string message)
+        private static void DisplayInfinityFlowOptions(CrowdPathSpawnConfig pathSpawnConfig, string message)
         {
             EditorGUILayout.HelpBox(message, MessageType.Info);
-            Draw_SpawnInterval(config);
-            Draw_Reverse(config);
-            Draw_MaxSpawnCount(config);
+            Draw_SpawnInterval(pathSpawnConfig);
+            Draw_Reverse(pathSpawnConfig);
+            Draw_MaxSpawnCount(pathSpawnConfig);
         }
 
-        private static void DisplayMultipleCircleOptions(CrowdConfig config, string message)
+        private static void DisplayMultipleCircleOptions(CrowdPathSpawnConfig pathSpawnConfig, string message)
         {
             EditorGUILayout.HelpBox(message, MessageType.Info);
-            Draw_InstantCount(config);
-            Draw_Reverse(config);
-            Draw_MaxSpawnCount(config);
-            Draw_Offset(config);
-            Draw_UseSpacing(config);
-            if (config.useSpacing)
+            Draw_InstantCount(pathSpawnConfig);
+            Draw_Reverse(pathSpawnConfig);
+            Draw_MaxSpawnCount(pathSpawnConfig);
+            Draw_Offset(pathSpawnConfig);
+            Draw_UseSpacing(pathSpawnConfig);
+            if (pathSpawnConfig.useSpacing)
             {
-                Draw_Spacing(config);
+                Draw_Spacing(pathSpawnConfig);
             }
         }
 
-        private static void DisplaySingleCircleOptions(CrowdConfig config, string message)
+        private static void DisplaySingleCircleOptions(CrowdPathSpawnConfig pathSpawnConfig, string message)
         {
             EditorGUILayout.HelpBox(message, MessageType.Info);
-            Draw_ClosedLoop(config);
-            Draw_Reverse(config);
-            Draw_Offset(config);
+            Draw_ClosedLoop(pathSpawnConfig);
+            Draw_Reverse(pathSpawnConfig);
+            Draw_Offset(pathSpawnConfig);
         }
 
-        private static void DrawCustomOptions(CrowdConfig config, string message)
+        private static void DrawCustomOptions(CrowdPathSpawnConfig pathSpawnConfig, string message)
         {
             EditorGUILayout.HelpBox(message, MessageType.Info);
-            Draw_SpawnAgentOnce(config);
-            Draw_ClosedLoop(config);
-            Draw_Reverse(config);
-            Draw_ShouldDestroyOnGoal(config);
-            Draw_SpawnInterval(config);
-            Draw_InstantCount(config);
-            Draw_MaxSpawnCount(config);
-            Draw_Offset(config);
-            Draw_UseSpacing(config);
-            if (config.useSpacing)
+            Draw_SpawnAgentOnce(pathSpawnConfig);
+            Draw_ClosedLoop(pathSpawnConfig);
+            Draw_Reverse(pathSpawnConfig);
+            Draw_ShouldDestroyOnGoal(pathSpawnConfig);
+            Draw_SpawnInterval(pathSpawnConfig);
+            Draw_InstantCount(pathSpawnConfig);
+            Draw_MaxSpawnCount(pathSpawnConfig);
+            Draw_Offset(pathSpawnConfig);
+            Draw_UseSpacing(pathSpawnConfig);
+            if (pathSpawnConfig.useSpacing)
             {
-                Draw_Spacing(config);
+                Draw_Spacing(pathSpawnConfig);
             }
         }
 
-        private static void Draw_SpawnAgentOnce(CrowdConfig config)
+        private static void Draw_SpawnAgentOnce(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.spawnOnce = EditorGUILayout.Toggle("一次性生成代理", config.spawnOnce);
+            pathSpawnConfig.spawnOnce = EditorGUILayout.Toggle("一次性生成代理", pathSpawnConfig.spawnOnce);
         }
 
-        private static void Draw_ClosedLoop(CrowdConfig config)
+        private static void Draw_ClosedLoop(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.pathClosed = EditorGUILayout.Toggle("封閉路徑", config.pathClosed);
+            pathSpawnConfig.pathClosed = EditorGUILayout.Toggle("封閉路徑", pathSpawnConfig.pathClosed);
         }
 
-        private static void Draw_Reverse(CrowdConfig config)
+        private static void Draw_Reverse(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.reverse = EditorGUILayout.Toggle("反轉路徑", config.reverse);
+            pathSpawnConfig.reverse = EditorGUILayout.Toggle("反轉路徑", pathSpawnConfig.reverse);
         }
 
-        private static void Draw_ShouldDestroyOnGoal(CrowdConfig config)
+        private static void Draw_ShouldDestroyOnGoal(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.shouldDestroy = EditorGUILayout.Toggle("抵達終點後銷毀", config.shouldDestroy);
+            pathSpawnConfig.shouldDestroy = EditorGUILayout.Toggle("抵達終點後銷毀", pathSpawnConfig.shouldDestroy);
         }
 
-        private static void Draw_InstantCount(CrowdConfig config)
+        private static void Draw_InstantCount(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.instantCount = EditorGUILayout.IntSlider("一次性生成數量", config.instantCount, 1, 100);
+            pathSpawnConfig.instantCount = EditorGUILayout.IntSlider("一次性生成數量", pathSpawnConfig.instantCount, 1, 100);
         }
 
-        private static void Draw_SpawnInterval(CrowdConfig config)
+        private static void Draw_SpawnInterval(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.spawnInterval = EditorGUILayout.Slider("生成間隔", config.spawnInterval, 0.1f, 10f);
+            pathSpawnConfig.spawnInterval = EditorGUILayout.Slider("生成間隔", pathSpawnConfig.spawnInterval, 0.1f, 10f);
         }
 
-        private static void Draw_MaxSpawnCount(CrowdConfig config)
+        private static void Draw_MaxSpawnCount(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.maxSpawnCount = EditorGUILayout.IntSlider("最大生成數量", config.maxSpawnCount, 1, 100);
+            pathSpawnConfig.maxSpawnCount = EditorGUILayout.IntSlider("最大生成數量", pathSpawnConfig.maxSpawnCount, 1, 100);
         }
 
-        private static void Draw_Offset(CrowdConfig config)
+        private static void Draw_Offset(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.offset = EditorGUILayout.FloatField("偏移", config.offset);
-            config.offset = Mathf.Clamp(config.offset, 0, float.MaxValue);
+            pathSpawnConfig.offset = EditorGUILayout.FloatField("偏移", pathSpawnConfig.offset);
+            pathSpawnConfig.offset = Mathf.Clamp(pathSpawnConfig.offset, 0, float.MaxValue);
         }
 
-        private static void Draw_UseSpacing(CrowdConfig config)
+        private static void Draw_UseSpacing(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.useSpacing = EditorGUILayout.Toggle("使用間距", config.useSpacing);
+            pathSpawnConfig.useSpacing = EditorGUILayout.Toggle("使用間距", pathSpawnConfig.useSpacing);
         }
 
-        private static void Draw_Spacing(CrowdConfig config)
+        private static void Draw_Spacing(CrowdPathSpawnConfig pathSpawnConfig)
         {
-            config.spacing = EditorGUILayout.Slider("間距", config.spacing, 1f, 10f);
+            pathSpawnConfig.spacing = EditorGUILayout.Slider("間距", pathSpawnConfig.spacing, 1f, 10f);
         }
 
         #endregion

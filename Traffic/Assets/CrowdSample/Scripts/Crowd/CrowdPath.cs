@@ -12,10 +12,10 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private CrowdConfig      m_crowdConfig;
-        [SerializeField] private List<Waypoint>   m_waypoints   = new List<Waypoint>();
-        [SerializeField] private List<SpawnPoint> m_spawnPoints = new List<SpawnPoint>();
-        [SerializeField] private float            m_arrowScale  = 1f;
+        [SerializeField] private CrowdPathSpawnConfig m_crowdPathSpawnConfig;
+        [SerializeField] private List<Waypoint>       m_waypoints   = new List<Waypoint>();
+        [SerializeField] private List<SpawnPoint>     m_spawnPoints = new List<SpawnPoint>();
+        [SerializeField] private float                m_arrowScale  = 1f;
 
         public enum EditMode
         {
@@ -27,10 +27,10 @@ namespace CrowdSample.Scripts.Crowd
 
         #region Properties
 
-        public CrowdConfig crowdConfig
+        public CrowdPathSpawnConfig crowdPathSpawnConfig
         {
-            get => m_crowdConfig;
-            set => m_crowdConfig = value;
+            get => m_crowdPathSpawnConfig;
+            set => m_crowdPathSpawnConfig = value;
         }
 
         public List<Waypoint> waypoints
@@ -57,12 +57,12 @@ namespace CrowdSample.Scripts.Crowd
         {
             waypoints = GetWaypoints();
 
-            if (crowdConfig == null)
+            if (crowdPathSpawnConfig == null)
             {
                 return;
             }
 
-            if (crowdConfig.reverse)
+            if (crowdPathSpawnConfig.reverse)
             {
                 waypoints.Reverse();
             }
@@ -122,7 +122,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private List<SpawnPoint> GetSpawnPoints()
         {
-            var config      = crowdConfig;
+            var config      = crowdPathSpawnConfig;
             var points      = waypoints.Select(wp => wp.transform.position).ToList();
             var totalLength = PathResolver.GetTotalLength(points, config.pathClosed);
             var maxCount    = Mathf.FloorToInt(totalLength / config.spacing);
@@ -153,7 +153,7 @@ namespace CrowdSample.Scripts.Crowd
         private SpawnPoint NewSpawnPoint(float distance, float totalLength)
         {
             var globalInterp  = distance / totalLength;
-            var config        = crowdConfig;
+            var config        = crowdPathSpawnConfig;
             var points        = waypoints.Select(wp => wp.transform.position).ToList();
             var position      = PathResolver.GetPositionAt(config, points, globalInterp);
             var direction     = PathResolver.GetDirectionAt(config, points, globalInterp);
@@ -190,7 +190,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void DrawPathArrows()
         {
-            var config = crowdConfig;
+            var config = crowdPathSpawnConfig;
             var count  = waypoints.Count;
             var points = waypoints.Select(wp => wp.transform.position).ToList();
             int actualCount;
@@ -260,6 +260,10 @@ namespace CrowdSample.Scripts.Crowd
 
             EditorGUI.EndDisabledGroup();
 
+            EditorGUILayout.Space(4);
+
+            DrawBackButton();
+
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -303,7 +307,8 @@ namespace CrowdSample.Scripts.Crowd
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_crowdConfig"), new GUIContent("設定資源檔"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_crowdPathSpawnConfig"),
+                new GUIContent("設定資源檔"));
             EditorGUILayout.EndVertical();
         }
 
@@ -429,6 +434,17 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(arrowScaleProp, new GUIContent("圖示大小"));
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawBackButton()
+        {
+            EditorGUILayout.BeginVertical("box");
+            if (GUILayout.Button("返回️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.1f)))
+            {
+                Selection.activeObject = crowdPath.transform.parent;
+            }
+
             EditorGUILayout.EndVertical();
         }
 

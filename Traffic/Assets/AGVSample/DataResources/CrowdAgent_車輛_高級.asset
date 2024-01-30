@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2baaee8cb7364a7899437dac55aac4a4, type: 3}
+  m_Name: "CrowdAgent_\u8ECA\u8F1B_\u9AD8\u7D1A"
+  m_EditorClassIdentifier: 
+  m_prefabs: []
+  m_minSpeed: 4
+  m_maxSpeed: 5
+  m_angularSpeed: 100
+  m_acceleration: 5
+  m_stoppingDistance: 1
+  m_autoBraking: 1
+  m_agentID: No Data
+  m_type: No Data
+  m_category: 
+  m_alias: 
+  m_model: 
+  m_time: 
+  m_noted: 

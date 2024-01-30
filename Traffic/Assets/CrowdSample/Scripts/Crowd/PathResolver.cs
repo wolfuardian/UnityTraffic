@@ -20,47 +20,47 @@ namespace CrowdSample.Scripts.Crowd
             return length;
         }
 
-        public static float CalculateDistance(CrowdConfig config, int index, float totalLength)
+        public static float CalculateDistance(CrowdPathSpawnConfig pathSpawnConfig, int index, float totalLength)
         {
-            return config.useSpacing
-                ? CalculateSpacingDistance(config, index, totalLength)
-                : CalculateCurveDistance(config, index, totalLength);
+            return pathSpawnConfig.useSpacing
+                ? CalculateSpacingDistance(pathSpawnConfig, index, totalLength)
+                : CalculateCurveDistance(pathSpawnConfig, index, totalLength);
         }
 
-        public static float CalculateSpacingDistance(CrowdConfig config, int index, float totalLength)
+        public static float CalculateSpacingDistance(CrowdPathSpawnConfig pathSpawnConfig, int index, float totalLength)
         {
-            var distance = config.offset + config.spacing * index;
-            return config.pathClosed ? distance % totalLength : distance;
+            var distance = pathSpawnConfig.offset + pathSpawnConfig.spacing * index;
+            return pathSpawnConfig.pathClosed ? distance % totalLength : distance;
         }
 
-        public static float CalculateCurveDistance(CrowdConfig config, int index, float totalLength)
+        public static float CalculateCurveDistance(CrowdPathSpawnConfig pathSpawnConfig, int index, float totalLength)
         {
-            var interp = (float)index / config.instantCount;
-            return (interp + config.offset / totalLength) % 1.0f * totalLength;
+            var interp = (float)index / pathSpawnConfig.instantCount;
+            return (interp + pathSpawnConfig.offset / totalLength) % 1.0f * totalLength;
         }
 
-        public static Vector3 GetPositionAt(CrowdConfig config, List<Vector3> pts, float interp)
+        public static Vector3 GetPositionAt(CrowdPathSpawnConfig pathSpawnConfig, List<Vector3> pts, float interp)
         {
             if (!ValidateWaypoints(pts)) return Vector3.zero;
 
             if (interp <= 0) return pts[0];
             if (interp >= 1) return pts[pts.Count - 1];
 
-            var totalLength = GetTotalLength(pts, config.pathClosed);
+            var totalLength = GetTotalLength(pts, pathSpawnConfig.pathClosed);
             var length      = interp * totalLength;
-            return CalculatePositionAlongPath(pts, length, config.pathClosed);
+            return CalculatePositionAlongPath(pts, length, pathSpawnConfig.pathClosed);
         }
 
-        public static Vector3 GetDirectionAt(CrowdConfig config, List<Vector3> pts, float interp)
+        public static Vector3 GetDirectionAt(CrowdPathSpawnConfig pathSpawnConfig, List<Vector3> pts, float interp)
         {
             if (!ValidateWaypoints(pts)) return Vector3.zero;
 
             if (interp <= 0) return (pts[1] - pts[0]).normalized;
             if (interp >= 1) return (pts[pts.Count - 1] - pts[0]).normalized;
 
-            var totalLength = GetTotalLength(pts, config.pathClosed);
+            var totalLength = GetTotalLength(pts, pathSpawnConfig.pathClosed);
             var length      = interp * totalLength;
-            return CalculateDirectionAlongPath(pts, length, config.pathClosed);
+            return CalculateDirectionAlongPath(pts, length, pathSpawnConfig.pathClosed);
         }
 
         private static bool ValidateWaypoints(ICollection pts)
@@ -130,13 +130,13 @@ namespace CrowdSample.Scripts.Crowd
                 : (pts[pts.Count - 1] - pts[pts.Count - 2]).normalized;
         }
 
-        public static float GetLocalDistanceAt(CrowdConfig config, List<Vector3> pts, float interp)
+        public static float GetLocalDistanceAt(CrowdPathSpawnConfig pathSpawnConfig, List<Vector3> pts, float interp)
         {
             if (!ValidateWaypoints(pts)) return 0;
 
-            var totalLength  = GetTotalLength(pts, config.pathClosed);
+            var totalLength  = GetTotalLength(pts, pathSpawnConfig.pathClosed);
             var globalLength = interp * totalLength;
-            var (currentIndex, localDistance) = CalculateLocalDistance(pts, globalLength, config.pathClosed);
+            var (currentIndex, localDistance) = CalculateLocalDistance(pts, globalLength, pathSpawnConfig.pathClosed);
             return currentIndex + localDistance;
         }
 
