@@ -5,7 +5,7 @@ using CrowdSample.Scripts.Utils;
 namespace CrowdSample.Scripts.Crowd
 {
     [ExecuteInEditMode]
-    public class Waypoint : MonoBehaviour
+    public class CrowdWaypoint : MonoBehaviour
     {
         #region Field Declarations
 
@@ -98,12 +98,12 @@ namespace CrowdSample.Scripts.Crowd
     }
 
 
-    [CustomEditor(typeof(Waypoint))]
+    [CustomEditor(typeof(CrowdWaypoint))]
     public class WaypointEditor : Editor
     {
         #region Field Declarations
 
-        private Waypoint waypoint;
+        private CrowdWaypoint crowdWaypoint;
 
         #endregion
 
@@ -111,14 +111,14 @@ namespace CrowdSample.Scripts.Crowd
 
         private void OnEnable()
         {
-            waypoint = (Waypoint)target;
+            crowdWaypoint = (CrowdWaypoint)target;
         }
 
         private void OnSceneGUI()
         {
-            if (waypoint.transform.position == waypoint.prevPosition) return;
+            if (crowdWaypoint.transform.position == crowdWaypoint.prevPosition) return;
 
-            waypoint.prevPosition = waypoint.transform.position;
+            crowdWaypoint.prevPosition = crowdWaypoint.transform.position;
 
             UnityUtils.UpdateAllReceiverImmediately();
 

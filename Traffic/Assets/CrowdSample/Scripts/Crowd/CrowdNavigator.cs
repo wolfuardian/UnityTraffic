@@ -21,7 +21,7 @@ namespace CrowdSample.Scripts.Crowd
 
         [SerializeField] private NavigationMode m_navigationMode;
         [SerializeField] private NavMeshAgent   m_navMeshAgent;
-        [SerializeField] private List<Waypoint> m_waypoints;
+        [SerializeField] private List<CrowdWaypoint> m_waypoints;
         [SerializeField] private int            m_spawnID;
         [SerializeField] private int            m_targetPointID;
         [SerializeField] private bool           m_movingForward = true;
@@ -52,7 +52,7 @@ namespace CrowdSample.Scripts.Crowd
             set => m_navMeshAgent = value;
         }
 
-        public List<Waypoint> waypoints
+        public List<CrowdWaypoint> waypoints
         {
             get => m_waypoints;
             set => m_waypoints = value;

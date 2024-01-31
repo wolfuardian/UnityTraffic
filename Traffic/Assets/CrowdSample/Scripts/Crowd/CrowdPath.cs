@@ -13,7 +13,7 @@ namespace CrowdSample.Scripts.Crowd
         #region Field Declarations
 
         [SerializeField] private CrowdPathConfig m_crowdPathConfig;
-        [SerializeField] private List<Waypoint>       m_waypoints   = new List<Waypoint>();
+        [SerializeField] private List<CrowdWaypoint>       m_waypoints   = new List<CrowdWaypoint>();
         [SerializeField] private List<SpawnPoint>     m_spawnPoints = new List<SpawnPoint>();
         [SerializeField] private float                m_arrowScale  = 1f;
 
@@ -33,7 +33,7 @@ namespace CrowdSample.Scripts.Crowd
             set => m_crowdPathConfig = value;
         }
 
-        public List<Waypoint> waypoints
+        public List<CrowdWaypoint> waypoints
         {
             get => m_waypoints;
             set => m_waypoints = value;
@@ -106,9 +106,9 @@ namespace CrowdSample.Scripts.Crowd
 
         #region Public Methods
 
-        public List<Waypoint> GetWaypoints()
+        public List<CrowdWaypoint> GetWaypoints()
         {
-            return transform.GetComponentsInChildren<Waypoint>().ToList();
+            return transform.GetComponentsInChildren<CrowdWaypoint>().ToList();
         }
 
         public IEnumerable<Transform> GetWaypointsTransform()
@@ -124,7 +124,7 @@ namespace CrowdSample.Scripts.Crowd
         {
             var config      = crowdPathConfig;
             var points      = waypoints.Select(wp => wp.transform.position).ToList();
-            var totalLength = PathResolver.GetTotalLength(points, config.pathClosed);
+            var totalLength = CrowdPathResolver.GetTotalLength(points, config.pathClosed);
             var maxCount    = Mathf.FloorToInt(totalLength / config.spacing);
 
             var spawnCount = config.spawnOnce ? config.instantCount :
@@ -133,7 +133,7 @@ namespace CrowdSample.Scripts.Crowd
             var actualCount = 0;
             for (var i = 0; i < spawnCount; i++)
             {
-                var distance = PathResolver.CalculateDistance(config, i, totalLength);
+                var distance = CrowdPathResolver.CalculateDistance(config, i, totalLength);
                 if (distance > totalLength && !config.pathClosed) break;
                 actualCount++;
             }
@@ -142,7 +142,7 @@ namespace CrowdSample.Scripts.Crowd
 
             for (var i = 0; i < actualCount; i++)
             {
-                var distance = PathResolver.CalculateDistance(config, i, totalLength);
+                var distance = CrowdPathResolver.CalculateDistance(config, i, totalLength);
 
                 newSpawnPoints.Add(NewSpawnPoint(distance, totalLength));
             }
@@ -155,9 +155,9 @@ namespace CrowdSample.Scripts.Crowd
             var globalInterp  = distance / totalLength;
             var config        = crowdPathConfig;
             var points        = waypoints.Select(wp => wp.transform.position).ToList();
-            var position      = PathResolver.GetPositionAt(config, points, globalInterp);
-            var direction     = PathResolver.GetDirectionAt(config, points, globalInterp);
-            var pathLocation  = PathResolver.GetLocalDistanceAt(config, points, globalInterp);
+            var position      = CrowdPathResolver.GetPositionAt(config, points, globalInterp);
+            var direction     = CrowdPathResolver.GetDirectionAt(config, points, globalInterp);
+            var pathLocation  = CrowdPathResolver.GetLocalDistanceAt(config, points, globalInterp);
             var newSpawnPoint = new SpawnPoint(position, direction, globalInterp, pathLocation);
             return newSpawnPoint;
         }
@@ -295,7 +295,7 @@ namespace CrowdSample.Scripts.Crowd
 
             var parent       = crowdPath.transform;
             var waypointInst = UnityUtils.CreatePoint("Waypoint" + crowdPath.waypoints.Count, hitPoint, parent);
-            var waypoint     = waypointInst.gameObject.AddComponent<Waypoint>();
+            var waypoint     = waypointInst.gameObject.AddComponent<CrowdWaypoint>();
             crowdPath.waypoints.Add(waypoint);
         }
 
@@ -397,7 +397,7 @@ namespace CrowdSample.Scripts.Crowd
                     if (waypoint.objectReferenceValue == null) continue; // 跳過已經被刪除的 waypoint, 防止介面卡住
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.PropertyField(waypoint, GUIContent.none);
-                    if (waypoint.objectReferenceValue is Waypoint component)
+                    if (waypoint.objectReferenceValue is CrowdWaypoint component)
                     {
                         var waypointSo    = new SerializedObject(component);
                         var pathBuilderSo = new SerializedObject(crowdPath);

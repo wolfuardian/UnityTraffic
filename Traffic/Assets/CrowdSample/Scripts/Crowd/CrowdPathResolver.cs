@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Crowd
 {
-    public static class PathResolver
+    public static class CrowdPathResolver
     {
         public static float GetTotalLength(List<Vector3> pts, bool closedLoop)
         {
