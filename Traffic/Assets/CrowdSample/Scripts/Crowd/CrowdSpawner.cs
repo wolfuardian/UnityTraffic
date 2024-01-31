@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Crowd
