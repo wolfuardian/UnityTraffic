@@ -9,9 +9,12 @@ namespace CrowdSample.Scripts.Crowd
     public class CrowdAgent : MonoBehaviour
     {
         [SerializeField] private NavMeshAgent m_navMeshAgent;
+        [SerializeField] private Rigidbody    m_rigidBody;
         [SerializeField] private float        m_originalSpeed;
 
-        [SerializeField] private int    m_agentID;
+        [SerializeField] private PermissionStates m_permissionStates;
+
+        [SerializeField] private int    m_entityID;
         [SerializeField] private string m_type     = "No Data";
         [SerializeField] private string m_category = "No Data";
         [SerializeField] private string m_alias    = "No Data";
@@ -19,7 +22,7 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private string m_time     = "No Data";
         [SerializeField] private string m_noted    = "No Data";
 
-        public Action<CrowdAgent> AgentExited;
+        public Action<CrowdAgent> EntityExited;
 
 
         public NavMeshAgent navMeshAgent
@@ -28,17 +31,28 @@ namespace CrowdSample.Scripts.Crowd
             set => m_navMeshAgent = value;
         }
 
+        public Rigidbody rigidBody
+        {
+            get => m_rigidBody;
+            set => m_rigidBody = value;
+        }
+
         public float originalSpeed
         {
             get => m_originalSpeed;
             set => m_originalSpeed = value;
         }
 
-
-        public int agentID
+        public PermissionStates permissionStates
         {
-            get => m_agentID;
-            set => m_agentID = value;
+            get => m_permissionStates;
+            set => m_permissionStates = value;
+        }
+
+        public int entityID
+        {
+            get => m_entityID;
+            set => m_entityID = value;
         }
 
         public string type
@@ -81,7 +95,12 @@ namespace CrowdSample.Scripts.Crowd
 
         private void Awake()
         {
-            navMeshAgent = GetComponent<NavMeshAgent>() ?? gameObject.AddComponent<NavMeshAgent>();
+            navMeshAgent = GetComponent<NavMeshAgent>() == null
+                ? gameObject.AddComponent<NavMeshAgent>()
+                : GetComponent<NavMeshAgent>();
+            rigidBody = GetComponent<Rigidbody>() == null
+                ? gameObject.AddComponent<Rigidbody>()
+                : GetComponent<Rigidbody>();
         }
 
         private void Start()
@@ -90,6 +109,10 @@ namespace CrowdSample.Scripts.Crowd
         }
 
         #endregion
+
+        private void Update()
+        {
+        }
 
 
         public void TemporaryDeceleration(float interval, float duration, float minSpeed = 0.2f)
@@ -111,6 +134,6 @@ namespace CrowdSample.Scripts.Crowd
             navMeshAgent.speed = speed;
         }
 
-        private void OnDestroy() => AgentExited?.Invoke(this);
+        private void OnDestroy() => EntityExited?.Invoke(this);
     }
 }

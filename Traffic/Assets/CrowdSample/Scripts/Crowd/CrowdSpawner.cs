@@ -203,32 +203,36 @@ namespace CrowdSample.Scripts.Crowd
                     : CrowdNavigator.NavigationMode.PingPong;
             }
 
-            navigator.waypoints      =  path.waypoints;
-            navigator.targetPointNum =  spawnPoint.targetPointNum % path.waypoints.Count;
-            navigator.shouldDestroy  =  pathConfig.shouldDestroy;
-            navigator.DestroyEvent   += () => { queueTotalCount--; };
-            navigator.DestroyEvent   += () => { trackingAgents.Remove(agentInstance.transform); };
-            navigator.DestroyEvent   += () => { ReleaseId(navigator.spawnID); };
-            navigator.spawnID        =  AssignNewId();
+            navigator.waypoints     =  path.waypoints;
+            navigator.targetPointID =  spawnPoint.targetPointNum % path.waypoints.Count;
+            navigator.shouldDestroy =  pathConfig.shouldDestroy;
+            navigator.DestroyEvent  += () => { queueTotalCount--; };
+            navigator.DestroyEvent  += () => { trackingAgents.Remove(agentInstance.transform); };
+            navigator.DestroyEvent  += () => { ReleaseId(navigator.spawnID); };
+            navigator.spawnID       =  AssignNewSpawnId();
             navigator.QueueStateEvent += nav =>
             {
                 nav.queueIndex      = trackingAgents.IndexOf(nav.transform);
                 nav.queueTotalCount = queueTotalCount;
             };
 
-            var agent = agentInstance.AddComponent<CrowdAgent>();
-            agent.navMeshAgent.speed            = Random.Range(agentConfig.minSpeed, agentConfig.maxSpeed);
-            agent.navMeshAgent.angularSpeed     = agentConfig.angularSpeed;
-            agent.navMeshAgent.acceleration     = agentConfig.acceleration;
-            agent.navMeshAgent.stoppingDistance = agentConfig.stoppingDistance;
-            agent.navMeshAgent.autoBraking      = agentConfig.autoBraking;
+            var entity = agentInstance.AddComponent<CrowdAgent>();
+            entity.navMeshAgent.speed            = Random.Range(agentConfig.minSpeed, agentConfig.maxSpeed);
+            entity.navMeshAgent.angularSpeed     = agentConfig.angularSpeed;
+            entity.navMeshAgent.acceleration     = agentConfig.acceleration;
+            entity.navMeshAgent.stoppingDistance = agentConfig.stoppingDistance;
+            entity.navMeshAgent.autoBraking      = agentConfig.autoBraking;
+            entity.rigidBody.useGravity          = false;
+            entity.rigidBody.isKinematic         = true;
+            entity.rigidBody.angularDrag         = 0; // 雖然　isKinematic　已經能避免被撞開，但仍有機會被影響旋動量，因此這邊設定為 0
 
             trackingAgents.Add(agentInstance.transform);
+
             queueTotalCount++;
             createdTotalCount++;
         }
 
-        private int AssignNewId()
+        private int AssignNewSpawnId()
         {
             if (availableIds.Count == 0)
             {
