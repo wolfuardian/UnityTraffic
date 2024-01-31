@@ -24,4 +24,5 @@ MonoBehaviour:
   m_userType: Car
   m_userIdentity: XYZ-1234
   m_useLicensePlate: 1
+  m_useLicensePlateFromCsv: 1
   m_licensePlateCsvPath: Assets/AGVSample/Data/LicensePlate.csv
