@@ -20,10 +20,8 @@ MonoBehaviour:
   m_acceleration: 10
   m_stoppingDistance: 1
   m_autoBraking: 1
-  m_agentID: No Data
-  m_type: No Data
-  m_category: 
-  m_alias: 
-  m_model: 
-  m_time: 
-  m_noted: 
+  m_permissionStates: 2
+  m_userType: Car
+  m_userIdentity: XYZ-1234
+  m_useLicensePlate: 1
+  m_licensePlateCsvPath: Assets/AGVSample/Data/LicensePlate.csv
