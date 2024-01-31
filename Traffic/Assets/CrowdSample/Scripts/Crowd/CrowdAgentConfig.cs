@@ -19,13 +19,10 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private float m_stoppingDistance = 1f;
         [SerializeField] private bool  m_autoBraking      = true;
 
-        [SerializeField] private string m_userID = "";
-        [SerializeField] private string m_type   = "No Data";
-        [SerializeField] private string m_category;
-        [SerializeField] private string m_alias;
-        [SerializeField] private string m_model;
-        [SerializeField] private string m_time;
-        [SerializeField] private string m_noted;
+        [SerializeField] private PermissionStates m_permissionStates = PermissionStates.Guest;
+
+        [SerializeField] private string m_userType     = "Car";
+        [SerializeField] private string m_userIdentity = "XYZ-1234";
 
         #endregion
 
@@ -73,46 +70,22 @@ namespace CrowdSample.Scripts.Crowd
             set => m_autoBraking = value;
         }
 
+        public PermissionStates permissionStates
+        {
+            get => m_permissionStates;
+            set => m_permissionStates = value;
+        }
+
+        public string userType
+        {
+            get => m_userType;
+            set => m_userType = value;
+        }
+
         public string userID
         {
-            get => m_userID;
-            set => m_userID = value;
-        }
-
-        public string type
-        {
-            get => m_type;
-            set => m_type = value;
-        }
-
-        public string category
-        {
-            get => m_category;
-            set => m_category = value;
-        }
-
-        public string alias
-        {
-            get => m_alias;
-            set => m_alias = value;
-        }
-
-        public string model
-        {
-            get => m_model;
-            set => m_model = value;
-        }
-
-        public string time
-        {
-            get => m_time;
-            set => m_time = value;
-        }
-
-        public string noted
-        {
-            get => m_noted;
-            set => m_noted = value;
+            get => m_userIdentity;
+            set => m_userIdentity = value;
         }
 
         #endregion
@@ -132,7 +105,10 @@ namespace CrowdSample.Scripts.Crowd
         private SerializedProperty stoppingDistanceProp;
         private SerializedProperty autoBrakingProp;
 
-        private SerializedProperty userIDProp;
+        private SerializedProperty permissionStatesProp;
+
+        private SerializedProperty userTypeProp;
+        private SerializedProperty userIdentityProp;
 
         #endregion
 
@@ -149,7 +125,10 @@ namespace CrowdSample.Scripts.Crowd
             stoppingDistanceProp = serializedObject.FindProperty("m_stoppingDistance");
             autoBrakingProp      = serializedObject.FindProperty("m_autoBraking");
 
-            userIDProp = serializedObject.FindProperty("m_userID");
+            permissionStatesProp = serializedObject.FindProperty("m_permissionStates");
+
+            userTypeProp     = serializedObject.FindProperty("m_userType");
+            userIdentityProp = serializedObject.FindProperty("m_userIdentity");
         }
 
         public override void OnInspectorGUI()
@@ -213,7 +192,9 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(userIDProp, new GUIContent("使用者 ID"));
+            EditorGUILayout.PropertyField(permissionStatesProp, new GUIContent("權限狀態"));
+            EditorGUILayout.PropertyField(userTypeProp,         new GUIContent("使用者類型"));
+            EditorGUILayout.PropertyField(userIdentityProp,     new GUIContent("使用者 ID"));
             EditorGUILayout.EndVertical();
             EditorGUI.indentLevel--;
         }

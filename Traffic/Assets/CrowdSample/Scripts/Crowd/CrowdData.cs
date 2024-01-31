@@ -2,6 +2,34 @@
 
 namespace CrowdSample.Scripts.Crowd
 {
+    public enum PermissionStates
+    {
+        Authorized,
+        Denied,
+        Guest
+    }
+
+    public struct CarData
+    {
+        public enum TransitStates
+        {
+            Moving,
+            Arrived,
+            Congested,
+            Halted,
+            Stopped
+        }
+
+        public enum RouteStates
+        {
+            Validating,
+            Clear,
+            Obstructed,
+            Rerouting
+        }
+    }
+
+
     [System.Serializable]
     public struct SpawnPoint
     {
