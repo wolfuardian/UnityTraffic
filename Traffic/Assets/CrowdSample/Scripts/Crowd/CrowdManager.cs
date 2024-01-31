@@ -1,7 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
-using CrowdSample.Scripts.Utils;
 using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Crowd
@@ -54,7 +53,7 @@ namespace CrowdSample.Scripts.Crowd
         private void OnValidate()
         {
             if (crowdPathConfig == null) return;
-            UnityUtils.UpdateAllReceiverImmediately();
+            CrowdUtils.UpdateAllReceiverImmediately();
         }
 
         #endregion
@@ -236,7 +235,7 @@ namespace CrowdSample.Scripts.Crowd
                 EditorGUILayout.EndHorizontal();
             }
 
-            UnityUtils.RemoveInstances(instances, toRemove);
+            CrowdUtils.RemoveInstances(instances, toRemove);
 
             if (GUILayout.Button("新增"))
             {

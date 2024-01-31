@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.AI;
 using UnityEngine.Events;
-using CrowdSample.Scripts.Utils;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 

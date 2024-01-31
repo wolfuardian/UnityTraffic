@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using CrowdSample.Scripts.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -141,7 +140,7 @@ namespace CrowdSample.Scripts.Crowd
 
             if (GUI.changed)
             {
-                UnityUtils.UpdateAllReceiverImmediately();
+                CrowdUtils.UpdateAllReceiverImmediately();
             }
 
             SceneView.RepaintAll();

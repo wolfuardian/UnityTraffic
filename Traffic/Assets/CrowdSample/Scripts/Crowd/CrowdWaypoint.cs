@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using CrowdSample.Scripts.Utils;
 
 namespace CrowdSample.Scripts.Crowd
 {
@@ -29,7 +28,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void OnEnable()
         {
-            UnityUtils.UpdateAllReceiverImmediately();
+            CrowdUtils.UpdateAllReceiverImmediately();
 
             UpdateCrowdPath();
         }
@@ -51,7 +50,7 @@ namespace CrowdSample.Scripts.Crowd
         private void OnDestroy()
         {
             UpdateCrowdPath();
-            UnityUtils.UpdateAllReceiverImmediately();
+            CrowdUtils.UpdateAllReceiverImmediately();
         }
 #endif
 
@@ -120,7 +119,7 @@ namespace CrowdSample.Scripts.Crowd
 
             crowdWaypoint.prevPosition = crowdWaypoint.transform.position;
 
-            UnityUtils.UpdateAllReceiverImmediately();
+            CrowdUtils.UpdateAllReceiverImmediately();
 
             SceneView.RepaintAll();
         }

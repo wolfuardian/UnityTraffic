@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using CrowdSample.Scripts.Utils;
 using System.Collections.Generic;
 
 namespace CrowdSample.Scripts.Crowd
@@ -279,7 +278,7 @@ namespace CrowdSample.Scripts.Crowd
         private void HandleClickOnScene()
         {
             if (crowdPath.editMode != CrowdPath.EditMode.Add ||
-                !UnityUtils.IsLeftMouseButtonDown())
+                !CrowdUtils.IsLeftMouseButtonDown())
             {
                 return;
             }
@@ -290,11 +289,11 @@ namespace CrowdSample.Scripts.Crowd
 
         private void ClickAddWaypointOnScene()
         {
-            if (!UnityUtils.TryGetRaycastHit(out var hitPoint)) return;
+            if (!CrowdUtils.TryGetRaycastHit(out var hitPoint)) return;
             if (crowdPath.editMode != CrowdPath.EditMode.Add) return;
 
             var parent       = crowdPath.transform;
-            var waypointInst = UnityUtils.CreatePoint("Waypoint" + crowdPath.waypoints.Count, hitPoint, parent);
+            var waypointInst = CrowdUtils.CreatePoint("Waypoint" + crowdPath.waypoints.Count, hitPoint, parent);
             var waypoint     = waypointInst.gameObject.AddComponent<CrowdWaypoint>();
             crowdPath.waypoints.Add(waypoint);
         }
@@ -342,10 +341,10 @@ namespace CrowdSample.Scripts.Crowd
                 switch (crowdPath.editMode)
                 {
                     case CrowdPath.EditMode.None:
-                        UnityUtils.SetInspectorLock(false);
+                        CrowdUtils.SetInspectorLock(false);
                         break;
                     case CrowdPath.EditMode.Add:
-                        UnityUtils.SetInspectorLock(true);
+                        CrowdUtils.SetInspectorLock(true);
                         break;
                 }
 
@@ -362,7 +361,7 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("重設所有路徑點", GUILayout.Height(24)))
             {
-                UnityUtils.ClearPoints(crowdPath.GetWaypointsTransform());
+                CrowdUtils.ClearPoints(crowdPath.GetWaypointsTransform());
             }
 
             EditorGUILayout.EndHorizontal();
@@ -371,7 +370,7 @@ namespace CrowdSample.Scripts.Crowd
 
         private void DrawPointConfig(string label)
         {
-            var headerStyle = UnityUtils.CreateHeaderStyle(FontStyle.Bold, 12);
+            var headerStyle = CrowdUtils.CreateHeaderStyle(FontStyle.Bold, 12);
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, headerStyle);
 
@@ -415,7 +414,7 @@ namespace CrowdSample.Scripts.Crowd
 
                         if (GUILayout.Button("Delete", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.15f)))
                         {
-                            UnityUtils.DeleteItem(component);
+                            CrowdUtils.DeleteItem(component);
                             pathBuilderSo.ApplyModifiedProperties();
                         }
                     }
