@@ -14,15 +14,10 @@ namespace CrowdSample.Scripts.Crowd
 
         [SerializeField] private PermissionStates m_permissionStates;
 
-        [SerializeField] private int    m_entityID;
-        [SerializeField] private string m_type     = "No Data";
-        [SerializeField] private string m_category = "No Data";
-        [SerializeField] private string m_alias    = "No Data";
-        [SerializeField] private string m_model    = "No Data";
-        [SerializeField] private string m_time     = "No Data";
-        [SerializeField] private string m_noted    = "No Data";
+        [SerializeField] private string m_userIdentity;
+        [SerializeField] private string m_userType;
 
-        public Action<CrowdAgent> EntityExited;
+        public Action<CrowdAgent> AgentExited;
 
 
         public NavMeshAgent navMeshAgent
@@ -49,46 +44,16 @@ namespace CrowdSample.Scripts.Crowd
             set => m_permissionStates = value;
         }
 
-        public int entityID
+        public string userIdentity
         {
-            get => m_entityID;
-            set => m_entityID = value;
+            get => m_userIdentity;
+            set => m_userIdentity = value;
         }
 
-        public string type
+        public string userType
         {
-            get => m_type;
-            set => m_type = value;
-        }
-
-        public string category
-        {
-            get => m_category;
-            set => m_category = value;
-        }
-
-        public string alias
-        {
-            get => m_alias;
-            set => m_alias = value;
-        }
-
-        public string model
-        {
-            get => m_model;
-            set => m_model = value;
-        }
-
-        public string time
-        {
-            get => m_time;
-            set => m_time = value;
-        }
-
-        public string noted
-        {
-            get => m_noted;
-            set => m_noted = value;
+            get => m_userType;
+            set => m_userType = value;
         }
 
         #region Unity Methods
@@ -110,10 +75,6 @@ namespace CrowdSample.Scripts.Crowd
 
         #endregion
 
-        private void Update()
-        {
-        }
-
 
         public void TemporaryDeceleration(float interval, float duration, float minSpeed = 0.2f)
         {
@@ -134,6 +95,6 @@ namespace CrowdSample.Scripts.Crowd
             navMeshAgent.speed = speed;
         }
 
-        private void OnDestroy() => EntityExited?.Invoke(this);
+        private void OnDestroy() => AgentExited?.Invoke(this);
     }
 }

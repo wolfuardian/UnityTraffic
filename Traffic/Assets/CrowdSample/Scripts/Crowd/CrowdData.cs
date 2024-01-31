@@ -4,9 +4,9 @@ namespace CrowdSample.Scripts.Crowd
 {
     public enum PermissionStates
     {
-        Authorized,
-        Denied,
-        Guest
+        Admin = 0,
+        Guest = 1,
+        Deny  = 2
     }
 
     public struct CarData

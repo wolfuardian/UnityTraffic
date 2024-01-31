@@ -9,6 +9,11 @@ using Random = UnityEngine.Random;
 
 namespace CrowdSample.Scripts.Crowd
 {
+    public interface IUpdateReceiver
+    {
+        void UpdateImmediately();
+    }
+
     public static class Misc
     {
         public static string GenerateLicensePlateNumber()
@@ -133,11 +138,6 @@ namespace CrowdSample.Scripts.Crowd
             Gizmos.DrawLine(headWidthRight,  bodyEnd + right);
             Gizmos.DrawLine(bodyEnd - right, headWidthLeft);
         }
-    }
-
-    public interface IUpdateReceiver
-    {
-        void UpdateImmediately();
     }
 
     public class CrowdUtils

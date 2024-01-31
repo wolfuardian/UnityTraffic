@@ -23,6 +23,10 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private string m_userType     = "Car";
         [SerializeField] private string m_userIdentity = "XYZ-1234";
 
+        // Plug-in
+        [SerializeField] private bool   m_useLicensePlate;
+        [SerializeField] private string m_licensePlateCsvPath = "Assets/AGVSample/Data/LicensePlate.csv";
+
         #endregion
 
         #region Properties
@@ -104,10 +108,14 @@ namespace CrowdSample.Scripts.Crowd
         private SerializedProperty stoppingDistanceProp;
         private SerializedProperty autoBrakingProp;
 
-        private SerializedProperty permissionStatesProp;
+        private SerializedProperty licensePlateStatesProp;
 
         private SerializedProperty userTypeProp;
-        private SerializedProperty userIdentityProp;
+        private SerializedProperty licensePlateProp;
+
+        // Plug-in
+        private SerializedProperty useLicensePlateProp;
+        private SerializedProperty licensePlateCsvPathProp;
 
         #endregion
 
@@ -124,10 +132,14 @@ namespace CrowdSample.Scripts.Crowd
             stoppingDistanceProp = serializedObject.FindProperty("m_stoppingDistance");
             autoBrakingProp      = serializedObject.FindProperty("m_autoBraking");
 
-            permissionStatesProp = serializedObject.FindProperty("m_permissionStates");
+            licensePlateStatesProp = serializedObject.FindProperty("m_permissionStates");
 
             userTypeProp     = serializedObject.FindProperty("m_userType");
-            userIdentityProp = serializedObject.FindProperty("m_userIdentity");
+            licensePlateProp = serializedObject.FindProperty("m_userIdentity");
+
+            // Plug-in
+            useLicensePlateProp     = serializedObject.FindProperty("m_useLicensePlate");
+            licensePlateCsvPathProp = serializedObject.FindProperty("m_licensePlateCsvPath");
         }
 
         public override void OnInspectorGUI()
@@ -137,6 +149,8 @@ namespace CrowdSample.Scripts.Crowd
             DrawAgentConfig("NavAgentMesh 物件設定");
 
             DrawUserConfig("使用者資料設定");
+
+            DrawPluginLicensePlateConfig("車牌驗證設定");
 
             if (GUI.changed)
             {
@@ -191,11 +205,64 @@ namespace CrowdSample.Scripts.Crowd
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(permissionStatesProp, new GUIContent("權限狀態"));
-            EditorGUILayout.PropertyField(userTypeProp,         new GUIContent("使用者類型"));
-            EditorGUILayout.PropertyField(userIdentityProp,     new GUIContent("使用者 ID"));
+
             EditorGUILayout.EndVertical();
             EditorGUI.indentLevel--;
+        }
+
+        private void DrawPluginLicensePlateConfig(string label)
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(licensePlateStatesProp, new GUIContent("權限狀態"));
+            EditorGUILayout.PropertyField(licensePlateProp,       new GUIContent("車牌號碼"));
+            useLicensePlateProp.boolValue = EditorGUILayout.Toggle("使用車牌資料", useLicensePlateProp.boolValue);
+            if (useLicensePlateProp.boolValue)
+            {
+                EditorGUILayout.BeginVertical("box");
+
+                licensePlateCsvPathProp.stringValue =
+                    EditorGUILayout.TextField("車牌資料路徑", licensePlateCsvPathProp.stringValue);
+
+                EditorGUILayout.Space(4);
+
+
+                EditorGUILayout.BeginVertical("box");
+
+                EditorGUILayout.LabelField("格式範例：", EditorStyles.miniBoldLabel);
+
+                EditorGUILayout.Space(4);
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("  PID",  EditorStyles.label, GUILayout.Width(100));
+                GUILayout.Label("  AUTH", EditorStyles.label, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("  ABC-123", EditorStyles.label, GUILayout.Width(100));
+                GUILayout.Label("  0",       EditorStyles.label, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("  XYZ-789", EditorStyles.label, GUILayout.Width(100));
+                GUILayout.Label("  1",       EditorStyles.label, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("  HJK-456", EditorStyles.label, GUILayout.Width(100));
+                GUILayout.Label("  2",       EditorStyles.label, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.Space(4);
+
+                EditorGUILayout.LabelField("權限狀態: 0 = Admin, 1 = Guest, 2 = Deny", EditorStyles.miniLabel);
+                EditorGUILayout.EndVertical();
+            }
+
+
+            EditorGUILayout.EndVertical();
         }
 
         #endregion

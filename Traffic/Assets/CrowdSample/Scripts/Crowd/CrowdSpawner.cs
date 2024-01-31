@@ -23,6 +23,9 @@ namespace CrowdSample.Scripts.Crowd
         private readonly         HashSet<int>   activeIds    = new HashSet<int>();
         private readonly         SortedSet<int> availableIds = new SortedSet<int>();
 
+        // Plug-in
+        [SerializeField] private CrowdSpawnerLicensePlate m_crowdSpawnerLicensePlate;
+
         #endregion
 
         #region Properties
@@ -66,13 +69,28 @@ namespace CrowdSample.Scripts.Crowd
             set => m_maxIdSoFar = value;
         }
 
+
+        // Plug-in
+
+        public CrowdSpawnerLicensePlate crowdSpawnerLicensePlate
+        {
+            get => m_crowdSpawnerLicensePlate;
+            set => m_crowdSpawnerLicensePlate = value;
+        }
+
         #endregion
 
         #region Unity Methods
 
+        private void Awake()
+        {
+            crowdSpawnerLicensePlate = GetComponent<CrowdSpawnerLicensePlate>();
+            if (crowdSpawnerLicensePlate) crowdSpawnerLicensePlate.crowdSpawner = this;
+        }
+
         private void Start()
         {
-            if (!m_spawnable) return;
+            if (!spawnable) return;
             StartSpawn();
         }
 
@@ -95,7 +113,6 @@ namespace CrowdSample.Scripts.Crowd
 
         private void SpawnOnce()
         {
-            var spawnConfig = path.crowdPathConfig;
             var spawnPoints = path.spawnPoints;
 
             if (agentConfig.prefabs.Length == 0)

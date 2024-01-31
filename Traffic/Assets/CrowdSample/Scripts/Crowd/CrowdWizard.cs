@@ -114,7 +114,7 @@ namespace CrowdSample.Scripts.Crowd
                         Selection.activeObject = component;
                     }
 
-                    if (GUILayout.Button("刪️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.05f)))
+                    if (GUILayout.Button("✖️️", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.05f)))
                     {
                         var isConfirmed = EditorUtility.DisplayDialog(
                             "確認刪除",
