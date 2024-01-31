@@ -87,10 +87,10 @@ namespace CrowdSample.Scripts.Crowd
             {
                 normal    = { textColor = Color.cyan },
                 alignment = TextAnchor.UpperLeft,
-                fontSize  = 9
+                fontSize  = 14
             };
 
-            Handles.Label(position, "PointNum: " + waypointID, style);
+            Handles.Label(position, "  PtNum: " + waypointID, style);
         }
 
         #endregion

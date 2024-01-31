@@ -12,7 +12,7 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private Rigidbody    m_rigidBody;
         [SerializeField] private float        m_originalSpeed;
 
-        [SerializeField] private PermissionStates m_permissionStates;
+        [SerializeField] private LicensePlateStates m_licensePlateStates;
 
         [SerializeField] private string m_userIdentity;
         [SerializeField] private string m_userType;
@@ -38,10 +38,10 @@ namespace CrowdSample.Scripts.Crowd
             set => m_originalSpeed = value;
         }
 
-        public PermissionStates permissionStates
+        public LicensePlateStates licensePlateStates
         {
-            get => m_permissionStates;
-            set => m_permissionStates = value;
+            get => m_licensePlateStates;
+            set => m_licensePlateStates = value;
         }
 
         public string userIdentity

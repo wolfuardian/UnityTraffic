@@ -16,13 +16,13 @@ MonoBehaviour:
   - {fileID: 4054966841787611744, guid: 41ee19b563882c640b377b17d4d252b7, type: 3}
   m_minSpeed: 5
   m_maxSpeed: 6
-  m_angularSpeed: 120
+  m_angularSpeed: 100
   m_acceleration: 10
   m_stoppingDistance: 1
   m_autoBraking: 1
-  m_permissionStates: 2
   m_userType: Car
-  m_userIdentity: XYZ-1234
   m_useLicensePlate: 1
-  m_useLicensePlateFromCsv: 0
+  m_useLicensePlateFromCsv: 1
   m_licensePlateCsvPath: Assets/AGVSample/Data/LicensePlate.csv
+  m_licensePlateNumber: XYZ-1234
+  m_licensePlateAuthStates: 1

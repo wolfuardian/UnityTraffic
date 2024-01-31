@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
@@ -24,7 +25,7 @@ namespace CrowdSample.Scripts.Crowd
         private readonly         SortedSet<int> availableIds = new SortedSet<int>();
 
         // Plug-in
-        [SerializeField] private CrowdSpawnerLicensePlate m_crowdSpawnerLicensePlate;
+        [SerializeField] private CrowdAgentAddonLicensePlate m_crowdAgentAddonLicensePlate;
 
         #endregion
 
@@ -72,10 +73,10 @@ namespace CrowdSample.Scripts.Crowd
 
         // Plug-in
 
-        public CrowdSpawnerLicensePlate crowdSpawnerLicensePlate
+        public CrowdAgentAddonLicensePlate crowdAgentAddonLicensePlate
         {
-            get => m_crowdSpawnerLicensePlate;
-            set => m_crowdSpawnerLicensePlate = value;
+            get => m_crowdAgentAddonLicensePlate;
+            set => m_crowdAgentAddonLicensePlate = value;
         }
 
         #endregion
@@ -84,8 +85,8 @@ namespace CrowdSample.Scripts.Crowd
 
         private void Awake()
         {
-            crowdSpawnerLicensePlate = GetComponent<CrowdSpawnerLicensePlate>();
-            if (crowdSpawnerLicensePlate) crowdSpawnerLicensePlate.crowdSpawner = this;
+            crowdAgentAddonLicensePlate = GetComponent<CrowdAgentAddonLicensePlate>();
+            if (crowdAgentAddonLicensePlate) crowdAgentAddonLicensePlate.crowdSpawner = this;
         }
 
         private void Start()
@@ -239,9 +240,30 @@ namespace CrowdSample.Scripts.Crowd
             entity.navMeshAgent.acceleration     = agentConfig.acceleration;
             entity.navMeshAgent.stoppingDistance = agentConfig.stoppingDistance;
             entity.navMeshAgent.autoBraking      = agentConfig.autoBraking;
+            entity.navMeshAgent.radius           = 1.5f;
             entity.rigidBody.useGravity          = false;
             entity.rigidBody.isKinematic         = true;
             entity.rigidBody.angularDrag         = 0; // 雖然　isKinematic　已經能避免被撞開，但仍有機會被影響旋動量，因此這邊設定為 0
+
+            if (agentConfig.useLicensePlate)
+            {
+                var addonLicensePlate     = agentInstance.AddComponent<CrowdAgentAddonLicensePlate>();
+                var licensePlateNumber    = agentConfig.licensePlateNumber;
+                var licensePlateAuthState = agentConfig.licensePlateAuthStates;
+
+                if (agentConfig.useLicensePlateFromCsv)
+                {
+                    addonLicensePlate.RegistryDataFromCsv(agentConfig.licensePlateCsvPath);
+                    licensePlateNumber = addonLicensePlate.GetRandomPlateNumber();
+                    var authStateCode = addonLicensePlate.GetAuthState(licensePlateNumber);
+                    licensePlateAuthState = Enum.TryParse(authStateCode, out LicensePlateStates parsedState)
+                        ? parsedState
+                        : LicensePlateStates.Deny;
+                }
+
+                addonLicensePlate.licensePlateNumber     = licensePlateNumber;
+                addonLicensePlate.licensePlateAuthStates = licensePlateAuthState;
+            }
 
             trackingAgents.Add(agentInstance.transform);
 

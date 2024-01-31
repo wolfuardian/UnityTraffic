@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 3.38
+  m_radius: 2
 --- !u!1 &231197780
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,7 +484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 3.52
+  m_radius: 2
 --- !u!1 &329539908
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 2.27
+  m_radius: 2
 --- !u!1 &544322733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,7 +1270,6 @@ GameObject:
   m_Component:
   - component: {fileID: 906526098}
   - component: {fileID: 906526097}
-  - component: {fileID: 906526099}
   m_Layer: 0
   m_Name: Spawner_0
   m_TagString: Untagged
@@ -1297,7 +1296,7 @@ MonoBehaviour:
   m_createdTotalCount: 0
   m_queueTotalCount: 0
   m_maxIdSoFar: 0
-  m_crowdSpawnerLicensePlate: {fileID: 0}
+  m_crowdAgentAddonLicensePlate: {fileID: 0}
 --- !u!4 &906526098
 Transform:
   m_ObjectHideFlags: 0
@@ -1312,20 +1311,6 @@ Transform:
   m_Father: {fileID: 1063877121}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &906526099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906526096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57606ad872b547869711c92da5d25b79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_crowdSpawner: {fileID: 0}
-  m_licensePlateCsvPath: 
 --- !u!1 &956477853
 GameObject:
   m_ObjectHideFlags: 0
@@ -2611,7 +2596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 1.35
+  m_radius: 2
 --- !u!1 &1905760781
 GameObject:
   m_ObjectHideFlags: 0
@@ -2715,7 +2700,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83cdae7d45f0742aea73cc8ddd51fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 3.11
+  m_radius: 2
 --- !u!23 &1977336558
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2991,9 +2976,12 @@ MonoBehaviour:
   onAgentEnterAccess:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
   onAgentEnterDenied:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
   onAgentExitDetect:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1

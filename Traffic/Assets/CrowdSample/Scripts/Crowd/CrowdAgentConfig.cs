@@ -18,15 +18,16 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private float m_stoppingDistance = 1f;
         [SerializeField] private bool  m_autoBraking      = true;
 
-        [SerializeField] private PermissionStates m_permissionStates = PermissionStates.Guest;
 
-        [SerializeField] private string m_userType     = "Car";
-        [SerializeField] private string m_userIdentity = "XYZ-1234";
+        [SerializeField] private string m_userType = "Car";
+
 
         // Plug-in
-        [SerializeField] private bool   m_useLicensePlate;
-        [SerializeField] private bool   m_useLicensePlateFromCsv;
-        [SerializeField] private string m_licensePlateCsvPath = "Assets/AGVSample/Data/LicensePlate.csv";
+        [SerializeField] private bool               m_useLicensePlate;
+        [SerializeField] private bool               m_useLicensePlateFromCsv;
+        [SerializeField] private string             m_licensePlateCsvPath    = "Assets/AGVSample/Data/LicensePlate.csv";
+        [SerializeField] private string             m_licensePlateNumber     = "XYZ-1234";
+        [SerializeField] private LicensePlateStates m_licensePlateAuthStates = LicensePlateStates.Guest;
 
         #endregion
 
@@ -74,10 +75,10 @@ namespace CrowdSample.Scripts.Crowd
             set => m_autoBraking = value;
         }
 
-        public PermissionStates permissionStates
+        public LicensePlateStates licensePlateAuthStates
         {
-            get => m_permissionStates;
-            set => m_permissionStates = value;
+            get => m_licensePlateAuthStates;
+            set => m_licensePlateAuthStates = value;
         }
 
         public string userType
@@ -86,10 +87,28 @@ namespace CrowdSample.Scripts.Crowd
             set => m_userType = value;
         }
 
-        public string userID
+        public string licensePlateNumber
         {
-            get => m_userIdentity;
-            set => m_userIdentity = value;
+            get => m_licensePlateNumber;
+            set => m_licensePlateNumber = value;
+        }
+
+        public bool useLicensePlate
+        {
+            get => m_useLicensePlate;
+            set => m_useLicensePlate = value;
+        }
+
+        public bool useLicensePlateFromCsv
+        {
+            get => m_useLicensePlateFromCsv;
+            set => m_useLicensePlateFromCsv = value;
+        }
+
+        public string licensePlateCsvPath
+        {
+            get => m_licensePlateCsvPath;
+            set => m_licensePlateCsvPath = value;
         }
 
         #endregion
@@ -109,15 +128,12 @@ namespace CrowdSample.Scripts.Crowd
         private SerializedProperty stoppingDistanceProp;
         private SerializedProperty autoBrakingProp;
 
-        private SerializedProperty licensePlateStatesProp;
-
-        private SerializedProperty userTypeProp;
-        private SerializedProperty licensePlateProp;
-
         // Plug-in
         private SerializedProperty useLicensePlateProp;
         private SerializedProperty useLicensePlateFromCsvProp;
         private SerializedProperty licensePlateCsvPathProp;
+        private SerializedProperty licensePlateProp;
+        private SerializedProperty licensePlateStatesProp;
 
         #endregion
 
@@ -134,15 +150,13 @@ namespace CrowdSample.Scripts.Crowd
             stoppingDistanceProp = serializedObject.FindProperty("m_stoppingDistance");
             autoBrakingProp      = serializedObject.FindProperty("m_autoBraking");
 
-            licensePlateStatesProp = serializedObject.FindProperty("m_permissionStates");
-
-            userTypeProp     = serializedObject.FindProperty("m_userType");
-            licensePlateProp = serializedObject.FindProperty("m_userIdentity");
 
             // Plug-in
             useLicensePlateProp        = serializedObject.FindProperty("m_useLicensePlate");
             useLicensePlateFromCsvProp = serializedObject.FindProperty("m_useLicensePlateFromCsv");
             licensePlateCsvPathProp    = serializedObject.FindProperty("m_licensePlateCsvPath");
+            licensePlateProp           = serializedObject.FindProperty("m_licensePlateNumber");
+            licensePlateStatesProp     = serializedObject.FindProperty("m_licensePlateAuthStates");
         }
 
         public override void OnInspectorGUI()
@@ -224,8 +238,8 @@ namespace CrowdSample.Scripts.Crowd
                 EditorGUI.indentLevel++;
 
                 EditorGUI.BeginDisabledGroup(useLicensePlateFromCsvProp.boolValue);
-                EditorGUILayout.PropertyField(licensePlateStatesProp, new GUIContent("權限狀態"));
                 EditorGUILayout.PropertyField(licensePlateProp,       new GUIContent("車牌號碼"));
+                EditorGUILayout.PropertyField(licensePlateStatesProp, new GUIContent("權限狀態"));
                 EditorGUI.EndDisabledGroup();
 
                 EditorGUILayout.Space(4);
@@ -234,7 +248,6 @@ namespace CrowdSample.Scripts.Crowd
                     EditorGUILayout.Toggle("使用車牌資料庫", useLicensePlateFromCsvProp.boolValue);
                 if (useLicensePlateFromCsvProp.boolValue)
                 {
-
                     EditorGUILayout.BeginVertical("box");
                     licensePlateCsvPathProp.stringValue =
                         EditorGUILayout.TextField("車牌資料路徑", licensePlateCsvPathProp.stringValue);
