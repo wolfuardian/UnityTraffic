@@ -18,13 +18,14 @@ namespace CrowdSample.Scripts.Crowd
             Once
         }
 
-        [SerializeField] private NavigationMode m_navigationMode;
-        [SerializeField] private NavMeshAgent   m_navMeshAgent;
+        [SerializeField] private CrowdPath           m_crowdPath;
+        [SerializeField] private NavigationMode      m_navigationMode;
+        [SerializeField] private NavMeshAgent        m_navMeshAgent;
         [SerializeField] private List<CrowdWaypoint> m_waypoints;
-        [SerializeField] private int            m_spawnID;
-        [SerializeField] private int            m_targetPointID;
-        [SerializeField] private bool           m_movingForward = true;
-        [SerializeField] private bool           m_shouldDestroy = true;
+        [SerializeField] private int                 m_spawnID;
+        [SerializeField] private int                 m_targetPointID;
+        [SerializeField] private bool                m_movingForward = true;
+        [SerializeField] private bool                m_shouldDestroy = true;
 
         [SerializeField] private float m_reachedThreshold = 0.1f;
 
@@ -38,6 +39,12 @@ namespace CrowdSample.Scripts.Crowd
         #endregion
 
         #region Properties
+
+        public CrowdPath crowdPath
+        {
+            get => m_crowdPath;
+            set => m_crowdPath = value;
+        }
 
         public NavigationMode navigationMode
         {
@@ -133,7 +140,8 @@ namespace CrowdSample.Scripts.Crowd
 
             if (IsDestinationReached())
             {
-                navMeshAgent.destination = transform.position + transform.forward * 0.1f;
+                var t = transform;
+                navMeshAgent.destination = t.position + t.forward * 0.1f;
                 HandleDestinationReached();
             }
             else
@@ -194,7 +202,7 @@ namespace CrowdSample.Scripts.Crowd
             }
         }
 
-        private void MoveToNextWaypoint()
+        public void MoveToNextWaypoint()
         {
             switch (navigationMode)
             {
@@ -269,6 +277,11 @@ namespace CrowdSample.Scripts.Crowd
             navMeshAgent.destination = targetPosition;
         }
 
+        public void TemporaryWaiting(CrowdAgent agent)
+        {
+            agent.TemporaryDeceleration(1f, 2f);
+        }
+
         #endregion
 
         #region Debug and Visualization Methods
@@ -288,11 +301,11 @@ namespace CrowdSample.Scripts.Crowd
             var style = new GUIStyle
             {
                 normal    = { textColor = Color.white },
-                alignment = TextAnchor.UpperLeft,
-                fontSize  = 9
+                alignment = TextAnchor.LowerCenter,
+                fontSize  = 12
             };
 
-            Handles.Label(position, "ID: " + spawnID, style);
+            Handles.Label(position, spawnID.ToString(), style);
         }
 
         #endregion

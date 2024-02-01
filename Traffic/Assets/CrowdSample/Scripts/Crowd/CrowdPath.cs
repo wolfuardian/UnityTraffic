@@ -175,14 +175,14 @@ namespace CrowdSample.Scripts.Crowd
 
                 var style = new GUIStyle
                 {
-                    normal    = { textColor = Color.yellow },
-                    alignment = TextAnchor.UpperLeft,
+                    normal    = { textColor = Color.cyan },
+                    alignment = TextAnchor.MiddleLeft,
                     fontSize  = 9
                 };
 
                 var text = "" +
-                           "PInterp: " + spawnData.pathInterp + "\n" +
-                           "PLocation: " + spawnData.pathLocation;
+                           "  Interp: " + spawnData.pathInterp + "\n" +
+                           "  Location: " + spawnData.pathLocation;
                 Handles.Label(spawnData.position, text, style);
             }
         }

@@ -285,7 +285,7 @@ namespace CrowdSample.Scripts.Crowd
 
                     EditorGUILayout.Space(4);
 
-                    EditorGUILayout.LabelField("權限狀態: 0 = Admin, 1 = Guest, 2 = Deny", EditorStyles.miniLabel);
+                    EditorGUILayout.LabelField("權限狀態: 0 = Vip, 1 = Guest, 2 = Deny", EditorStyles.miniLabel);
                     EditorGUILayout.EndVertical();
                 }
 

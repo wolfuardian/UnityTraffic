@@ -17,7 +17,6 @@ namespace CrowdSample.Scripts.Crowd
     {
         #region Field Declarations
 
-        [SerializeField] private CrowdSpawner       m_crowdSpawner;
         [SerializeField] private string             m_licensePlateNumber;
         [SerializeField] private LicensePlateStates m_licensePlateAuthStates;
 
@@ -27,12 +26,6 @@ namespace CrowdSample.Scripts.Crowd
         #endregion
 
         #region Properties
-
-        public CrowdSpawner crowdSpawner
-        {
-            get => m_crowdSpawner;
-            set => m_crowdSpawner = value;
-        }
 
         public string licensePlateNumber
         {

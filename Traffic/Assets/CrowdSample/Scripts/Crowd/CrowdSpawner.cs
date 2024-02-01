@@ -83,12 +83,6 @@ namespace CrowdSample.Scripts.Crowd
 
         #region Unity Methods
 
-        private void Awake()
-        {
-            crowdAgentAddonLicensePlate = GetComponent<CrowdAgentAddonLicensePlate>();
-            if (crowdAgentAddonLicensePlate) crowdAgentAddonLicensePlate.crowdSpawner = this;
-        }
-
         private void Start()
         {
             if (!spawnable) return;
@@ -240,7 +234,7 @@ namespace CrowdSample.Scripts.Crowd
             entity.navMeshAgent.acceleration     = agentConfig.acceleration;
             entity.navMeshAgent.stoppingDistance = agentConfig.stoppingDistance;
             entity.navMeshAgent.autoBraking      = agentConfig.autoBraking;
-            entity.navMeshAgent.radius           = 1.5f;
+            entity.navMeshAgent.radius           = 0.5f;
             entity.rigidBody.useGravity          = false;
             entity.rigidBody.isKinematic         = true;
             entity.rigidBody.angularDrag         = 0; // 雖然　isKinematic　已經能避免被撞開，但仍有機會被影響旋動量，因此這邊設定為 0

@@ -1,7 +1,9 @@
-using System;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.Events;
 
 namespace CrowdSample.Scripts.Crowd
 {
@@ -12,13 +14,14 @@ namespace CrowdSample.Scripts.Crowd
         [SerializeField] private Rigidbody    m_rigidBody;
         [SerializeField] private float        m_originalSpeed;
 
-        [SerializeField] private LicensePlateStates m_licensePlateStates;
+        [SerializeField] private bool m_hasAddonLicensePlate;
 
-        [SerializeField] private string m_userIdentity;
-        [SerializeField] private string m_userType;
+        public UnityAction<CrowdAgent> AgentExited;
 
-        public Action<CrowdAgent> AgentExited;
+        public UnityAction<CrowdAgent> OnTemporaryHaltAgentBegin;
+        public UnityAction<CrowdAgent> OnTemporaryHaltAgentCompleted;
 
+        private List<Color> originalColors = new List<Color>();
 
         public NavMeshAgent navMeshAgent
         {
@@ -38,22 +41,10 @@ namespace CrowdSample.Scripts.Crowd
             set => m_originalSpeed = value;
         }
 
-        public LicensePlateStates licensePlateStates
+        public bool hasAddonLicensePlate
         {
-            get => m_licensePlateStates;
-            set => m_licensePlateStates = value;
-        }
-
-        public string userIdentity
-        {
-            get => m_userIdentity;
-            set => m_userIdentity = value;
-        }
-
-        public string userType
-        {
-            get => m_userType;
-            set => m_userType = value;
+            get => m_hasAddonLicensePlate;
+            set => m_hasAddonLicensePlate = value;
         }
 
         #region Unity Methods
@@ -68,13 +59,48 @@ namespace CrowdSample.Scripts.Crowd
                 : GetComponent<Rigidbody>();
         }
 
+        private void OnEnable()
+        {
+            OnTemporaryHaltAgentBegin     += ChangeColorToRed;
+            OnTemporaryHaltAgentCompleted += ChangeColorToOriginal;
+        }
+
+        private void OnDisable()
+        {
+            OnTemporaryHaltAgentBegin     -= ChangeColorToRed;
+            OnTemporaryHaltAgentCompleted -= ChangeColorToOriginal;
+        }
+
         private void Start()
         {
             TemporaryDeceleration(0, 0.5f);
+            hasAddonLicensePlate = GetComponent<CrowdAgentAddonLicensePlate>() != null;
         }
 
         #endregion
 
+        public void ChangeColorToRed(CrowdAgent agent)
+        {
+            var meshRenderers = GetComponentsInChildren<MeshRenderer>();
+            if (meshRenderers.Length == 0) return;
+            meshRenderers.ToList().ForEach(meshRenderer =>
+            {
+                originalColors.Add(meshRenderer.material.color);
+                meshRenderer.material.color = Color.red;
+            });
+        }
+
+        public void ChangeColorToOriginal(CrowdAgent agent)
+        {
+            var meshRenderers = GetComponentsInChildren<MeshRenderer>();
+            if (meshRenderers.Length == 0) return;
+            meshRenderers.ToList().ForEach(meshRenderer =>
+            {
+                if (originalColors.Count == 0) return;
+                meshRenderer.material.color = originalColors[meshRenderers.ToList().IndexOf(meshRenderer)];
+            });
+            originalColors.Clear();
+        }
 
         public void TemporaryDeceleration(float interval, float duration, float minSpeed = 0.2f)
         {

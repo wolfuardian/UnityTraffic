@@ -4,7 +4,7 @@ namespace CrowdSample.Scripts.Crowd
 {
     public enum LicensePlateStates
     {
-        Admin = 0,
+        Vip   = 0,
         Guest = 1,
         Deny  = 2
     }
