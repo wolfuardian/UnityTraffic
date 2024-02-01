@@ -3265,8 +3265,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -611.8408, y: -320.28}
-  m_SizeDelta: {x: 696.3121, y: 439.44}
+  m_AnchoredPosition: {x: -611.8408, y: -349.29935}
+  m_SizeDelta: {x: 696.3121, y: 381.4013}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1563868084
 MonoBehaviour:
@@ -4046,6 +4046,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2060530581}
+        m_TargetAssemblyTypeName: CrowdSample.Scripts.Crowd.CrowdAgentActionLicensePlateGUIEmitter,
+          CrowdSample
+        m_MethodName: SetGUIHighlightOn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onAgentExit:
     m_PersistentCalls:
       m_Calls:
@@ -4065,6 +4078,19 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: CrowdSample.Scripts.Crowd.CrowdAgentActionShowGUI,
           CrowdSample
         m_MethodName: RemoveItem
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2060530581}
+        m_TargetAssemblyTypeName: CrowdSample.Scripts.Crowd.CrowdAgentActionLicensePlateGUIEmitter,
+          CrowdSample
+        m_MethodName: SetGUIHighlightOff
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4134,3 +4160,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_scrollViewContent: {fileID: 1466640396}
   m_guiPrefab: {fileID: 5120970470435263794, guid: 01fd5e4f320edfc4c85c9ffd07400fdc, type: 3}
+  m_maxItemCount: 25
