@@ -65,7 +65,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6588996609816316721, guid: 2ad41989ec3285f4c9d2174f505edefe, type: 3}
       propertyPath: m_Name
-      value: Car Variant
+      value: Car Variant - VIP
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ad41989ec3285f4c9d2174f505edefe, type: 3}
