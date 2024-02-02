@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ede7ccd0c0444485899ba14e18dd9ff8, type: 3}
-  m_Name: CrowdPathConfig
+  m_Name: "CrowdPathConfig_\u8ECA\u6D41\u8A2D\u5B9A"
   m_EditorClassIdentifier: 
   m_generationMode: 0
   m_spawnInterval: 0.36
