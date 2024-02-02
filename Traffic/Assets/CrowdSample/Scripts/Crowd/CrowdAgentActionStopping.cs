@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace CrowdSample.Scripts.Crowd
 {
-    public class CrowdAgentActionMovement : MonoBehaviour
+    public class CrowdAgentActionStopping : MonoBehaviour
     {
         #region Field Declarations
 
