@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Playables;
+using System.Collections.Generic;
+using System.Linq;
 using TimetreeSample.Scripts.Timetree.TimelineCore;
 
 namespace TimetreeSample.Scripts.Timetree
@@ -9,13 +12,14 @@ namespace TimetreeSample.Scripts.Timetree
         #region Field Declarations
 
         [SerializeField] private PlayableDirector m_playableDirector;
-        public                   double           playableLength = 6; // 定義播放的時間長度，比如 6 帧
+        [SerializeField] private List<GameObject> m_bindings = new List<GameObject>();
 
         #endregion
 
         #region Properties
 
         public PlayableDirector playableDirector => m_playableDirector;
+        public List<GameObject> bindings         => m_bindings;
 
         #endregion
 
@@ -23,18 +27,24 @@ namespace TimetreeSample.Scripts.Timetree
 
         private void Awake()
         {
+            FetchBindingGameObjects();
             SelectTime(1);
         }
 
         private void Start()
         {
             // 播放之後馬上停止播放，再跳到第零格
-            m_playableDirector.playOnAwake = false;
+            playableDirector.playOnAwake = false;
             SelectTime(0);
         }
 
         private void Update()
         {
+        }
+
+        private void OnValidate()
+        {
+            FetchBindingGameObjects();
         }
 
         #endregion
@@ -43,7 +53,7 @@ namespace TimetreeSample.Scripts.Timetree
 
         public void SelectTime(int time)
         {
-            m_playableDirector.time = time;
+            playableDirector.time = time;
             playableDirector.Evaluate();
         }
 
@@ -58,6 +68,28 @@ namespace TimetreeSample.Scripts.Timetree
         #endregion
 
         #region Private Methods
+
+        void FetchBindingGameObjects()
+        {
+            bindings.Clear();
+
+            if (playableDirector != null && playableDirector.playableAsset != null)
+            {
+                foreach (var binding in playableDirector.playableAsset.outputs)
+                {
+                    // 檢查綁定的物體類型
+                    if (playableDirector.GetGenericBinding(binding.sourceObject) is GameObject boundGameObject)
+                    {
+                        bindings.Add(boundGameObject);
+                    }
+                    else if (playableDirector.GetGenericBinding(binding.sourceObject) is Component boundComponent)
+                    {
+                        // 如果綁定的是 Component，則添加其 GameObject
+                        bindings.Add(boundComponent.gameObject);
+                    }
+                }
+            }
+        }
 
         private void StopPlayableDirector()
         {
