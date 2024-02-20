@@ -1,0 +1,173 @@
+fileFormatVersion: 2
+guid: 2cb7cf17b9c8bf646b903b80b95a3da4
+timeCreated: 1474557928
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: group_0
+    100004: group_1
+    100006: group_2
+    100008: group_3
+    100010: group_4
+    100012: ID102
+    100014: ID108
+    100016: ID114
+    100018: ID120
+    100020: ID48
+    100022: ID54
+    100024: ID60
+    100026: ID66
+    100028: ID72
+    100030: ID78
+    100032: ID84
+    100034: ID90
+    100036: ID96
+    100038: instance_0
+    100040: rocket_space_ship_engine____please_rate_
+    100042: skp_camera_Last_Saved_SketchUp_View
+    400000: //RootNode
+    400002: group_0
+    400004: group_1
+    400006: group_2
+    400008: group_3
+    400010: group_4
+    400012: ID102
+    400014: ID108
+    400016: ID114
+    400018: ID120
+    400020: ID48
+    400022: ID54
+    400024: ID60
+    400026: ID66
+    400028: ID72
+    400030: ID78
+    400032: ID84
+    400034: ID90
+    400036: ID96
+    400038: instance_0
+    400040: rocket_space_ship_engine____please_rate_
+    400042: skp_camera_Last_Saved_SketchUp_View
+    2300000: group_0
+    2300002: group_1
+    2300004: group_2
+    2300006: group_3
+    2300008: group_4
+    2300010: ID102
+    2300012: ID108
+    2300014: ID114
+    2300016: ID120
+    2300018: ID48
+    2300020: ID54
+    2300022: ID60
+    2300024: ID66
+    2300026: ID72
+    2300028: ID78
+    2300030: ID84
+    2300032: ID90
+    2300034: ID96
+    2300036: rocket_space_ship_engine____please_rate_
+    3300000: group_0
+    3300002: group_1
+    3300004: group_2
+    3300006: group_3
+    3300008: group_4
+    3300010: ID102
+    3300012: ID108
+    3300014: ID114
+    3300016: ID120
+    3300018: ID48
+    3300020: ID54
+    3300022: ID60
+    3300024: ID66
+    3300026: ID72
+    3300028: ID78
+    3300030: ID84
+    3300032: ID90
+    3300034: ID96
+    3300036: rocket_space_ship_engine____please_rate_
+    4300000: rocket_space_ship_engine____please_rate_
+    4300002: ID48
+    4300004: ID54
+    4300006: ID60
+    4300008: ID66
+    4300010: ID72
+    4300012: ID78
+    4300014: ID84
+    4300016: ID90
+    4300018: ID96
+    4300020: ID102
+    4300022: ID108
+    4300024: ID114
+    4300026: ID120
+    4300028: group_0
+    4300030: group_1
+    4300032: group_2
+    4300034: group_3
+    4300036: group_4
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
