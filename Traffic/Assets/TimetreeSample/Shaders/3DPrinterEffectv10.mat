@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 3DPrinterEffectv2
-  m_Shader: {fileID: 4800000, guid: 8fe4167bb2a639c4f9b1a1c1044010f0, type: 3}
+  m_Name: 3DPrinterEffectv10
+  m_Shader: {fileID: 4800000, guid: 5867672f6418a7a489d872c8b43a9940, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -24,9 +24,26 @@ Material:
         m_Scale: {x: 10, y: 10}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _ConstructGap: 0.2
+    - _ConstructY: 0.46
+    - _Frequency: 0.5
     - _Metallic: 0
     - _Smoothness: 0.5
+    - _Speed: 1
+    - _WireframeAlphaAfter: 0.5
+    - _WireframeAlphaBefore: 1
+    - _WireframeColor: 0.1
+    - _WireframeThickness: 1.5
+    - _WireframeThicknessAfter: 1.5
+    - _WireframeThicknessBefore: 2
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _ConstructColor: {r: 0.4592657, g: 1, b: 0, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 1}
+    - _PreConstructColor: {r: 0, g: 0.25, b: 0, a: 1}
+    - _WireframeBackColour: {r: 0, g: 0.04445076, b: 1, a: 1}
+    - _WireframeColor: {r: 0, g: 0, b: 0, a: 1}
+    - _WireframeColorA: {r: 0, g: 1, b: 0, a: 1}
+    - _WireframeColorB: {r: 0, g: 0.2, b: 0, a: 1}
+    - _WireframeFrontColour: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

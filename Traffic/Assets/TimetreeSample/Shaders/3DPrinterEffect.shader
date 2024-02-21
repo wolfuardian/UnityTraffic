@@ -100,58 +100,6 @@ Shader "Custom/3DPrinterEffect"
             LightingStandard_GI(s, data, gi);
         }
         ENDCG
-
-        // 添加一個額外的Pass用於螢幕空間效果
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float3 normal : NORMAL;
-            };
-
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-            };
-
-            sampler2D _RampTex; // Ramp紋理
-
-            v2f vert(appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.vertex.xy / _ScreenParams.xy;
-                return o;
-            }
-
-            fixed4 frag(v2f i) : SV_Target
-            {
-                // 根據螢幕空間坐標讀取Ramp紋理
-                fixed4 rampColor = tex2D(_RampTex, i.uv);
-                // 將UV坐標直接用作顏色值
-                fixed4 color;
-                color.r = i.uv.x; // X坐標映射到紅色通道
-                color.g = i.uv.y; // Y坐標映射到綠色通道
-                color.b = 0; // 藍色通道設定為0
-                color.a = 1; // Alpha通道設定為完全不透明
-                
-                return color;
-            }
-            ENDCG
-        }
-
-
-
-
-
-
     }
     FallBack "Diffuse"
 }

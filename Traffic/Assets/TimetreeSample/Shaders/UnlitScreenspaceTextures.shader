@@ -15,8 +15,11 @@ Shader "Tutorial/039_ScreenspaceTextures/Unlit"
         Tags
         {
             "RenderType"="Opaque" "Queue"="Geometry"
-        }
 
+        }
+        LOD 100
+
+        Blend SrcAlpha OneMinusSrcAlpha
         Pass
         {
             CGPROGRAM
@@ -71,7 +74,7 @@ Shader "Tutorial/039_ScreenspaceTextures/Unlit"
 
                 // 根據漸層高度調整Y坐標，實現循環漸層效果
                 textureCoordinate.y = frac(textureCoordinate.y + yOffset) * _GradientHeight;
-                
+
                 textureCoordinate = TRANSFORM_TEX(textureCoordinate, _MainTex);
                 fixed4 col = tex2D(_MainTex, textureCoordinate);
                 col *= _Color;
